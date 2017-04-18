@@ -1,0 +1,24 @@
+{
+    "name": "airstory/airstory-wp",
+    "description": "Publish content from Airstory to WordPress.",
+    "type": "wordpress-plugin",
+    "homepage": "http://www.airstory.co/integrations/",
+    "authors": [
+        {
+            "name": "Liquid Web",
+            "homepage": "https://www.liquidweb.com"
+        }
+    ],
+    "require-dev": {
+        "stevegrunwell/wp-enforcer": "dev-master",
+        "10up/wp_mock": "dev-dev"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "wp-enforcer"
+        ],
+        "post-update-cmd": [
+            "wp-enforcer"
+        ]
+    }
+}

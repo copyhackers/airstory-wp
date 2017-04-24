@@ -29,7 +29,10 @@ class API {
 	 * @return stdClass|WP_Error The response from Airstory\API::make_authenticated_request().
 	 */
 	public function get_project( $project_id ) {
-		return $this->make_authenticated_request( sprintf( '/projects/%s', $project_id ) );
+		return $this->decode_json_response( $this->make_authenticated_request( sprintf(
+			'/projects/%s',
+			$project_id
+		) ) );
 	}
 
 	/**
@@ -40,11 +43,11 @@ class API {
 	 * @return stdClass|WP_Error The response from Airstory\API::make_authenticated_request().
 	 */
 	public function get_document( $project_id, $document_id ) {
-		return $this->make_authenticated_request( sprintf(
+		return $this->decode_json_response( $this->make_authenticated_request( sprintf(
 			'/projects/%s/documents/%s',
 			$project_id,
 			$document_id
-		) );
+		) ) );
 	}
 
 	/**
@@ -109,20 +112,29 @@ class API {
 			return $request;
 		}
 
-		// Retrieve the request body and JSON-decode it.
-		$json   = wp_remote_retrieve_body( $request );
-		$result = json_decode( $json, false );
+		return wp_remote_retrieve_body( $request );
+	}
+
+	/**
+	 * For requests that return JSON (e.g. anything except getting the generated HTML), JSON-decode
+	 * the API response and return it.
+	 *
+	 * @param string $response_body The HTTP response body.
+	 * @return stdClass|WP_Error If JSON-decoded successfully, a stdClass representation of the
+	 *                           response body, otherwise a WP_Error object.
+	 */
+	protected function decode_json_response( $response_body ) {
+		$result = json_decode( $response_body, false );
 
 		// Something went wrong decoding the JSON.
 		if ( ! $result ) {
 			return new WP_Error(
 				'airstory-invalid-json',
 				__( 'The request did not return valid JSON', 'airstory' ),
-				array( 'request' => $request )
+				array( 'body' => $response_body )
 			);
 		}
 
-		// If we've gotten this far, the request was completed successfully.
 		return $result;
 	}
 }

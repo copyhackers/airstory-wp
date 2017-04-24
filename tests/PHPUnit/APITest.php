@@ -24,9 +24,10 @@ class APITest extends \Airstory\TestCase {
 		$instance->shouldReceive( 'make_authenticated_request' )
 			->once()
 			->with( '/projects/' . $project )
-			->andReturn( $result );
+			->andReturn( "{\"$result\"}" );
+		$instance->shouldReceive( 'decode_json_response' )->andReturn( $result );
 
-		$instance->get_project( $project );
+		$this->assertEquals( $result, $instance->get_project( $project ) );
 	}
 
 	public function testGetDocument() {
@@ -37,9 +38,10 @@ class APITest extends \Airstory\TestCase {
 		$instance->shouldReceive( 'make_authenticated_request' )
 			->once()
 			->with( '/projects/' . $project . '/documents/' . $document )
-			->andReturn( $result );
+			->andReturn( "{\"$result\"}" );
+		$instance->shouldReceive( 'decode_json_response' )->andReturn( $result );
 
-		$instance->get_document( $project, $document );
+		$this->assertEquals( $result, $instance->get_document( $project, $document ) );
 	}
 
 	public function testGetDocumentContent() {
@@ -64,6 +66,7 @@ class APITest extends \Airstory\TestCase {
 		$instance->shouldReceive( 'get_credentials' )->andReturn( 'abc123' );
 		$method   = new ReflectionMethod( $instance, 'make_authenticated_request' );
 		$method->setAccessible( true );
+		$uniqid = uniqid();
 
 		M::userFunction( 'wp_remote_get', array(
 			'times'  => 1,
@@ -82,12 +85,12 @@ class APITest extends \Airstory\TestCase {
 		) );
 
 		M::userFunction( 'wp_remote_retrieve_body', array(
-			'return' => '{"json":"string"}',
+			'return' => $uniqid,
 		) );
 
 		$response = $method->invoke( $instance, '/some-route' );
 
-		$this->assertEquals( 'string', $response->json );
+		$this->assertEquals( $uniqid, $response );
 	}
 
 	public function testMakeAuthenticatedRequestThrowsWPErrorIfNoCredentialsAvailable() {
@@ -122,26 +125,22 @@ class APITest extends \Airstory\TestCase {
 		$this->assertEquals( $error, $method->invoke( $instance, '/some-route' ) );
 	}
 
-	public function testMakeAuthenticatedRequestReturnsWPErrorWhenJSONResponseIsInvalid() {
+	public function testDecodeJsonResponse() {
 		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
-		$instance->shouldReceive( 'get_credentials' )->andReturn( 'abc123' );
-		$method   = new ReflectionMethod( $instance, 'make_authenticated_request' );
+		$method   = new ReflectionMethod( $instance, 'decode_json_response' );
 		$method->setAccessible( true );
-		$error    = new \WP_Error( 'code', 'Something went wrong' );
 
-		M::userFunction( 'wp_remote_get', array(
-			'times'  => 1,
-		) );
+		$response = $method->invoke( $instance, '{"foo": "bar"}' );
 
-		M::userFunction( 'is_wp_error', array(
-			'return' => false,
-		) );
+		$this->assertEquals( 'bar', $response->foo );
+	}
 
-		M::userFunction( 'wp_remote_retrieve_body', array(
-			'return' => '{this is "invalid" JSON}',
-		) );
+	public function testDecodeJsonResponseReturnsWPErrorOnParseError() {
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$method   = new ReflectionMethod( $instance, 'decode_json_response' );
+		$method->setAccessible( true );
 
-		$response = $method->invoke( $instance, '/some-route' );
+		$response = $method->invoke( $instance, '{this is "invalid" JSON}' );
 
 		$this->assertInstanceOf( 'WP_Error', $response );
 		$this->assertEquals( 'airstory-invalid-json', $response->get_error_code() );

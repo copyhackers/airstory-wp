@@ -14,3 +14,4 @@
 namespace Airstory;
 
 require_once __DIR__ . '/includes/core.php';
+require_once __DIR__ . '/includes/webhook.php';

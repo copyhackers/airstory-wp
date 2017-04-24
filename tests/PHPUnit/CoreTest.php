@@ -16,15 +16,4 @@ class CoreTest extends \Airstory\TestCase {
 		'core.php',
 	);
 
-	function testCheckDependenciesVerifiesOAuthPluginIsActive() {
-		M::userFunction( 'is_plugin_active', array(
-			'args'   => array( 'rest-api-oauth1/oauth-server.php' ),
-			'times'  => 1,
-			'return' => false,
-		) );
-
-		M::expectActionAdded( 'admin_notices', __NAMESPACE__ . '\notify_dependencies_not_installed' );
-
-		check_dependencies();
-	}
 }

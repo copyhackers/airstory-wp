@@ -8,30 +8,14 @@
 namespace Airstory\Core;
 
 /**
- * Verify that the WP-API OAuth Server plugin is installed and activated.
+ * Given an Airstory project and document UUIDs, call out to the Airstory API and assemble a
+ * WordPress post.
  *
- * If not, an admin notification will be queued up with instructions for installing/activating
- * the necessary requirements.
+ * @param string $project_id  The Airstory project UUID.
+ * @param string $document_id The Airstory document UUID.
+ * @return int|WP_Error The ID of the newly-created post or a WP_Error object if anything went
+ *                      wrong during the creation of the post.
  */
-function check_dependencies() {
-	if ( ! is_plugin_active( 'rest-api-oauth1/oauth-server.php' ) ) {
-		add_action( 'admin_notices', __NAMESPACE__ . '\notify_dependencies_not_installed' );
-	}
-}
-add_action( 'admin_init', __NAMESPACE__ . '\check_dependencies' );
+function import_document( $project_id, $document_id ) {
 
-/**
- * Display an admin notice, informing the user that the OAuth 1.0a Server plugin is either not
- * installed or not activated.
- *
- * @todo Automate the installation/activation with a button click.
- */
-function notify_dependencies_not_installed() {
-?>
-
-	<div class="notice notice-warning">
-		<p><?php esc_html_e( 'In order to connect with Airstory, the WordPress REST API - OAuth Server 1.0a plugin must be installed and activated', 'airstory' ); ?></p>
-	</div>
-
-<?php
 }

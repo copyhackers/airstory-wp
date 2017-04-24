@@ -10,7 +10,7 @@ if ( ! defined( 'PROJECT' ) ) {
 }
 
 if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', __DIR__ . '/test-tools/' );
+	define( 'ABSPATH', __DIR__ . '/test-tools/dummy-files/' );
 }
 
 if ( ! file_exists( __DIR__ . '/../vendor/autoload.php' ) ) {
@@ -21,6 +21,7 @@ if ( ! file_exists( __DIR__ . '/../vendor/autoload.php' ) ) {
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/test-tools/TestCase.php';
+require_once ABSPATH . 'wp-includes/class-wp-error.php';
 
 WP_Mock::setUsePatchwork( true );
 WP_Mock::bootstrap();

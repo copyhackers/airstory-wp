@@ -15,5 +15,4 @@ class CoreTest extends \Airstory\TestCase {
 	protected $testFiles = array(
 		'core.php',
 	);
-
 }

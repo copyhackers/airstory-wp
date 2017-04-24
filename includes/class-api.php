@@ -33,6 +33,39 @@ class API {
 	}
 
 	/**
+	 * Retrieve information about a particular document.
+	 *
+	 * @param string $project_id The project's UUID.
+	 * @param string $document_id The document's UUID.
+	 * @return stdClass|WP_Error The response from Airstory\API::make_authenticated_request().
+	 */
+	public function get_document( $project_id, $document_id ) {
+		return $this->make_authenticated_request( sprintf(
+			'/projects/%s/documents/%s',
+			$project_id,
+			$document_id
+		) );
+	}
+
+	/**
+	 * Retrieve the rendered content for a given document.
+	 *
+	 * Note that this method will return the entire response, which includes a <!DOCTYPE> declaration
+	 * and supporting <html> elements. These can be filtered via Airstory\Core\get_body_contents().
+	 *
+	 * @param string $project_id The project's UUID.
+	 * @param string $document_id The document's UUID.
+	 * @return string|WP_Error The response from Airstory\API::make_authenticated_request().
+	 */
+	public function get_document_content( $project_id, $document_id ) {
+		return $this->make_authenticated_request( sprintf(
+			'/projects/%s/documents/%s/content',
+			$project_id,
+			$document_id
+		) );
+	}
+
+	/**
 	 * Retrieve the credentials for the currently logged-in user.
 	 *
 	 * @return string The bearer token to be passed with API requests.

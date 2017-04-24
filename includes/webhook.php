@@ -7,6 +7,7 @@
 
 namespace Airstory\Webhook;
 
+use Airstory;
 use Airstory\Core as Core;
 use WP_REST_Request;
 
@@ -34,9 +35,10 @@ add_action( 'rest_api_init', __NAMESPACE__ . '\register_webhook_endpoint' );
  * @param WP_REST_Request $request The WP REST API request object.
  */
 function handle_webhook( WP_REST_Request $request ) {
+	$api      = new Airstory\API;
 	$project  = $request->get_param( 'project' );
 	$document = $request->get_param( 'document' );
-	$post_id  = Core\import_document( $project, $document );
+	$post_id  = Core\import_document( $api, $project, $document );
 
 	// Return early if import_document() gave us a WP_Error object.
 	if ( is_wp_error( $post_id ) ) {

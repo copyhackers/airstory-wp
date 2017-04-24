@@ -29,6 +29,32 @@ class APITest extends \Airstory\TestCase {
 		$instance->get_project( $project );
 	}
 
+	public function testGetDocument() {
+		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$result   = uniqid();
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )
+			->once()
+			->with( '/projects/' . $project . '/documents/' . $document )
+			->andReturn( $result );
+
+		$instance->get_document( $project, $document );
+	}
+
+	public function testGetDocumentContent() {
+		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$result   = uniqid();
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )
+			->once()
+			->with( '/projects/' . $project . '/documents/' . $document . '/content' )
+			->andReturn( $result );
+
+		$instance->get_document_content( $project, $document );
+	}
+
 	public function testGetCredentials() {
 		$this->markTestIncomplete();
 	}

@@ -49,7 +49,7 @@ class WebhookTest extends \Airstory\TestCase {
 			->andReturn( $document );
 
 		M::userFunction( 'Airstory\Core\import_document', array(
-			'args'   => array( $project, $document ),
+			'args'   => array( M\Functions::type( 'Airstory\API' ), $project, $document ),
 			'return' => 123,
 		) );
 

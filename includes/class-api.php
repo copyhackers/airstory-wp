@@ -94,7 +94,7 @@ class API {
 		$token = $this->get_credentials();
 
 		// Don't even attempt the request if we don't have a token.
-		if ( ! $token ) {
+		if ( empty( $token ) ) {
 			return new WP_Error(
 				'airstory-missing-credentials',
 				__( 'An Airstory token is required to make this request', 'airstory' )

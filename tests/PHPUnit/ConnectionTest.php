@@ -9,6 +9,7 @@ namespace Airstory\Connection;
 
 use WP_Mock as M;
 use Mockery;
+use Patchwork;
 use WP_Error;
 
 class ConnectionTest extends \Airstory\TestCase {
@@ -18,7 +19,7 @@ class ConnectionTest extends \Airstory\TestCase {
 	);
 
 	public function tearDown() {
-		API::$response = null;
+		Patchwork\undoAll();
 
 		parent::tearDown();
 	}
@@ -30,11 +31,16 @@ class ConnectionTest extends \Airstory\TestCase {
 		$response->last_name  = 'Jenkins';
 		$response->email      = 'leroy.jenkins@example.com';
 		$response->created    = time();
-		API::$response        = $response;
+
+		Patchwork\replace( 'Airstory\API::get_user', function () use ( $response ) {
+			return $response;
+		} );
 
 		M::userFunction( 'is_wp_error', array(
 			'return' => false,
 		) );
+
+		M::passthruFunction( 'sanitize_text_field' );
 
 		$this->assertEquals(
 			array(
@@ -56,6 +62,149 @@ class ConnectionTest extends \Airstory\TestCase {
 		) );
 
 		$this->assertEquals( array(), get_user_profile(), 'WP_Errors should produce empty profile arrays' );
+	}
+
+	public function testRegisterConnection() {
+		Patchwork\replace( 'Airstory\API::post_target', function () {
+			return 'connection-id';
+		} );
+
+		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
+			'return' => array(
+				'email' => 'test@example.com',
+			),
+		) );
+
+		M::userFunction( 'get_bloginfo', array(
+			'return' => 'My site',
+		) );
+
+		M::userFunction( 'get_rest_url', array(
+			'return' => 'https://example.com/webhook',
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'update_user_meta', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_profile', array( 'email' => 'test@example.com' ) ),
+		) );
+
+		M::userFunction( 'update_user_meta', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_target', 'connection-id' ),
+		) );
+
+		M::passthruFunction( 'sanitize_text_field' );
+
+		$this->assertEquals( 'connection-id', register_connection( 123 ) );
+	}
+
+	public function testRegisterConnectionReturnsEarlyIfNoProfileDataFound() {
+		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
+			'return' => array(),
+		) );
+
+		$this->assertNull( register_connection( 123 ) );
+	}
+
+	public function testRegisterConnectionHandlesWPErrors() {
+		$response = new WP_Error();
+
+		Patchwork\replace( 'Airstory\API::post_target', function () use ( $response ) {
+			return $response;
+		} );
+
+		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
+			'return' => array(
+				'email' => 'test@example.com',
+			),
+		) );
+
+		M::userFunction( 'get_bloginfo', array(
+			'return' => 'My site',
+		) );
+
+		M::userFunction( 'get_rest_url', array(
+			'return' => 'https://example.com/webhook',
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => true,
+		) );
+
+		$this->assertNull( register_connection( 123 ) );
+	}
+
+	public function testRemoveConnection() {
+		$connection_id = uniqid();
+		$profile       = array(
+			'email' => 'test@example.com',
+		);
+
+		Patchwork\replace( 'Airstory\API::delete_target', function () use ( $connection_id ) {
+			return $connection_id;
+		} );
+
+		M::userFunction( 'get_user_meta', array(
+			'args'   => array( 123, '_airstory_profile', true ),
+			'return' => $profile,
+		) );
+
+		M::userFunction( 'get_user_meta', array(
+			'args'   => array( 123, '_airstory_target', true ),
+			'return' => $connection_id,
+		) );
+
+		M::userFunction( 'delete_user_meta', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_profile', array( 'email' => 'test@example.com' ) ),
+		) );
+
+		M::userFunction( 'delete_user_meta', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_target', $connection_id ),
+		) );
+
+		remove_connection( 123 );
+	}
+
+	public function testRemoveConnectionOnlyDeletesIfItHasTheUserEmail() {
+		M::userFunction( 'get_user_meta', array(
+			'args'   => array( 123, '_airstory_profile', true ),
+			'return' => array( 'email' => '' )
+		) );
+
+		M::userFunction( 'get_user_meta', array(
+			'args'   => array( 123, '_airstory_target', true ),
+			'return' => uniqid(),
+		) );
+
+		M::userFunction( 'delete_user_meta', array(
+			'times'  => 0,
+		) );
+
+		remove_connection( 123 );
+	}
+
+	public function testRemoveConnectionOnlyDeletesIfItHasTheConnectionID() {
+		M::userFunction( 'get_user_meta', array(
+			'args'   => array( 123, '_airstory_profile', true ),
+			'return' => array( 'email' => 'test@example.com' ),
+		) );
+
+		M::userFunction( 'get_user_meta', array(
+			'args'   => array( 123, '_airstory_target', true ),
+			'return' => null,
+		) );
+
+		M::userFunction( 'delete_user_meta', array(
+			'times'  => 0,
+		) );
+
+		remove_connection( 123 );
 	}
 }
 

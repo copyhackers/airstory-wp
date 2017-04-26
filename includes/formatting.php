@@ -49,3 +49,29 @@ function get_body_contents( $content ) {
 	return $body;
 }
 add_filter( 'airstory_before_insert_content', __NAMESPACE__ . '\get_body_contents', 1 );
+
+/**
+ * Sideload media referenced from within the Airstory content.
+ *
+ * While this could be a good use for DOMDocument, that extension can get rather finicky. As we're
+ * only replacing links to https://images.airstory.co, we can safely accomplish this with regex.
+ *
+ * @param string $content The post content.
+ * @return string The filtered post contents.
+ */
+function sideload_images( $content ) {
+	$pattern = '/["\'](https?:\/\/images.airstory.co\/[^"\']+)/i';
+	preg_match_all( $pattern, $content, $matches );
+
+	foreach ( $matches['1'] as $remote ) {
+		$local = media_sideload_image( esc_url_raw( $remote ), 0, null, 'src' );
+
+		if ( is_wp_error( $local ) ) {
+			continue;
+		}
+
+		$content = str_replace( $remote, $local, $content );
+	}
+
+	return $content;
+}

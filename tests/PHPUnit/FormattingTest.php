@@ -69,4 +69,23 @@ EOT;
 
 		$this->assertEmpty( get_body_contents( $response ) );
 	}
+
+	public function testSideloadImages() {
+		$content = <<<EOT
+<h1>Here's an image</h1>
+<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="" /></p>
+EOT;
+		$expected = <<<EOT
+<h1>Here's an image</h1>
+<p><img src="https://example.com/image.jpg" alt="" /></p>
+EOT;
+
+		M::userFunction( 'media_sideload_image', array(
+			'times'  => 1,
+			'args'   => array( 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg', 0, null, 'src' ),
+			'return' => 'https://example.com/image.jpg',
+		) );
+
+		$this->assertEquals( $expected, sideload_images( $content ) );
+	}
 }

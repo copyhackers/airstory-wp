@@ -26,7 +26,13 @@ function get_body_contents( $content ) {
 	$doc->loadHTML( $content, LIBXML_HTML_NODEFDTD );
 
 	// Will retrieve the entire <body> node.
-	$body = $doc->saveHTML( $doc->getElementsByTagName( 'body' )->item( 0 ) );
+	$body_node = $doc->getElementsByTagName( 'body' );
+
+	if ( 0 === $body_node->length ) {
+		return '';
+	}
+
+	$body = $doc->saveHTML( $body_node->item( 0 ) );
 
 	// If an error occurred while parsing the data, return an empty string.
 	if ( libxml_get_errors() ) {

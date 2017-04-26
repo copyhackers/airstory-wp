@@ -13,8 +13,7 @@ namespace Airstory\Settings;
  * @param WP_User $user The current user object.
  */
 function render_profile_settings( $user ) {
-	$token = get_user_meta( $user->ID, '_airstory_token', true );
-	$email = 'test@example.com'; // @todo Get the stored user email.
+	$profile = get_user_meta( $user->ID, '_airstory_profile', true );
 ?>
 
 	<h2><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>
@@ -23,11 +22,11 @@ function render_profile_settings( $user ) {
 			<tr>
 				<th><label for="airstory-token"><?php esc_html_e( 'User Token', 'airstory' ); ?></label></th>
 				<td>
-					<?php if ( ! empty( $token ) ) : ?>
+					<?php if ( ! empty( $profile['email'] ) ) : ?>
 
 						<input name="airstory-disconnect" type="submit" class="button" value="<?php esc_attr_e( 'Disconnect from Airstory', '' ); ?>" />
 						<p class="description">
-							<?php echo wp_kses_post( sprintf( __( 'Currently authenticated as <strong>%s</strong>', 'airstory' ), $email ) ); ?>
+							<?php echo wp_kses_post( sprintf( __( 'Currently authenticated as <strong>%s</strong>', 'airstory' ), $profile['email'] ) ); ?>
 						</p>
 
 					<?php else : ?>

@@ -85,12 +85,17 @@ class API {
 	 *
 	 * @param string $path The API endpoint, relative to the API_BASE constant. The path should begin
 	 *                     with a leading slash.
+	 * @param array  $args {
+	 *   Optional. Additional arguments to pass to wp_remote_request(), which will be merged with
+	 *   defaults. For a full list of available settings, @see wp_remote_request().
+	 *
+	 *   @var string $method The HTTP method (verb) to use. Default is "GET".
+	 * }
 	 * @return stdClass|WP_Error If everything comes back okay, the JSON-decoded response will be
 	 *                           returned as a stdClass object. Otherwise, a WP_Error object will be
 	 *                           given with an explanation of what went wrong.
 	 */
-	protected function make_authenticated_request( $path ) {
-		$url   = sprintf( '%s%s', self::API_BASE, $path );
+	protected function make_authenticated_request( $path, $args = array() ) {
 		$token = $this->get_credentials();
 
 		// Don't even attempt the request if we don't have a token.
@@ -101,12 +106,18 @@ class API {
 			);
 		}
 
-		// Assemble the request, along with an Authorization header.
-		$request = wp_remote_get( $url, array(
-			'headers' => array(
-				'Authorization' => sprintf( 'Bearer=%s', $token ),
-			),
+		// Begin assembling the URL and arguments.
+		$url  = sprintf( '%s%s', self::API_BASE, $path );
+		$args = wp_parse_args( $args, array(
+			'method'  => 'GET',
+			'headers' => array(),
 		) );
+
+		// Explicitly append the Authorization header, which is required by Airstory.
+		$args['headers']['Authorization'] = sprintf( 'Bearer=%s', $token );
+
+		// Assemble the request, along with an Authorization header.
+		$request = wp_remote_request( $url, $args );
 
 		if ( is_wp_error( $request ) ) {
 			return $request;

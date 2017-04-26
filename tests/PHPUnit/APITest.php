@@ -68,7 +68,11 @@ class APITest extends \Airstory\TestCase {
 		$method->setAccessible( true );
 		$uniqid = uniqid();
 
-		M::userFunction( 'wp_remote_get', array(
+		M::userFunction( 'wp_parse_args', array(
+			'return' => array( 'headers' => array() ),
+		) );
+
+		M::userFunction( 'wp_remote_request', array(
 			'times'  => 1,
 			'return' => function ( $url, $args ) {
 				if ( ! isset( $args['headers']['Authorization'] ) ) {
@@ -93,6 +97,39 @@ class APITest extends \Airstory\TestCase {
 		$this->assertEquals( $uniqid, $response );
 	}
 
+	public function testMakeAuthenticatedRequestWithArgs() {
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'get_credentials' )->andReturn( 'abc123' );
+		$method   = new ReflectionMethod( $instance, 'make_authenticated_request' );
+		$method->setAccessible( true );
+		$uniqid = uniqid();
+
+		M::userFunction( 'wp_parse_args', array(
+			'return_arg' => 0,
+		) );
+
+		M::userFunction( 'wp_remote_request', array(
+			'times'  => 1,
+			'return' => function ( $url, $args ) {
+				if ( 'POST' !== $args['method'] ) {
+					$this->fail( 'User-provided args should take precedence over our defaults' );
+				}
+			}
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'wp_remote_retrieve_body', array(
+			'return' => $uniqid,
+		) );
+
+		$response = $method->invoke( $instance, '/some-route', array( 'method' => 'POST', 'headers' => array() ) );
+
+		$this->assertEquals( $uniqid, $response );
+	}
+
 	public function testMakeAuthenticatedRequestThrowsWPErrorIfNoCredentialsAvailable() {
 		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
 		$instance->shouldReceive( 'get_credentials' )->andReturn( '' );
@@ -112,7 +149,11 @@ class APITest extends \Airstory\TestCase {
 		$method->setAccessible( true );
 		$error    = new \WP_Error( 'code', 'Something went wrong' );
 
-		M::userFunction( 'wp_remote_get', array(
+		M::userFunction( 'wp_parse_args', array(
+			'return' => array( 'headers' => array() ),
+		) );
+
+		M::userFunction( 'wp_remote_request', array(
 			'times'  => 1,
 			'return' => $error,
 		) );

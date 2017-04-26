@@ -24,7 +24,7 @@ class APITest extends \Airstory\TestCase {
 		$instance->shouldReceive( 'make_authenticated_request' )
 			->once()
 			->with( '/projects/' . $project )
-			->andReturn( "{\"$result\"}" );
+			->andReturn( array( 'body' => "{\"$result\"}" ) );
 		$instance->shouldReceive( 'decode_json_response' )->andReturn( $result );
 
 		$this->assertEquals( $result, $instance->get_project( $project ) );
@@ -38,7 +38,7 @@ class APITest extends \Airstory\TestCase {
 		$instance->shouldReceive( 'make_authenticated_request' )
 			->once()
 			->with( '/projects/' . $project . '/documents/' . $document )
-			->andReturn( "{\"$result\"}" );
+			->andReturn( array( 'body' => "{\"$result\"}" ) );
 		$instance->shouldReceive( 'decode_json_response' )->andReturn( $result );
 
 		$this->assertEquals( $result, $instance->get_document( $project, $document ) );
@@ -52,9 +52,14 @@ class APITest extends \Airstory\TestCase {
 		$instance->shouldReceive( 'make_authenticated_request' )
 			->once()
 			->with( '/projects/' . $project . '/documents/' . $document . '/content' )
-			->andReturn( $result );
+			->andReturn( array( 'body' => $result ) );
 
-		$instance->get_document_content( $project, $document );
+		M::userFunction( 'wp_remote_retrieve_body', array(
+			'args'   => array( array( 'body' => $result ) ),
+			'return' => $result,
+		) );
+
+		$this->assertEquals( $result, $instance->get_document_content( $project, $document ) );
 	}
 
 	public function testGetUser() {
@@ -63,7 +68,7 @@ class APITest extends \Airstory\TestCase {
 		$instance->shouldReceive( 'make_authenticated_request' )
 			->once()
 			->with( '/user' )
-			->andReturn( "{\"$result\"}" );
+			->andReturn( array( 'body' => "{\"$result\"}" ) );
 		$instance->shouldReceive( 'decode_json_response' )->andReturn( $result );
 
 		$this->assertEquals( $result, $instance->get_user() );
@@ -86,27 +91,21 @@ class APITest extends \Airstory\TestCase {
 
 		M::userFunction( 'wp_remote_request', array(
 			'times'  => 1,
-			'return' => function ( $url, $args ) {
+			'return' => function ( $url, $args ) use ( $uniqid ) {
 				if ( ! isset( $args['headers']['Authorization'] ) ) {
 					$this->fail( 'Method is not injecting Authorization header' );
 
 				} elseif ( 'Bearer=abc123' !== $args['headers']['Authorization'] ) {
 					$this->fail( 'Response from get_credentials is not being set as the Authorization header' );
 				}
+
+				return array( 'body' => $uniqid );
 			}
-		) );
-
-		M::userFunction( 'is_wp_error', array(
-			'return' => false,
-		) );
-
-		M::userFunction( 'wp_remote_retrieve_body', array(
-			'return' => $uniqid,
 		) );
 
 		$response = $method->invoke( $instance, '/some-route' );
 
-		$this->assertEquals( $uniqid, $response );
+		$this->assertEquals( array( 'body' => $uniqid ), $response );
 	}
 
 	public function testMakeAuthenticatedRequestWithArgs() {
@@ -122,24 +121,18 @@ class APITest extends \Airstory\TestCase {
 
 		M::userFunction( 'wp_remote_request', array(
 			'times'  => 1,
-			'return' => function ( $url, $args ) {
+			'return' => function ( $url, $args ) use ( $uniqid ) {
 				if ( 'POST' !== $args['method'] ) {
 					$this->fail( 'User-provided args should take precedence over our defaults' );
 				}
+
+				return array( 'body' => $uniqid );
 			}
-		) );
-
-		M::userFunction( 'is_wp_error', array(
-			'return' => false,
-		) );
-
-		M::userFunction( 'wp_remote_retrieve_body', array(
-			'return' => $uniqid,
 		) );
 
 		$response = $method->invoke( $instance, '/some-route', array( 'method' => 'POST', 'headers' => array() ) );
 
-		$this->assertEquals( $uniqid, $response );
+		$this->assertEquals( array( 'body' => $uniqid ), $response );
 	}
 
 	public function testMakeAuthenticatedRequestThrowsWPErrorIfNoCredentialsAvailable() {
@@ -183,7 +176,11 @@ class APITest extends \Airstory\TestCase {
 		$method   = new ReflectionMethod( $instance, 'decode_json_response' );
 		$method->setAccessible( true );
 
-		$response = $method->invoke( $instance, '{"foo": "bar"}' );
+		M::userFunction( 'wp_remote_retrieve_body', array(
+			'return' => '{"foo": "bar"}',
+		) );
+
+		$response = $method->invoke( $instance, array( 'body' => '{"foo": "bar"}' ) );
 
 		$this->assertEquals( 'bar', $response->foo );
 	}
@@ -193,7 +190,11 @@ class APITest extends \Airstory\TestCase {
 		$method   = new ReflectionMethod( $instance, 'decode_json_response' );
 		$method->setAccessible( true );
 
-		$response = $method->invoke( $instance, '{this is "invalid" JSON}' );
+		M::userFunction( 'wp_remote_retrieve_body', array(
+			'return' => '{this is "invalid" JSON}',
+		) );
+
+		$response = $method->invoke( $instance, array( 'body' => '{this is "invalid" JSON}' ) );
 
 		$this->assertInstanceOf( 'WP_Error', $response );
 		$this->assertEquals( 'airstory-invalid-json', $response->get_error_code() );

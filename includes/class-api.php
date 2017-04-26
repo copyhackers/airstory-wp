@@ -61,11 +61,13 @@ class API {
 	 * @return string|WP_Error The response from Airstory\API::make_authenticated_request().
 	 */
 	public function get_document_content( $project_id, $document_id ) {
-		return $this->make_authenticated_request( sprintf(
+		$request = $this->make_authenticated_request( sprintf(
 			'/projects/%s/documents/%s/content',
 			$project_id,
 			$document_id
 		) );
+
+		return wp_remote_retrieve_body( $request );
 	}
 
 	/**
@@ -100,9 +102,8 @@ class API {
 	 *
 	 *   @var string $method The HTTP method (verb) to use. Default is "GET".
 	 * }
-	 * @return stdClass|WP_Error If everything comes back okay, the JSON-decoded response will be
-	 *                           returned as a stdClass object. Otherwise, a WP_Error object will be
-	 *                           given with an explanation of what went wrong.
+	 * @return array|WP_Error If everything comes back okay, the response array. Otherwise, a
+	 *                        WP_Error object will be given with an explanation of what went wrong.
 	 */
 	protected function make_authenticated_request( $path, $args = array() ) {
 		$token = $this->get_credentials();
@@ -126,32 +127,26 @@ class API {
 		$args['headers']['Authorization'] = sprintf( 'Bearer=%s', $token );
 
 		// Assemble the request, along with an Authorization header.
-		$request = wp_remote_request( $url, $args );
-
-		if ( is_wp_error( $request ) ) {
-			return $request;
-		}
-
-		return wp_remote_retrieve_body( $request );
+		return wp_remote_request( $url, $args );
 	}
 
 	/**
 	 * For requests that return JSON (e.g. anything except getting the generated HTML), JSON-decode
 	 * the API response and return it.
 	 *
-	 * @param string $response_body The HTTP response body.
+	 * @param array $response The HTTP response array.
 	 * @return stdClass|WP_Error If JSON-decoded successfully, a stdClass representation of the
 	 *                           response body, otherwise a WP_Error object.
 	 */
-	protected function decode_json_response( $response_body ) {
-		$result = json_decode( $response_body, false );
+	protected function decode_json_response( $response ) {
+		$result = json_decode( wp_remote_retrieve_body( $response ), false );
 
 		// Something went wrong decoding the JSON.
-		if ( ! $result ) {
+		if ( empty( $result ) ) {
 			return new WP_Error(
 				'airstory-invalid-json',
 				__( 'The request did not return valid JSON', 'airstory' ),
-				array( 'body' => $response_body )
+				$response
 			);
 		}
 

@@ -10,12 +10,23 @@ namespace Airstory;
 use WP_Mock as M;
 use Mockery;
 use ReflectionMethod;
+use WP_Error;
 
 class APITest extends \Airstory\TestCase {
 
 	protected $testFiles = array(
 		'class-api.php',
 	);
+
+	public function setUp() {
+		M::userFunction( 'wp_json_encode', array(
+			'return' => function ( $data ) {
+				return json_encode( $data );
+			},
+		) );
+
+		parent::setUp();
+	}
 
 	public function testGetProject() {
 		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
@@ -72,6 +83,57 @@ class APITest extends \Airstory\TestCase {
 		$instance->shouldReceive( 'decode_json_response' )->andReturn( $result );
 
 		$this->assertEquals( $result, $instance->get_user() );
+	}
+
+	public function testPostTarget() {
+		$target   = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$email    = 'test@example.com';
+		$data     = array(
+			'identifier' => 123,
+			'name'       => 'Test Site',
+			'url'        => 'http://example.com/webhook',
+		);
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )
+			->once()
+			->andReturn( array( 'headers' => array( 'link' => $target ) ) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		$this->assertEquals( $target, $instance->post_target( $email, $data ) );
+	}
+
+	public function testPostTargetReturnsWPErrors() {
+		$error = new WP_Error;
+
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )
+			->once()
+			->andReturn( $error );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => true,
+		) );
+
+		$this->assertSame( $error, $instance->post_target( 'test@example.com', array() ) );
+	}
+
+	public function testPostTargetReturnsWPErrorIfLinkHeaderNotFound() {
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )
+			->once()
+			->andReturn( array( 'headers' => array() ) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		$response = $instance->post_target( 'test@example.com', array() );
+
+		$this->assertInstanceOf( 'WP_Error', $response );
+		$this->assertEquals( 'airstory-link', $response->get_error_code() );
 	}
 
 	public function testGetCredentials() {

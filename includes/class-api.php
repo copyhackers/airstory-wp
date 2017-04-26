@@ -80,6 +80,39 @@ class API {
 	}
 
 	/**
+	 * Create a new target for the given user.
+	 *
+	 * @param string $email The user's Airstory email address.
+	 * @param array  $target {
+	 *   The target consists of three properties, all of which are required.
+	 *
+	 *   @var int    $identifier The WordPress user ID. The API would also accept a username, but this
+	 *                           should be something immutable.
+	 *   @var string $name       The WordPress site name.
+	 *   @var string $url        The webhook URL for this site.
+	 * }
+	 * @return string|WP_Error Either the UUID of the newly-created target within Airstory, or a
+	 *                         a WP_Error should anything go awry.
+	 */
+	public function post_target( $email, $target ) {
+		$response = $this->make_authenticated_request( sprintf( '/users/%s/targets', $email ), array(
+			'method'  => 'POST',
+			'headers' => array( 'content-type' => 'application/json' ),
+			'body'    => wp_json_encode( $target ),
+		) );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		if ( empty( $response['headers']['link'] ) ) {
+			return new WP_Error( 'airstory-link', __( 'Invalid response from Airstory when connecting account' ) );
+		}
+
+		return $response['headers']['link'];
+	}
+
+	/**
 	 * Retrieve the credentials for the currently logged-in user.
 	 *
 	 * @return string The bearer token to be passed with API requests.

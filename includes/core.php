@@ -63,18 +63,3 @@ function import_document( Airstory\API $api, $project_id, $document_id ) {
 	// Finally, insert the post.
 	return wp_insert_post( $post );
 }
-
-/**
- * Reduce the contents of an exported document to the contents of the <body> element.
- *
- * By default, the Airstory API will include a full HTML document, including the <!DOCTYPE>, <html>
- * tags, and more.
- *
- * @param string $document The full HTML document.
- * @return string $body The contents of the document's <body> node.
- *
- * @todo Use DOMDocument to filter down the $document contents.
- */
-function get_body_contents( $document ) {
-	return '';
-}

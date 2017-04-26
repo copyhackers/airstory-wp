@@ -63,7 +63,7 @@ function sideload_images( $content ) {
 	$pattern = '/["\'](https?:\/\/images.airstory.co\/[^"\']+)/i';
 	preg_match_all( $pattern, $content, $matches );
 
-	foreach ( $matches['1'] as $remote ) {
+	foreach ( array_unique( $matches['1'] ) as $remote ) {
 		$local = media_sideload_image( esc_url_raw( $remote ), 0, null, 'src' );
 
 		if ( is_wp_error( $local ) ) {

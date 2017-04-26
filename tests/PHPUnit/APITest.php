@@ -136,6 +136,21 @@ class APITest extends \Airstory\TestCase {
 		$this->assertEquals( 'airstory-link', $response->get_error_code() );
 	}
 
+	public function testDeleteTarget() {
+		$target   = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$email    = 'test@example.com';
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )
+			->once()
+			->with( '/users/' . $email . '/targets/' . $target, array( 'method' => 'DELETE' ) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		$this->assertEquals( $target, $instance->delete_target( $email, $target ) );
+	}
+
 	public function testGetCredentials() {
 		$this->markTestIncomplete();
 	}

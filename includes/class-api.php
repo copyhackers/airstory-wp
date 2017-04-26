@@ -113,6 +113,26 @@ class API {
 	}
 
 	/**
+	 * Remove an existing target from within Airstory.
+	 *
+	 * @param string $email  The user's Airstory email address.
+	 * @param string $target The target ID.
+	 * @return string|WP_Error Either the UUID of the now-destroyed target within Airstory, or a
+	 *                         a WP_Error should anything go awry.
+	 */
+	public function delete_target( $email, $target ) {
+		$response = $this->make_authenticated_request( sprintf( '/users/%s/targets/%s', $email, $target ), array(
+			'method'  => 'DELETE',
+		) );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		return $target;
+	}
+
+	/**
 	 * Retrieve the credentials for the currently logged-in user.
 	 *
 	 * @return string The bearer token to be passed with API requests.

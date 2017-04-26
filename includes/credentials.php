@@ -31,6 +31,8 @@ define( 'AIRSTORY_ENCRYPTION_ALGORITHM', 'AES-256-CTR' );
  * the event that AUTH_KEY is compromised, Airstory users won't necessarily need to reauthenticate.
  *
  * @return string The encryption key to be used for encrypting and decrypting Airstory tokens.
+ *
+ * @todo Attempt to generate + inject the constant into wp-config.php upon plugin activation.
  */
 function get_encryption_key() {
 	return defined( 'AIRSTORY_ENCRYPTION_KEY' ) ? AIRSTORY_ENCRYPTION_KEY : AUTH_KEY;
@@ -44,6 +46,8 @@ function get_encryption_key() {
  * back to the now-deprecated mcrypt_create_iv().
  *
  * @see random_bytes()
+ *
+ * @return string A 16-byte initialization vector, for use with openssl_encrypt().
  */
 function get_iv() {
 	return function_exists( 'random_bytes' ) ? random_bytes( 16 ) : mcrypt_create_iv( 16 );

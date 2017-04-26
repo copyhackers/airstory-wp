@@ -57,6 +57,18 @@ class APITest extends \Airstory\TestCase {
 		$instance->get_document_content( $project, $document );
 	}
 
+	public function testGetUser() {
+		$result   = uniqid();
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )
+			->once()
+			->with( '/user' )
+			->andReturn( "{\"$result\"}" );
+		$instance->shouldReceive( 'decode_json_response' )->andReturn( $result );
+
+		$this->assertEquals( $result, $instance->get_user() );
+	}
+
 	public function testGetCredentials() {
 		$this->markTestIncomplete();
 	}

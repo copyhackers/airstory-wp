@@ -69,6 +69,15 @@ class API {
 	}
 
 	/**
+	 * Retrieve basic information about the current user.
+	 *
+	 * @return stdClass|WP_Error The response from Airstory\API::make_authenticated_request().
+	 */
+	public function get_user() {
+		return $this->decode_json_response( $this->make_authenticated_request( '/user' ) );
+	}
+
+	/**
 	 * Retrieve the credentials for the currently logged-in user.
 	 *
 	 * @return string The bearer token to be passed with API requests.

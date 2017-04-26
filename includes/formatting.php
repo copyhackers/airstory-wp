@@ -16,15 +16,25 @@ use Airstory;
  * tags, and more. WordPress only needs the actual post contents, so we'll load the provided HTML
  * into DOMDocument, reduce it to the <body>, then manually strip the opening and closing <body />.
  *
- * @param string $document The full HTML document.
- * @return string $body The contents of the document's <body> node.
+ * @param string $content The full HTML document contents.
+ * @return string The contents of the document's <body> node.
  */
-function get_body_contents( $document ) {
+function get_body_contents( $content ) {
+	$use_internal = libxml_use_internal_errors( true );
+
 	$doc = new \DOMDocument;
-	$doc->loadHTML( $document, LIBXML_HTML_NODEFDTD );
+	$doc->loadHTML( $content, LIBXML_HTML_NODEFDTD );
 
 	// Will retrieve the entire <body> node.
 	$body = $doc->saveHTML( $doc->getElementsByTagName( 'body' )->item( 0 ) );
+
+	// If an error occurred while parsing the data, return an empty string.
+	if ( libxml_get_errors() ) {
+		$body = '';
+	}
+
+	// Reset the original error handling approach for libxml.
+	libxml_use_internal_errors( $use_internal );
 
 	// Strip opening and trailing <body> tags (plus any whitespace).
 	$body = preg_replace( '/\<body\>\s*/i', '', $body );

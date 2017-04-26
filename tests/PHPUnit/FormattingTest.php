@@ -36,4 +36,25 @@ EOT;
 
 		$this->assertEquals( $expected, get_body_contents( $response ) );
 	}
+
+	public function testGetBodyContentsWithOnlyBodyContents() {
+		$response = <<<EOT
+<h1>This is some content</h1>
+<p>Our job is to clean it up.</p>
+EOT;
+
+		$this->assertEquals( $response, get_body_contents( $response ) );
+	}
+
+	public function testGetBodyContentsWithInvalidHTML() {
+		$response = <<<EOT
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+</body>
+</html>
+EOT;
+
+		$this->assertEmpty( get_body_contents( $response ) );
+	}
 }

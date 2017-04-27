@@ -17,27 +17,6 @@ class CredentialsTest extends \Airstory\TestCase {
 		'credentials.php',
 	);
 
-	/**
-	 * @runInSeparateProcess
-	 */
-	public function testGetEncryptionKey() {
-		$key = uniqid();
-		define( 'AIRSTORY_ENCRYPTION_KEY', $key );
-
-		$this->assertEquals( $key, get_encryption_key() );
-	}
-
-	/**
-	 * @runInSeparateProcess
-	 */
-	public function testGetEncryptionKeyDefaultsToAuthKey() {
-		$key = uniqid();
-		define( 'AUTH_KEY', $key );
-
-		$this->assertFalse( defined( 'AIRSTORY_ENCRYPTION_KEY' ), 'AIRSTORY_ENCRYPTION_KEY may be polluted from another test!' );
-		$this->assertEquals( $key, get_encryption_key() );
-	}
-
 	public function testGetIv() {
 		$iv = get_iv();
 
@@ -50,11 +29,7 @@ class CredentialsTest extends \Airstory\TestCase {
 	public function testSetToken() {
 		$token     = uniqid();
 		$iv        = '1234567890123456';
-		$encrypted = openssl_encrypt( $token, AIRSTORY_ENCRYPTION_ALGORITHM, 'secret_key', null, $iv );
-
-		M::userFunction( __NAMESPACE__ . '\get_encryption_key', array(
-			'return' => 'secret_key',
-		) );
+		$encrypted = openssl_encrypt( $token, AIRSTORY_ENCRYPTION_ALGORITHM, AUTH_KEY, null, $iv );
 
 		M::userFunction( __NAMESPACE__ . '\get_iv', array(
 			'return' => $iv,
@@ -79,11 +54,7 @@ class CredentialsTest extends \Airstory\TestCase {
 	public function testGetToken() {
 		$token     = uniqid();
 		$iv        = '1234567890123456';
-		$encrypted = openssl_encrypt( $token, AIRSTORY_ENCRYPTION_ALGORITHM, 'secret_key', null, $iv );
-
-		M::userFunction( __NAMESPACE__ . '\get_encryption_key', array(
-			'return' => 'secret_key',
-		) );
+		$encrypted = openssl_encrypt( $token, AIRSTORY_ENCRYPTION_ALGORITHM, AUTH_KEY, null, $iv );
 
 		M::userFunction( 'get_user_meta', array(
 			'args'   => array( 123, '_airstory_token', true ),

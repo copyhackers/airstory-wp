@@ -21,24 +21,6 @@ namespace Airstory\Credentials;
 define( 'AIRSTORY_ENCRYPTION_ALGORITHM', 'AES-256-CTR' );
 
 /**
- * Retrieve the encryption key used to store Airstory tokens.
- *
- * Tokens are stored in an encrypted form using the OpenSSL library — in order to do so, it's
- * necessary to have a secret key used for encrypting/decrypting this information.
- *
- * If desired, an AIRSTORY_ENCRYPTION_KEY constant can be added to the site's wp-config.php file,
- * causing that key to be used instead of AUTH_KEY (one of the WordPress defaults). That way, in
- * the event that AUTH_KEY is compromised, Airstory users won't necessarily need to reauthenticate.
- *
- * @return string The encryption key to be used for encrypting and decrypting Airstory tokens.
- *
- * @todo Attempt to generate + inject the constant into wp-config.php upon plugin activation.
- */
-function get_encryption_key() {
-	return defined( 'AIRSTORY_ENCRYPTION_KEY' ) ? AIRSTORY_ENCRYPTION_KEY : AUTH_KEY;
-}
-
-/**
  * Generate an initialization vector (IV) for encrypting tokens.
  *
  * In PHP 7.0+, this will be done with random_bytes(), which is the preferred method and will be
@@ -62,7 +44,7 @@ function get_iv() {
  */
 function set_token( $user_id, $token ) {
 	$iv        = get_iv();
-	$encrypted = openssl_encrypt( $token, AIRSTORY_ENCRYPTION_ALGORITHM, get_encryption_key(), null, $iv );
+	$encrypted = openssl_encrypt( $token, AIRSTORY_ENCRYPTION_ALGORITHM, AUTH_KEY, null, $iv );
 
 	if ( false === $encrypted ) {
 		return new WP_Error( 'airstory-encryption', __( 'Unable to encrypt Airstory token', 'airstory' ) );
@@ -91,7 +73,7 @@ function get_token( $user_id ) {
 		return '';
 	}
 
-	$token = openssl_decrypt( $encrypted, AIRSTORY_ENCRYPTION_ALGORITHM, get_encryption_key(), null, $iv );
+	$token = openssl_decrypt( $encrypted, AIRSTORY_ENCRYPTION_ALGORITHM, AUTH_KEY, null, $iv );
 
 	if ( false === $token ) {
 		return new WP_Error( 'airstory-decryption', __( 'Unable to decrypt Airstory token', 'airstory' ) );

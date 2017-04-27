@@ -151,8 +151,26 @@ class APITest extends \Airstory\TestCase {
 		$this->assertEquals( $target, $instance->delete_target( $email, $target ) );
 	}
 
+	/**
+	 * @runInSeparateProcess to avoid collision with other calls to get_token().
+	 */
 	public function testGetCredentials() {
-		$this->markTestIncomplete();
+		$instance = new API;
+		$method   = new ReflectionMethod( $instance, 'get_credentials' );
+		$method->setAccessible( true );
+		$user     = new \stdClass;
+		$user->ID = 123;
+
+		M::userFunction( 'wp_get_current_user', array(
+			'return' => $user,
+		) );
+
+		M::userFunction( 'Airstory\Credentials\get_token', array(
+			'args'   => array( 123 ),
+			'return' => 'my-unencrypted-token',
+		) );
+
+		$this->assertEquals( 'my-unencrypted-token', $method->invoke( $instance ) );
 	}
 
 	public function testMakeAuthenticatedRequest() {

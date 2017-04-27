@@ -10,6 +10,7 @@
 
 namespace Airstory;
 
+use Airstory\Credentials as Credentials;
 use WP_Error;
 
 /**
@@ -136,12 +137,11 @@ class API {
 	 * Retrieve the credentials for the currently logged-in user.
 	 *
 	 * @return string The bearer token to be passed with API requests.
-	 *
-	 * @todo While the authentication is being worked out on Airstory's side, the token will be
-	 *       stored in a constant, defined in wp-config.php.
 	 */
 	protected function get_credentials() {
-		return defined( 'AIRSTORY_API_KEY' ) ? AIRSTORY_API_KEY : null;
+		$user = wp_get_current_user();
+
+		return Credentials\get_token( $user->ID );
 	}
 
 	/**

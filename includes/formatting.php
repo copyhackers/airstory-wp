@@ -66,7 +66,7 @@ function sideload_images( $post_id ) {
 	preg_match_all( $pattern, $content, $matches );
 
 	foreach ( array_unique( $matches['1'] ) as $remote ) {
-		$local = media_sideload_image( esc_url_raw( $remote ), 0, null, 'src' );
+		$local = media_sideload_image( esc_url_raw( $remote ), $post_id, null, 'src' );
 
 		if ( is_wp_error( $local ) ) {
 			continue;

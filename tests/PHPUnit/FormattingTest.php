@@ -90,7 +90,7 @@ EOT;
 
 		M::userFunction( 'media_sideload_image', array(
 			'times'  => 1,
-			'args'   => array( 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg', 0, null, 'src' ),
+			'args'   => array( 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg', 123, null, 'src' ),
 			'return' => 'https://example.com/image.jpg',
 		) );
 
@@ -131,7 +131,6 @@ EOT;
 
 		M::userFunction( 'media_sideload_image', array(
 			'times'  => 1,
-			'args'   => array( 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg', 0, null, 'src' ),
 			'return' => 'https://example.com/image.jpg',
 		) );
 

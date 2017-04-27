@@ -15,7 +15,6 @@ namespace Airstory;
 
 define( 'AIRSTORY_INC', __DIR__ . '/includes' );
 
-require_once AIRSTORY_INC . '/async-tasks.php';
 require_once AIRSTORY_INC . '/class-api.php';
 require_once AIRSTORY_INC . '/core.php';
 require_once AIRSTORY_INC . '/formatting.php';

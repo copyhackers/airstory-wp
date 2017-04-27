@@ -97,6 +97,12 @@ class ConnectionTest extends \Airstory\TestCase {
 			'args'   => array( 123, '_airstory_target', 'connection-id' ),
 		) );
 
+		M::expectAction( 'airstory_register_connection', 123, 'connection-id', array(
+			'identifier' => '123',
+			'name'       => 'My site',
+			'url'        => 'https://example.com/webhook',
+		) );
+
 		M::passthruFunction( 'sanitize_text_field' );
 
 		$this->assertEquals( 'connection-id', register_connection( 123 ) );
@@ -167,6 +173,8 @@ class ConnectionTest extends \Airstory\TestCase {
 			'times'  => 1,
 			'args'   => array( 123, '_airstory_target', $connection_id ),
 		) );
+
+		M::expectAction( 'airstory_remove_connection', 123, $connection_id );
 
 		remove_connection( 123 );
 	}

@@ -75,3 +75,21 @@ function sideload_images( $content ) {
 
 	return $content;
 }
+
+/**
+ * Strip the <div> that Airstory wraps around the outer content by default.
+ *
+ * While this _could_ be targeted in get_body_contents(), this <div> may not be 100% consistent, so
+ * breaking it out here can help should we ever need to remove it.
+ *
+ * @param string $content The post content, which may or may not be wrapped in an unnecessary div.
+ * @return string The filtered $content, sans <div>.
+ */
+function strip_wrapping_div( $content ) {
+
+	// Match any content inside a <div> with no attributes that wraps the entire $content.
+	$regex = '/^\<div\>([\s\S]+)\<\/div\>$/i';
+
+	return trim( preg_replace( $regex, '$1', trim( $content ) ) );
+}
+add_filter( 'airstory_before_insert_content', __NAMESPACE__ . '\strip_wrapping_div' );

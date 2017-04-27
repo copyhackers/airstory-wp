@@ -130,4 +130,68 @@ EOT;
 
 		$this->assertEquals( $expected, sideload_images( $content ) );
 	}
+
+	public function testStripWrappingDiv() {
+		$content = <<<EOT
+<div>
+	<h1>This is content</h1>
+</div>
+EOT;
+
+		$this->assertEquals( '<h1>This is content</h1>', strip_wrapping_div( $content ) );
+	}
+
+	public function testStripWrappingDivAcrossMultipleLines() {
+		$content = <<<EOT
+<div>
+	<h1>This is content</h1>
+	<p>Blah blah blah</p>
+
+	<h2>Here's some more!</h2>
+</div>
+EOT;
+		$expected = <<<EOT
+<h1>This is content</h1>
+	<p>Blah blah blah</p>
+
+	<h2>Here's some more!</h2>
+EOT;
+
+		$this->assertEquals( $expected, strip_wrapping_div( $content ) );
+	}
+
+	public function testStripWrappingDivDoesNotAffectRegularContent() {
+		$content = '<h1>This is content</h1>';
+
+		$this->assertEquals( $content, strip_wrapping_div( $content ) );
+	}
+
+	public function testStripWrappingDivDoesNotStripWithoutAMatchingCloseTag() {
+		$content = <<<EOT
+<div>
+	<h1>This is content</h1>
+EOT;
+
+		$this->assertEquals( $content, strip_wrapping_div( $content ) );
+	}
+
+		public function testStripWrappingDivDoesNotAffectDivsWithAttributes() {
+		$content = <<<EOT
+<div class="significant">
+	<h1>This is content</h1>
+</div>
+EOT;
+
+		$this->assertEquals( $content, strip_wrapping_div( $content ) );
+	}
+
+	public function testStripWrappingDivOnlyStripsOneLevelOfDivs() {
+		$content = <<<EOT
+<div>
+	<div><h1>This is content</h1></div>
+</div>
+EOT;
+
+		$this->assertEquals( '<div><h1>This is content</h1></div>', strip_wrapping_div( $content ) );
+	}
 }

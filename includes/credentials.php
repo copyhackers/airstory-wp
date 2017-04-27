@@ -65,7 +65,7 @@ function set_token( $user_id, $token ) {
 	$encrypted = openssl_encrypt( $token, AIRSTORY_ENCRYPTION_ALGORITHM, get_encryption_key(), null, $iv );
 
 	if ( false === $encrypted ) {
-		return new WP_Error( 'airstory-encryption', __( 'Unable to store encrypted Airstory token', 'airstory' ) );
+		return new WP_Error( 'airstory-encryption', __( 'Unable to encrypt Airstory token', 'airstory' ) );
 	}
 
 	// Store the encrypted values and the IV.

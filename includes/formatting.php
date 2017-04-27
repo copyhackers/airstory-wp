@@ -83,6 +83,7 @@ function sideload_images( $post_id ) {
 
 	return count( $matches['1'] );
 }
+add_action( 'wp_ajax_airstory_import_post', __NAMESPACE__ . '\sideload_images' );
 
 /**
  * Strip the <div> that Airstory wraps around the outer content by default.

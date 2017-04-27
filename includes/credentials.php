@@ -32,7 +32,9 @@ define( 'AIRSTORY_ENCRYPTION_ALGORITHM', 'AES-256-CTR' );
  * @return string A 16-byte initialization vector, for use with openssl_encrypt().
  */
 function get_iv() {
-	return function_exists( 'random_bytes' ) ? random_bytes( 16 ) : mcrypt_create_iv( 16 );
+	$bytes = function_exists( 'random_bytes' ) ? random_bytes( 8 ) : mcrypt_create_iv( 8 );
+
+	return bin2hex( $bytes ); // Will produce an IV 16 characters long.
 }
 
 /**

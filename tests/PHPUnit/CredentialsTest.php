@@ -23,6 +23,12 @@ class CredentialsTest extends \Airstory\TestCase {
 		$this->assertEquals( 16, strlen( $iv ) );
 	}
 
+	public function testGetIvIsNotBinary() {
+		$iv = get_iv();
+
+		$this->assertTrue( ctype_print( $iv ), 'WordPress will not store binary data, so we must run the IV through bin2hex()' );
+	}
+
 	/**
 	 * @requires extension openssl
 	 */

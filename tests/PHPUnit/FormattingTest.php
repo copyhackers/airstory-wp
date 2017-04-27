@@ -80,13 +80,34 @@ EOT;
 <p><img src="https://example.com/image.jpg" alt="" /></p>
 EOT;
 
+		$post = new \stdClass;
+		$post->post_content = $content;
+
+		M::userFunction( 'get_post', array(
+			'args'   => array( 123 ),
+			'return' => $post,
+		) );
+
 		M::userFunction( 'media_sideload_image', array(
 			'times'  => 1,
 			'args'   => array( 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg', 0, null, 'src' ),
 			'return' => 'https://example.com/image.jpg',
 		) );
 
-		$this->assertEquals( $expected, sideload_images( $content ) );
+		M::userFunction( 'wp_update_post', array(
+			'times'  => 1,
+			'return' => function ( $post ) use ( $expected ) {
+				if ( $expected !== $post->post_content ) {
+					$this->fail( 'Expected image replacement did not occur!' );
+				}
+			},
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		$this->assertEquals( 1, sideload_images( 123 ) );
 	}
 
 	public function testSideloadImagesDeduplicatesMatches() {
@@ -101,13 +122,28 @@ EOT;
 <p><img src="https://example.com/image.jpg" alt="" /></p>
 EOT;
 
+		$post = new \stdClass;
+		$post->post_content = $content;
+
+		M::userFunction( 'get_post', array(
+			'return' => $post,
+		) );
+
 		M::userFunction( 'media_sideload_image', array(
 			'times'  => 1,
 			'args'   => array( 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg', 0, null, 'src' ),
 			'return' => 'https://example.com/image.jpg',
 		) );
 
-		$this->assertEquals( $expected, sideload_images( $content ) );
+		M::userFunction( 'wp_update_post', array(
+			'return' => function ( $post ) use ( $expected ) {
+				if ( $expected !== $post->post_content ) {
+					$this->fail( 'Expected image replacement did not occur!' );
+				}
+			},
+		) );
+
+		$this->assertEquals( 2, sideload_images( 123 ) );
 	}
 
 	public function testSideloadImagesHandlesMultipleImages() {
@@ -122,13 +158,28 @@ EOT;
 <p><img src="https://example.com/image2.jpg" alt="" /></p>
 EOT;
 
+		$post = new \stdClass;
+		$post->post_content = $content;
+
+		M::userFunction( 'get_post', array(
+			'return' => $post,
+		) );
+
 		M::userFunction( 'media_sideload_image', array(
 			'return' => function ( $image_url ) {
 				return 'https://example.com/' . basename( $image_url );
 			},
 		) );
 
-		$this->assertEquals( $expected, sideload_images( $content ) );
+		M::userFunction( 'wp_update_post', array(
+			'return' => function ( $post ) use ( $expected ) {
+				if ( $expected !== $post->post_content ) {
+					$this->fail( 'Expected image replacement did not occur!' );
+				}
+			},
+		) );
+
+		$this->assertEquals( 2, sideload_images( 123 ) );
 	}
 
 	public function testStripWrappingDiv() {

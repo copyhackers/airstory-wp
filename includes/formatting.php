@@ -56,10 +56,12 @@ add_filter( 'airstory_before_insert_content', __NAMESPACE__ . '\get_body_content
  * While this could be a good use for DOMDocument, that extension can get rather finicky. As we're
  * only replacing links to https://images.airstory.co, we can safely accomplish this with regex.
  *
- * @param string $content The post content.
- * @return string The filtered post contents.
+ * @param int $post_id The ID of the post to scan for media to sideload.
+ * @return int The number of replacements made.
  */
-function sideload_images( $content ) {
+function sideload_images( $post_id ) {
+	$post    = get_post( $post_id );
+	$content = $post->post_content;
 	$pattern = '/["\'](https?:\/\/images.airstory.co\/[^"\']+)/i';
 	preg_match_all( $pattern, $content, $matches );
 
@@ -73,7 +75,13 @@ function sideload_images( $content ) {
 		$content = str_replace( $remote, $local, $content );
 	}
 
-	return $content;
+	// If changes have been made, update the post.
+	if ( $content !== $post->post_content ) {
+		$post->post_content = $content;
+		wp_update_post( $post );
+	}
+
+	return count( $matches['1'] );
 }
 
 /**

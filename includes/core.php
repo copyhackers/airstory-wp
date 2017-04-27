@@ -61,5 +61,18 @@ function import_document( Airstory\API $api, $project_id, $document_id ) {
 	$post = apply_filters( 'airstory_before_insert_post', $post );
 
 	// Finally, insert the post.
-	return wp_insert_post( $post );
+	$post_id = wp_insert_post( $post );
+
+	if ( is_wp_error( $post_id ) ) {
+		return $post_id;
+	}
+
+	/**
+	 * Fires after an Airstory post has been successfully inserted into WordPress.
+	 *
+	 * @param int $post_id The ID of the newly-created post.
+	 */
+	do_action( 'airstory_import_post', $post_id );
+
+	return $post_id;
 }

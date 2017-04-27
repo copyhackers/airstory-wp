@@ -47,6 +47,8 @@ class CoreTest extends \Airstory\TestCase {
 			->with( 'My document body' )
 			->reply( 'My filtered body' );
 
+		M::expectAction( 'airstory_import_post', 123 );
+
 		$this->assertEquals( 123, import_document( $api, $project, $document ) );
 	}
 

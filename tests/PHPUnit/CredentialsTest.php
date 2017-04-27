@@ -68,4 +68,20 @@ class CredentialsTest extends \Airstory\TestCase {
 
 		$this->assertEquals( $token, get_token( 123 ), 'The same string, encrypted twice with the same arguments, should produce the same result' );
 	}
+
+	public function testClearToken() {
+		M::userFunction( 'delete_user_meta', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_iv' ),
+			'return' => true,
+		) );
+
+		M::userFunction( 'delete_user_meta', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_token' ),
+			'return' => true,
+		) );
+
+		$this->assertTrue( clear_token( 123 ) );
+	}
 }

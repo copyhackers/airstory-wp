@@ -81,3 +81,15 @@ function get_token( $user_id ) {
 
 	return $token;
 }
+
+/**
+ * Clear a user's token.
+ *
+ * @param int $user_id The user ID to clear token-related user meta for.
+ * @return bool Were the relevant user meta entries deleted?
+ */
+function clear_token( $user_id ) {
+	delete_user_meta( $user_id, '_airstory_iv' );
+
+	return delete_user_meta( $user_id, '_airstory_token' );
+}

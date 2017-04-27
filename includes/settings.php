@@ -7,6 +7,8 @@
 
 namespace Airstory\Settings;
 
+use Airstory\Credentials as Credentials;
+
 /**
  * Render the "Airstory" settings section on the user profile page.
  *
@@ -50,8 +52,6 @@ add_action( 'show_user_profile', __NAMESPACE__ . '\render_profile_settings' );
  *
  * @param int $user_id The user ID.
  * @return bool Whether or not the user meta was updated successfully.
- *
- * @todo If this ships without encrypting the token, punch me.
  */
 function save_profile_settings( $user_id ) {
 	if ( ! isset( $_POST['_airstory_nonce'] )
@@ -73,7 +73,7 @@ function save_profile_settings( $user_id ) {
 		 */
 		do_action( 'airstory_user_disconnect', $user_id );
 
-		return delete_user_meta( $user_id, '_airstory_token', $token );
+		return Credentials\clear_token( $user_id );
 
 	} elseif ( empty( $_POST['airstory-token'] ) ) {
 
@@ -83,10 +83,7 @@ function save_profile_settings( $user_id ) {
 
 	// Store the user meta. Casting, since update_user_meta() can return an int or boolean.
 	$new_token = sanitize_text_field( $_POST['airstory-token'] );
-	$result    = (bool) update_user_meta( $user_id, '_airstory_token', $new_token, $token );
-
-	// @todo Seriously, this is only a proof-of-concept.
-	trigger_error( 'This is not production-ready code, and I would rather not get punched.', E_USER_WARNING );
+	$result    = Credentials\set_token( $user_id, $new_token );
 
 	/**
 	 * A user has connected their account to Airstory.

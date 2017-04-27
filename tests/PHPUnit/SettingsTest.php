@@ -35,9 +35,9 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => 'my-old-token',
 		) );
 
-		M::userFunction( 'update_user_meta', array(
+		M::userFunction( 'Airstory\Credentials\set_token', array(
 			'times'  => 1,
-			'args'   => array( 123, '_airstory_token', 'my-secret-token', 'my-old-token' ),
+			'args'   => array( 123, 'my-secret-token' ),
 			'return' => true,
 		) );
 
@@ -101,9 +101,9 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => 'my-old-token',
 		) );
 
-		M::userFunction( 'delete_user_meta', array(
+		M::userFunction( 'Airstory\Credentials\clear_token', array(
 			'times'  => 1,
-			'args'   => array( 123, '_airstory_token', 'my-old-token' ),
+			'args'   => array( 123 ),
 			'return' => true,
 		) );
 

@@ -109,4 +109,25 @@ EOT;
 
 		$this->assertEquals( $expected, sideload_images( $content ) );
 	}
+
+	public function testSideloadImagesHandlesMultipleImages() {
+		$content = <<<EOT
+<h1>Here's the same image twice</h1>
+<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="" /></p>
+<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image2.jpg" alt="" /></p>
+EOT;
+		$expected = <<<EOT
+<h1>Here's the same image twice</h1>
+<p><img src="https://example.com/image.jpg" alt="" /></p>
+<p><img src="https://example.com/image2.jpg" alt="" /></p>
+EOT;
+
+		M::userFunction( 'media_sideload_image', array(
+			'return' => function ( $image_url ) {
+				return 'https://example.com/' . basename( $image_url );
+			},
+		) );
+
+		$this->assertEquals( $expected, sideload_images( $content ) );
+	}
 }

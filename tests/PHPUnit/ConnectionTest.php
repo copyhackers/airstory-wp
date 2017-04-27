@@ -55,7 +55,9 @@ class ConnectionTest extends \Airstory\TestCase {
 	}
 
 	public function testGetUserProfileReturnsEmptyArrayIfAPIResponseFails() {
-		API::$response = new WP_Error();
+		Patchwork\replace( 'Airstory\API::get_user', function () {
+			return new WP_Error();
+		} );
 
 		M::userFunction( 'is_wp_error', array(
 			'return' => true,

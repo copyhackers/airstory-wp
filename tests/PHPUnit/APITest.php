@@ -10,6 +10,7 @@ namespace Airstory;
 use WP_Mock as M;
 use Mockery;
 use ReflectionMethod;
+use ReflectionProperty;
 use WP_Error;
 
 class APITest extends \Airstory\TestCase {
@@ -171,6 +172,47 @@ class APITest extends \Airstory\TestCase {
 		) );
 
 		$this->assertEquals( 'my-unencrypted-token', $method->invoke( $instance ) );
+	}
+
+	/**
+	 * @runInSeparateProcess to avoid collision with other calls to get_token().
+	 */
+	public function testGetCredentialsCachesValue() {
+		$instance = new API;
+		$method   = new ReflectionMethod( $instance, 'get_credentials' );
+		$method->setAccessible( true );
+		$property = new ReflectionProperty( $instance, 'token' );
+		$property->setAccessible( true );
+		$user     = new \stdClass;
+		$user->ID = 123;
+
+		M::userFunction( 'wp_get_current_user', array(
+			'return' => $user,
+		) );
+
+		M::userFunction( 'Airstory\Credentials\get_token', array(
+			'return' => 'my-unencrypted-token',
+		) );
+
+		// Start empty.
+		$this->assertEmpty( $property->getValue( $instance ) );
+
+		// Execute.
+		$method->invoke( $instance );
+
+		// Make sure the value is cached.
+		$this->assertEquals( 'my-unencrypted-token', $property->getValue( $instance ) );
+	}
+
+	public function testGetCredentialsPullsFromCache() {
+		$instance = new API;
+		$method   = new ReflectionMethod( $instance, 'get_credentials' );
+		$method->setAccessible( true );
+		$property = new ReflectionProperty( $instance, 'token' );
+		$property->setAccessible( true );
+		$property->setValue( $instance, 'my-token' );
+
+		$this->assertEquals( 'my-token', $method->invoke( $instance ) );
 	}
 
 	public function testMakeAuthenticatedRequest() {

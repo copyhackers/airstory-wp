@@ -24,6 +24,13 @@ class API {
 	const API_BASE = 'https://api.airstory.co/v1';
 
 	/**
+	 * Cache the user token, once it's been collected.
+	 *
+	 * @var string
+	 */
+	protected $token;
+
+	/**
 	 * Retrieve information about a particular project.
 	 *
 	 * @param string $project_id The project's UUID.
@@ -139,9 +146,13 @@ class API {
 	 * @return string The bearer token to be passed with API requests.
 	 */
 	protected function get_credentials() {
-		$user = wp_get_current_user();
+		if ( $this->token ) {
+			return $this->token;
+		}
 
-		return Credentials\get_token( $user->ID );
+		$this->token = Credentials\get_token( wp_get_current_user()->ID );
+
+		return $this->token;
 	}
 
 	/**

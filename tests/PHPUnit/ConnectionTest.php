@@ -85,6 +85,7 @@ class ConnectionTest extends \Airstory\TestCase {
 		), $args['meta_query'], 'The WP_User_Query should look for a matching user based on the _airstory_target meta key' );
 		$this->assertEquals( 1, $args['number'], 'The WP_User_Query should be limited to a single user' );
 		$this->assertEquals( 'ID', $args['fields'], 'The WP_User_Query should only return user ID(s)' );
+		$this->assertFalse( $args['count_total'], 'We\'re looking for a single user, no need to count the totals' );
 	}
 
 	public function testGetConnectionUserIdReturnsZeroIfNoMatchFound() {

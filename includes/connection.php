@@ -47,9 +47,10 @@ function get_user_profile() {
  */
 function get_connection_user_id( $connection_id ) {
 	$query = new \WP_User_Query( array(
-		'number'     => 1,
-		'fields'     => 'ID',
-		'meta_query' => array(
+		'number'      => 1,
+		'fields'      => 'ID',
+		'count_total' => false,
+		'meta_query'  => array(
 			'key' => '_airstory_target',
 			'value' => $connection_id,
 		),

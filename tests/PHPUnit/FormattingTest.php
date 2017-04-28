@@ -58,6 +58,9 @@ EOT;
 		$this->assertEmpty( get_body_contents( $response ) );
 	}
 
+	/**
+	 * @runInSeparateProcess Or risk the libxml error buffer getting all kinds of screwy.
+	 */
 	public function testGetBodyContentsWithInvalidHTML() {
 		$response = <<<EOT
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -68,6 +71,12 @@ EOT;
 EOT;
 
 		$this->assertEmpty( get_body_contents( $response ) );
+	}
+
+	public function testGetBodyContentsDoesNotButcherEmoji() {
+		$emoji = '<p>emoji: 😉</p>';
+
+		$this->assertEquals( $emoji, get_body_contents( $emoji ), 'Multi-byte characters like emoji appear to be encoded improperly.' );
 	}
 
 	public function testSideloadImages() {
@@ -142,6 +151,10 @@ EOT;
 			},
 		) );
 
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
 		$this->assertEquals( 2, sideload_images( 123 ) );
 	}
 
@@ -176,6 +189,10 @@ EOT;
 					$this->fail( 'Expected image replacement did not occur!' );
 				}
 			},
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
 		) );
 
 		$this->assertEquals( 2, sideload_images( 123 ) );

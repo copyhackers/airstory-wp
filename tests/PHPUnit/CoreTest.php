@@ -98,8 +98,4 @@ class CoreTest extends \Airstory\TestCase {
 
 		$this->assertSame( $error, import_document( $api, $project, $document ) );
 	}
-
-	public function testGetBodyContents() {
-		$this->markTestIncomplete();
-	}
 }

@@ -70,6 +70,12 @@ EOT;
 		$this->assertEmpty( get_body_contents( $response ) );
 	}
 
+	public function testGetBodyContentsDoesNotButcherEmoji() {
+		$emoji = '<p>emoji: 😉</p>';
+
+		$this->assertEquals( $emoji, get_body_contents( $emoji ), 'Multi-byte characters like emoji appear to be encoded improperly.' );
+	}
+
 	public function testSideloadImages() {
 		$content = <<<EOT
 <h1>Here's an image</h1>

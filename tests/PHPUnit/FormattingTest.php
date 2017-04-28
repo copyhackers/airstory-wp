@@ -58,6 +58,9 @@ EOT;
 		$this->assertEmpty( get_body_contents( $response ) );
 	}
 
+	/**
+	 * @runInSeparateProcess Or risk the libxml error buffer getting all kinds of screwy.
+	 */
 	public function testGetBodyContentsWithInvalidHTML() {
 		$response = <<<EOT
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -92,6 +95,10 @@ EOT;
 			'return' => 'https://example.com/image.jpg',
 		) );
 
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
 		$this->assertEquals( $expected, sideload_images( $content ) );
 	}
 
@@ -113,6 +120,10 @@ EOT;
 			'return' => 'https://example.com/image.jpg',
 		) );
 
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
 		$this->assertEquals( $expected, sideload_images( $content ) );
 	}
 
@@ -132,6 +143,10 @@ EOT;
 			'return' => function ( $image_url ) {
 				return 'https://example.com/' . basename( $image_url );
 			},
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
 		) );
 
 		$this->assertEquals( $expected, sideload_images( $content ) );

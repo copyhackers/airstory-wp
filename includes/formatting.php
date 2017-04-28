@@ -40,6 +40,7 @@ function get_body_contents( $content ) {
 	}
 
 	// Reset the original error handling approach for libxml.
+	libxml_clear_errors();
 	libxml_use_internal_errors( $use_internal );
 
 	// Strip opening and trailing <body> tags (plus any whitespace).

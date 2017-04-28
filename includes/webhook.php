@@ -8,7 +8,9 @@
 namespace Airstory\Webhook;
 
 use Airstory;
+use Airstory\Connection as Connection;
 use Airstory\Core as Core;
+use Airstory\Credentials as Credentials;
 use WP_REST_Request;
 
 /**
@@ -35,9 +37,22 @@ add_action( 'rest_api_init', __NAMESPACE__ . '\register_webhook_endpoint' );
  * @param WP_REST_Request $request The WP REST API request object.
  */
 function handle_webhook( WP_REST_Request $request ) {
-	$api      = new Airstory\API;
-	$project  = $request->get_param( 'project' );
-	$document = $request->get_param( 'document' );
+	$connection = $request->get_param( 'target' );
+	$project    = $request->get_param( 'project' );
+	$document   = $request->get_param( 'document' );
+
+	// Airstory will have given us a connection ID, which we can use to identify the WordPress user.
+	$user_id = Connection\get_connection_user_id( $connection );
+
+	if ( 0 === $user_id ) {
+		return new \WP_Error( 'airstory-unrecognized-connection', __( 'The provided connection ID is not associated with any user.', 'airstory' ) );
+	}
+
+	// Establish an API connection, using the Airstory token of the connection owner.
+	$api = new Airstory\API;
+	$api->set_token( Credentials\get_token( $user_id ) );
+
+	// Import the document, acting as the connection owner.
 	$post_id  = Core\import_document( $api, $project, $document );
 
 	// Return early if import_document() gave us a WP_Error object.

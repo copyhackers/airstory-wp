@@ -56,7 +56,7 @@ function get_connection_user_id( $connection_id ) {
 		),
 	) );
 
-	return (int) empty( $query ) ? 0 : array_shift( $query->results );
+	return (int) empty( $query ) ? 0 : current( $query->results );
 }
 
 /**

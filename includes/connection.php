@@ -108,17 +108,6 @@ function register_connection( $user_id ) {
 add_action( 'airstory_user_connect', __NAMESPACE__ . '\register_connection' );
 
 /**
- * Update an existing connection with Airstory.
- *
- * This might occur if the site name or URL changes.
- *
- * @todo Update the corresponding connection via a PUT request.
- */
-function update_connection() {
-
-}
-
-/**
  * If a user disconnects from Airstory, the corresponding connection should be removed as well.
  *
  * This function will remove the target within the user's Airstory profile, then remove any stored

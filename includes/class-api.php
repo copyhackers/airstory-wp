@@ -141,12 +141,24 @@ class API {
 	}
 
 	/**
+	 * Explicitly set the Airstory user token.
+	 *
+	 * This can be used to run a request as a given user, since get_credentials() will return the
+	 * $this->token property if it's already set.
+	 *
+	 * @param string $token The Airstory user token to use.
+	 */
+	public function set_token( $token ) {
+		$this->token = (string) $token;
+	}
+
+	/**
 	 * Retrieve the credentials for the currently logged-in user.
 	 *
 	 * @return string The bearer token to be passed with API requests.
 	 */
 	protected function get_credentials() {
-		if ( $this->token ) {
+		if ( ! empty( $this->token ) ) {
 			return $this->token;
 		}
 

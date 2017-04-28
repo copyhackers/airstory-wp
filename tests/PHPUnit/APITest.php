@@ -152,6 +152,17 @@ class APITest extends \Airstory\TestCase {
 		$this->assertEquals( $target, $instance->delete_target( $email, $target ) );
 	}
 
+	public function testSetToken() {
+		$instance = new API;
+		$token    = uniqid();
+		$property = new ReflectionProperty( $instance, 'token' );
+		$property->setAccessible( true );
+
+		$instance->set_token( $token );
+
+		$this->assertEquals( $token, $property->getValue( $instance ) );
+	}
+
 	/**
 	 * @runInSeparateProcess to avoid collision with other calls to get_token().
 	 */

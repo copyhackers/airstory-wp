@@ -57,7 +57,11 @@ class WebhookTest extends \Airstory\TestCase {
 			'return' => false,
 		) );
 
-		M::userFunction( 'get_edit_post_link', array(
+		M::userFunction( 'add_query_arg', array(
+			'return' => 'edit?id=123',
+		) );
+
+		M::userFunction( 'admin_url', array(
 			'return' => 'http://example.com/edit?id=123',
 		) );
 

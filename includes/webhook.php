@@ -45,10 +45,16 @@ function handle_webhook( WP_REST_Request $request ) {
 		return $post_id;
 	}
 
+	// Since get_edit_post_link() depends on permission checks, we'll construct the link manually.
+	$edit_path = add_query_arg( array(
+		'post'   => $post_id,
+		'action' => 'edit',
+	), '/post.php' );
+
 	return array(
 		'project'  => $project,
 		'document' => $document,
 		'post_id'  => $post_id,
-		'edit_url' => get_edit_post_link( $post_id ),
+		'edit_url' => admin_url( $edit_path ),
 	);
 }

@@ -19,4 +19,5 @@ require_once AIRSTORY_INC . '/async-tasks.php';
 require_once AIRSTORY_INC . '/class-api.php';
 require_once AIRSTORY_INC . '/core.php';
 require_once AIRSTORY_INC . '/formatting.php';
+require_once AIRSTORY_INC . '/includes/credentials.php';
 require_once AIRSTORY_INC . '/webhook.php';

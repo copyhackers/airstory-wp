@@ -11,6 +11,9 @@ use WP_Mock as M;
 use Mockery;
 use WP_Error;
 
+/**
+ * @require extension openssl
+ */
 class CredentialsTest extends \Airstory\TestCase {
 
 	protected $testFiles = array(

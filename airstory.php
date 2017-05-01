@@ -13,6 +13,8 @@
 
 namespace Airstory;
 
+define( 'AIRSTORY_DIR', __DIR__ );
+
 require_once __DIR__ . '/includes/class-api.php';
 require_once __DIR__ . '/includes/core.php';
 require_once __DIR__ . '/includes/credentials.php';

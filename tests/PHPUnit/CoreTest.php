@@ -40,6 +40,16 @@ class CoreTest extends \Airstory\TestCase {
 			'return' => 123,
 		) );
 
+		M::userFunction( 'add_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_project_id', $project, true ),
+		) );
+
+		M::userFunction( 'add_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_document_id', $document, true ),
+		) );
+
 		M::passthruFunction( 'sanitize_text_field' );
 		M::passthruFunction( 'wp_kses_post' );
 

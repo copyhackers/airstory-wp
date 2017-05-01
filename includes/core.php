@@ -67,6 +67,10 @@ function import_document( Airstory\API $api, $project_id, $document_id ) {
 		return $post_id;
 	}
 
+	// Store the Airstory project and document IDs in post meta.
+	add_post_meta( $post_id, '_airstory_project_id', sanitize_text_field( $project_id ), true );
+	add_post_meta( $post_id, '_airstory_document_id', sanitize_text_field( $document_id ), true );
+
 	/**
 	 * Fires after an Airstory post has been successfully inserted into WordPress.
 	 *

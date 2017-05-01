@@ -5,6 +5,7 @@ This plugin enables [Airstory](http://www.airstory.co/) users to connect their W
 ## Requirements
 
 * An [Airstory](http://www.airstory.co/) account. Not already an Airstory user? [Get one project free for life, just by signing up!](http://www.airstory.co/pricing/)
+* PHP version 5.3 or higher, with the "dom" and "openssl" extensions active.
 
 
 ## Installation
@@ -69,3 +70,15 @@ function mytheme_set_airstory_post_status( $post ) {
 }
 add_filter( 'airstory_before_insert_post', 'mytheme_set_airstory_post_status' );
 ```
+
+
+## Frequently Asked Questions
+
+Answers to some of the more common questions authors may have.
+
+
+### The plugin won't activate, instead telling me "the Airstory plugin is missing one or more of its dependencies, so it's automatically been deactivated". How do I resolve this?
+
+This is a safety feature built into the plugin to avoid any unexpected behavior due to missing dependencies. The Airstory plugin relies on two common PHP extensions: "dom" (for <abbr title="Document Object Model">DOM</abbr> manipulation, used to clean up incoming content from Airstory) and "openssl" (used to securely encrypt your Airstory user token before storing it).
+
+All modern hosts (Liquid Web, WP Engine, SiteGround, etc.) should support these extensions out of the box, but if you're running your own server you'll want to [ensure these extensions are both installed and activated](https://www.liquidweb.com/kb/how-to-check-php-modules-with-phpinfo/).

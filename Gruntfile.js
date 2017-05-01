@@ -1,6 +1,18 @@
 module.exports = function(grunt) {
 
 	grunt.initConfig({
+		copy: {
+			main: {
+				src: [
+					'includes/**',
+					'languages/**',
+					'airstory.php',
+					'composer.json',
+				],
+				dest: 'dist/'
+			},
+		},
+
 		makepot: {
 			target: {
 				options: {
@@ -19,7 +31,9 @@ module.exports = function(grunt) {
 	}
 	});
 
+	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-wp-i18n');
 
+	grunt.registerTask('build', ['i18n', 'copy']);
 	grunt.registerTask('i18n', ['makepot']);
 };

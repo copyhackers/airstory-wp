@@ -8,6 +8,49 @@
 namespace Airstory\Core;
 
 use Airstory;
+use WP_Query;
+
+/**
+ * Retrieve an existing post based on Airstory project and document IDs.
+ *
+ * Since we're tracking the original project and document IDs, we can prevent multiple copies of
+ * the same post from being made by cross-referencing these values with post meta.
+ *
+ * @param string $project_id  The Airstory project UUID.
+ * @param string $document_id The Airstory document UUID.
+ * @return int Either the ID of a NON-published post with those IDs or 0 if no such post exists.
+ */
+function get_current_draft( $project_id, $document_id ) {
+	$query_args = array(
+		'post_type'              => 'post',
+		'post_status'            => array( 'draft', 'pending' ),
+		'no_found_rows'          => true,
+		'update_term_meta_cache' => false,
+		'fields'                 => 'ids',
+		'posts_per_page'         => 1,
+		'meta_query'             => array(
+			array(
+				'key'   => '_airstory_project_id',
+				'value' => $project_id,
+			),
+			array(
+				'key'   => '_airstory_document_id',
+				'value' => $document_id,
+			),
+		),
+	);
+
+	/**
+	 * Filters the WP_Query arguments used to determine if a post has already been imported (as a
+	 * draft) into WordPress.
+	 *
+	 * @param array $query_args WP_Query arguments to find a matching draft.
+	 */
+	$query_args = apply_filters( 'airstory_get_current_draft', $query_args );
+	$query      = new WP_Query( $query_args );
+
+	return empty( $query->posts ) ? 0 : (int) current( $query->posts );
+}
 
 /**
  * Given an Airstory project and document UUIDs, call out to the Airstory API and assemble a

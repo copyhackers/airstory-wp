@@ -1,0 +1,16 @@
+{
+  "name": "airstory-wp",
+  "version": "0.1.0",
+  "description": "Publish content from Airstory to WordPress.",
+  "scripts": {
+    "test": "./vendor/bin/phpunit"
+  },
+  "keywords": [
+    "wordpress",
+    "airstory"
+  ],
+  "author": "Liquid Web",
+  "devDependencies": {
+    "grunt-wp-i18n": "^1.0.0"
+  }
+}

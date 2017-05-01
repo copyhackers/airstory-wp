@@ -9,6 +9,11 @@
             "homepage": "https://www.liquidweb.com"
         }
     ],
+    "require": {
+        "php": ">=5.3",
+        "ext-dom": "*",
+        "ext-openssl": "*"
+    },
     "require-dev": {
         "stevegrunwell/wp-enforcer": "dev-master",
         "10up/wp_mock": "dev-dev"

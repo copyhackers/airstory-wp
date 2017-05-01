@@ -48,6 +48,10 @@ class WebhookTest extends \Airstory\TestCase {
 			->with( 'document' )
 			->andReturn( $document );
 
+		M::userFunction( 'Airstory\Core\get_current_draft', array(
+			'return' => 0,
+		) );
+
 		M::userFunction( 'Airstory\Core\import_document', array(
 			'args'   => array( M\Functions::type( 'Airstory\API' ), $project, $document ),
 			'return' => 123,
@@ -73,6 +77,38 @@ class WebhookTest extends \Airstory\TestCase {
 		$this->assertEquals( 'http://example.com/edit?id=123', $response['edit_url'], 'The post edit URL should be returned' );
 	}
 
+	public function testHandleWebhookUpdatesExistingDocs() {
+		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$request = Mockery::mock( 'WP_REST_Request' )->makePartial();
+		$request->shouldReceive( 'get_param' )
+			->once()
+			->with( 'project' )
+			->andReturn( $project );
+		$request->shouldReceive( 'get_param' )
+			->once()
+			->with( 'document' )
+			->andReturn( $document );
+
+		M::userFunction( 'Airstory\Core\get_current_draft', array(
+			'return' => 123,
+		) );
+
+		M::userFunction( 'Airstory\Core\update_document', array(
+			'args'   => array( M\Functions::type( 'Airstory\API' ), $project, $document, 123 ),
+			'return' => 123,
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'add_query_arg' );
+		M::userFunction( 'admin_url' );
+
+		$response = handle_webhook( $request );
+	}
+
 	public function testHandleWebhookHandlesWPErrors() {
 		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
@@ -80,6 +116,10 @@ class WebhookTest extends \Airstory\TestCase {
 		$request->shouldReceive( 'get_param' )->with( 'project' )->andReturn( $project );
 		$request->shouldReceive( 'get_param' )->with( 'document' )->andReturn( $document );
 		$wp_error = Mockery::mock( 'WP_Error' );
+
+		M::userFunction( 'Airstory\Core\get_current_draft', array(
+			'return' => 0,
+		) );
 
 		M::userFunction( 'Airstory\Core\import_document', array(
 			'return' => $wp_error,

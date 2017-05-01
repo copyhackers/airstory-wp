@@ -38,7 +38,13 @@ function handle_webhook( WP_REST_Request $request ) {
 	$api      = new Airstory\API;
 	$project  = $request->get_param( 'project' );
 	$document = $request->get_param( 'document' );
-	$post_id  = Core\import_document( $api, $project, $document );
+	$post_id  = Core\get_current_draft( $project, $document );
+
+	if ( $post_id ) {
+		$post_id = Core\update_document( $api, $project, $document, $post_id );
+	} else {
+		$post_id  = Core\import_document( $api, $project, $document );
+	}
 
 	// Return early if import_document() gave us a WP_Error object.
 	if ( is_wp_error( $post_id ) ) {

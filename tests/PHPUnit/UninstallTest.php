@@ -15,6 +15,10 @@ use Mockery;
  */
 class UninstallTest extends \Airstory\TestCase {
 
+	protected $testFiles = [
+		'connection.php',
+	];
+
 	public function testUninstall() {
 		global $wpdb;
 

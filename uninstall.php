@@ -10,6 +10,8 @@
 
 namespace Airstory;
 
+require_once __DIR__ . '/includes/connection.php';
+
 global $wpdb;
 
 // Prevent this file from being executed outside of the plugin uninstallation.

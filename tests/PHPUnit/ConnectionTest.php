@@ -68,32 +68,6 @@ class ConnectionTest extends \Airstory\TestCase {
 		$this->assertEquals( array(), get_user_profile(), 'WP_Errors should produce empty profile arrays' );
 	}
 
-	public function testGetConnectionUserId() {
-		$connection_id = uniqid();
-		WP_User_Query::$__results = array( 123 );
-
-		$result = get_connection_user_id( $connection_id );
-
-		// Ensure the result we get back matches what we fed into WP_User_Query::$__results.
-		$this->assertEquals( 123, $result );
-
-		// Check other arguments.
-		$args = WP_User_Query::$__query;
-		$this->assertEquals( array(
-			'key'   => '_airstory_target',
-			'value' => $connection_id,
-		), $args['meta_query'], 'The WP_User_Query should look for a matching user based on the _airstory_target meta key' );
-		$this->assertEquals( 1, $args['number'], 'The WP_User_Query should be limited to a single user' );
-		$this->assertEquals( 'ID', $args['fields'], 'The WP_User_Query should only return user ID(s)' );
-		$this->assertFalse( $args['count_total'], 'We\'re looking for a single user, no need to count the totals' );
-	}
-
-	public function testGetConnectionUserIdReturnsZeroIfNoMatchFound() {
-		WP_User_Query::$__results = array(); // Ensure this is empty.
-
-		$this->assertEquals( 0, get_connection_user_id( uniqid() ) );
-	}
-
 	public function testRegisterConnection() {
 		Patchwork\replace( 'Airstory\API::post_target', function () {
 			return 'connection-id';

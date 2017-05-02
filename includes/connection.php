@@ -40,26 +40,6 @@ function get_user_profile() {
 }
 
 /**
- * Given a connection, determine the corresponding user ID.
- *
- * @param string $connection_id The Airstory connection ID.
- * @return int The user ID associated with the connection, or 0 if no match was found.
- */
-function get_connection_user_id( $connection_id ) {
-	$query = new \WP_User_Query( array(
-		'number'      => 1,
-		'fields'      => 'ID',
-		'count_total' => false,
-		'meta_query'  => array(
-			'key' => '_airstory_target',
-			'value' => $connection_id,
-		),
-	) );
-
-	return (int) empty( $query ) ? 0 : current( $query->results );
-}
-
-/**
  * Once a user has provided their token, authenticate with Airstory and save information locally.
  *
  * This information will include the Airstory user's first/last name, email, and user_id, which

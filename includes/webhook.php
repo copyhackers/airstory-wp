@@ -30,23 +30,17 @@ add_action( 'rest_api_init', __NAMESPACE__ . '\register_webhook_endpoint' );
  * The payload should be delivered via an HTTP POST request, with the following structure:
  *
  * {
- *   project: 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
+ *   id: XXX,
+ *   project: 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
  *   document: 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
  * }
  *
  * @param WP_REST_Request $request The WP REST API request object.
  */
 function handle_webhook( WP_REST_Request $request ) {
-	$connection = $request->get_param( 'target' );
-	$project    = $request->get_param( 'project' );
-	$document   = $request->get_param( 'document' );
-
-	// Airstory will have given us a connection ID, which we can use to identify the WordPress user.
-	$user_id = Connection\get_connection_user_id( $connection );
-
-	if ( 0 === $user_id ) {
-		return new \WP_Error( 'airstory-unrecognized-connection', __( 'The provided connection ID is not associated with any user.', 'airstory' ) );
-	}
+	$user_id  = $request->get_param( 'id' );
+	$project  = $request->get_param( 'project' );
+	$document = $request->get_param( 'document' );
 
 	// Establish an API connection, using the Airstory token of the connection owner.
 	$api = new Airstory\API;

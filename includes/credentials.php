@@ -32,7 +32,9 @@ define( 'AIRSTORY_ENCRYPTION_ALGORITHM', 'AES-256-CTR' );
  * @return string A 16-byte initialization vector, for use with openssl_encrypt().
  */
 function get_iv() {
-	return function_exists( 'random_bytes' ) ? random_bytes( 16 ) : mcrypt_create_iv( 16 );
+	$bytes = function_exists( 'random_bytes' ) ? random_bytes( 8 ) : mcrypt_create_iv( 8 );
+
+	return bin2hex( $bytes ); // Will produce an IV 16 characters long.
 }
 
 /**
@@ -80,4 +82,16 @@ function get_token( $user_id ) {
 	}
 
 	return $token;
+}
+
+/**
+ * Clear a user's token.
+ *
+ * @param int $user_id The user ID to clear token-related user meta for.
+ * @return bool Were the relevant user meta entries deleted?
+ */
+function clear_token( $user_id ) {
+	delete_user_meta( $user_id, '_airstory_iv' );
+
+	return delete_user_meta( $user_id, '_airstory_token' );
 }

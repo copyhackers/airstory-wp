@@ -5,7 +5,7 @@ This plugin enables [Airstory](http://www.airstory.co/) users to connect their W
 ## Requirements
 
 * An [Airstory](http://www.airstory.co/) account. Not already an Airstory user? [Get one project free for life, just by signing up!](http://www.airstory.co/pricing/)
-* PHP version 5.3 or higher, with the "dom" and "openssl" extensions active.
+* PHP version 5.3 or higher, with the "dom", "mcrypt", and "openssl" extensions active.
 
 
 ## Installation

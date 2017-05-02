@@ -17,6 +17,7 @@ use Airstory;
  * - PHP >= 5.3        - Namespace support, though the plugin will fail before reaching this check
  *                       if namespaces are unsupported.
  * - dom extension     - Used by DOMDocument in formatters.php.
+ * - mcrypt extension  - Used as a backup for older systems that don't support PHP 7's random_bytes().
  * - openssl extension - Used to securely encrypt Airstory credentials.
  *
  * @return bool True if all requirements are met, false otherwise.
@@ -25,7 +26,7 @@ function check_requirements() {
 	$requirements_met = true;
 
 	// Find any missing extensions; $missing_exts will contain any that fail extension_loaded().
-	$extensions = array( 'dom', 'openssl' );
+	$extensions = array( 'dom', 'mcrypt', 'openssl' );
 	if ( array_filter( $extensions, 'extension_loaded' ) !== $extensions ) {
 		$requirements_met = false;
 	}

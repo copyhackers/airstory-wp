@@ -13,6 +13,7 @@ use WP_Error;
 
 /**
  * @require extension openssl
+ * @require extension mcrypt
  */
 class CredentialsTest extends \Airstory\TestCase {
 

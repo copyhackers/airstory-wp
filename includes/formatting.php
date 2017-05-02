@@ -43,6 +43,11 @@ function get_body_contents( $content ) {
 	libxml_clear_errors();
 	libxml_use_internal_errors( $use_internal );
 
+	// If the body's empty at this point, no further work is necessary.
+	if ( empty( $body ) ) {
+		return $body;
+	}
+
 	// Strip opening and trailing <body> tags (plus any whitespace).
 	$body = preg_replace( '/\<body\>\s*/i', '', $body );
 	$body = preg_replace( '/\s*\<\/body\>/i', '', $body );

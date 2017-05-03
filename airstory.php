@@ -7,13 +7,16 @@
  * Author:      Liquid Web
  * Author URI:  https://www.liquidweb.com
  * Text Domain: airstory
+ * Domain Path: /languages
  *
  * @package Airstory
  */
 
 namespace Airstory;
 
-define( 'AIRSTORY_DIR', __DIR__ );
+if ( ! defined( 'AIRSTORY_DIR' ) ) {
+	define( 'AIRSTORY_DIR', __DIR__ );
+}
 
 require_once AIRSTORY_DIR . '/includes/async-tasks.php';
 require_once AIRSTORY_DIR . '/includes/class-api.php';

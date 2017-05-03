@@ -21,8 +21,8 @@ class CoreTest extends \Airstory\TestCase {
 
 		$pagenow = 'plugins.php';
 
-		if ( ! defined( 'AIRSTORY_MAIN_FILE' ) ) {
-			define( 'AIRSTORY_MAIN_FILE', '/path/to/main-plugin-file.php' );
+		if ( ! defined( 'AIRSTORY_DIR' ) ) {
+			define( 'AIRSTORY_DIR', '/path/to' );
 		}
 
 		M::userFunction( __NAMESPACE__ . '\check_requirements', array(

@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 					updatePoFiles: true
 				}
 			}
-	}
+		}
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-copy');

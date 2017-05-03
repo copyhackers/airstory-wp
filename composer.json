@@ -12,7 +12,9 @@
     "require": {
         "php": ">=5.3",
         "ext-dom": "*",
-        "ext-openssl": "*"
+        "ext-openssl": "*",
+        "techcrunch/wp-async-task": "dev-master",
+        "composer/installers": "^1.3"
     },
     "require-dev": {
         "stevegrunwell/wp-enforcer": "dev-master",
@@ -25,5 +27,10 @@
         "post-update-cmd": [
             "wp-enforcer"
         ]
+    },
+    "extra": {
+        "installer-paths": {
+            "includes/lib/{$name}": ["type:wordpress-plugin"]
+        }
     }
 }

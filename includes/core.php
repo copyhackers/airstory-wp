@@ -10,14 +10,6 @@ namespace Airstory\Core;
 use Airstory;
 
 /**
- * Load the plugin textdomain.
- */
-function load_textdomain() {
-	load_plugin_textdomain( 'airstory', false, basename( AIRSTORY_DIR ) . '/languages' );
-}
-add_action( 'init', __NAMESPACE__ . '\load_textdomain' );
-
-/**
  * Given an Airstory project and document UUIDs, call out to the Airstory API and assemble a
  * WordPress post.
  *

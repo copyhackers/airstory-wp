@@ -13,7 +13,11 @@
 
 namespace Airstory;
 
-require_once __DIR__ . '/includes/class-api.php';
-require_once __DIR__ . '/includes/core.php';
-require_once __DIR__ . '/includes/credentials.php';
-require_once __DIR__ . '/includes/webhook.php';
+define( 'AIRSTORY_INC', __DIR__ . '/includes' );
+
+require_once AIRSTORY_INC . '/async-tasks.php';
+require_once AIRSTORY_INC . '/class-api.php';
+require_once AIRSTORY_INC . '/core.php';
+require_once AIRSTORY_INC . '/formatting.php';
+require_once AIRSTORY_INC . '/credentials.php';
+require_once AIRSTORY_INC . '/webhook.php';

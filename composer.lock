@@ -4,8 +4,174 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "60aad1896e2e2417f11856927a8e0bbc",
-    "packages": [],
+    "content-hash": "3a5dbdc924c3631b67f75fb660ea9379",
+    "packages": [
+        {
+            "name": "composer/installers",
+            "version": "v1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/installers.git",
+                "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/installers/zipball/79ad876c7498c0bbfe7eed065b8651c93bfd6045",
+                "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0"
+            },
+            "replace": {
+                "roundcube/plugin-installer": "*",
+                "shama/baton": "*"
+            },
+            "require-dev": {
+                "composer/composer": "1.0.*@dev",
+                "phpunit/phpunit": "4.1.*"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Composer\\Installers\\Plugin",
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Composer\\Installers\\": "src/Composer/Installers"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kyle Robinson Young",
+                    "email": "kyle@dontkry.com",
+                    "homepage": "https://github.com/shama"
+                }
+            ],
+            "description": "A multi-framework Composer library installer",
+            "homepage": "https://composer.github.io/installers/",
+            "keywords": [
+                "Craft",
+                "Dolibarr",
+                "Eliasis",
+                "Hurad",
+                "ImageCMS",
+                "Kanboard",
+                "MODX Evo",
+                "Mautic",
+                "Maya",
+                "OXID",
+                "Plentymarkets",
+                "Porto",
+                "RadPHP",
+                "SMF",
+                "Thelia",
+                "WolfCMS",
+                "agl",
+                "aimeos",
+                "annotatecms",
+                "attogram",
+                "bitrix",
+                "cakephp",
+                "chef",
+                "cockpit",
+                "codeigniter",
+                "concrete5",
+                "croogo",
+                "dokuwiki",
+                "drupal",
+                "elgg",
+                "expressionengine",
+                "fuelphp",
+                "grav",
+                "installer",
+                "itop",
+                "joomla",
+                "kohana",
+                "laravel",
+                "lavalite",
+                "lithium",
+                "magento",
+                "mako",
+                "mediawiki",
+                "modulework",
+                "moodle",
+                "phpbb",
+                "piwik",
+                "ppi",
+                "puppet",
+                "reindex",
+                "roundcube",
+                "shopware",
+                "silverstripe",
+                "sydes",
+                "symfony",
+                "typo3",
+                "wordpress",
+                "yawik",
+                "zend",
+                "zikula"
+            ],
+            "time": "2017-04-24T06:37:16+00:00"
+        },
+        {
+            "name": "techcrunch/wp-async-task",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/techcrunch/wp-async-task.git",
+                "reference": "9bdbbf9df4ff5179711bb58b9a2451296f6753dc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/techcrunch/wp-async-task/zipball/9bdbbf9df4ff5179711bb58b9a2451296f6753dc",
+                "reference": "9bdbbf9df4ff5179711bb58b9a2451296f6753dc",
+                "shasum": ""
+            },
+            "require-dev": {
+                "10up/wp_mock": "dev-master",
+                "phpunit/phpunit": "*@stable"
+            },
+            "type": "wordpress-plugin",
+            "autoload": {
+                "classmap": [
+                    "wp-async-task.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alex Khadiwala",
+                    "role": "developer"
+                },
+                {
+                    "name": "Nicolas Vincent",
+                    "role": "developer"
+                },
+                {
+                    "name": "Eric Mann",
+                    "email": "eric.mann@10up.com",
+                    "role": "developer"
+                },
+                {
+                    "name": "John P. Bloch",
+                    "email": "john.bloch@10up.com",
+                    "role": "developer"
+                }
+            ],
+            "description": "Run asynchronous tasks for long-running operations in WordPress",
+            "time": "2016-03-10 17:37:13"
+        }
+    ],
     "packages-dev": [
         {
             "name": "10up/wp_mock",
@@ -1677,6 +1843,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "techcrunch/wp-async-task": 20,
         "stevegrunwell/wp-enforcer": 20,
         "10up/wp_mock": 20
     },

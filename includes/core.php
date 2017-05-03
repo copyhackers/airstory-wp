@@ -69,20 +69,22 @@ function import_document( Airstory\API $api, $project_id, $document_id ) {
 	$post = apply_filters( 'airstory_before_insert_post', $post );
 
 	// Finally, insert the post.
-	return wp_insert_post( $post );
-}
+	$post_id = wp_insert_post( $post );
 
-/**
- * Reduce the contents of an exported document to the contents of the <body> element.
- *
- * By default, the Airstory API will include a full HTML document, including the <!DOCTYPE>, <html>
- * tags, and more.
- *
- * @param string $document The full HTML document.
- * @return string $body The contents of the document's <body> node.
- *
- * @todo Use DOMDocument to filter down the $document contents.
- */
-function get_body_contents( $document ) {
-	return '';
+	if ( is_wp_error( $post_id ) ) {
+		return $post_id;
+	}
+
+	// Store the Airstory project and document IDs in post meta.
+	add_post_meta( $post_id, '_airstory_project_id', sanitize_text_field( $project_id ), true );
+	add_post_meta( $post_id, '_airstory_document_id', sanitize_text_field( $document_id ), true );
+
+	/**
+	 * Fires after an Airstory post has been successfully inserted into WordPress.
+	 *
+	 * @param int $post_id The ID of the newly-created post.
+	 */
+	do_action( 'airstory_import_post', $post_id );
+
+	return $post_id;
 }

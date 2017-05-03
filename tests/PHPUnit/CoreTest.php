@@ -40,12 +40,24 @@ class CoreTest extends \Airstory\TestCase {
 			'return' => 123,
 		) );
 
+		M::userFunction( 'add_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_project_id', $project, true ),
+		) );
+
+		M::userFunction( 'add_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_document_id', $document, true ),
+		) );
+
 		M::passthruFunction( 'sanitize_text_field' );
 		M::passthruFunction( 'wp_kses_post' );
 
 		M::onFilter( 'airstory_before_insert_content' )
 			->with( 'My document body' )
 			->reply( 'My filtered body' );
+
+		M::expectAction( 'airstory_import_post', 123 );
 
 		$this->assertEquals( 123, import_document( $api, $project, $document ) );
 	}
@@ -97,9 +109,5 @@ class CoreTest extends \Airstory\TestCase {
 		M::passthruFunction( 'sanitize_text_field' );
 
 		$this->assertSame( $error, import_document( $api, $project, $document ) );
-	}
-
-	public function testGetBodyContents() {
-		$this->markTestIncomplete();
 	}
 }

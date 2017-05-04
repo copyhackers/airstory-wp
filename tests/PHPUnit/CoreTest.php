@@ -9,12 +9,58 @@ namespace Airstory\Core;
 
 use WP_Mock as M;
 use Mockery;
+use WP_Query;
 
 class CoreTest extends \Airstory\TestCase {
 
 	protected $testFiles = array(
 		'core.php',
 	);
+
+	public function testGetCurrentDraft() {
+		$meta_query = array(
+			'_airstory_project_id'  => 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
+			'_airstory_document_id' => 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
+		);
+
+		WP_Query::$__results = array( 123 );
+
+		M::userFunction( 'wp_parse_args', array(
+			'return_arg' => 1,
+		) );
+
+		$this->assertEquals( 123, get_current_draft( $meta_query['_airstory_project_id'], $meta_query['_airstory_document_id'] ) );
+
+		// Disect key parts of the resulting query args.
+		$this->assertEquals( array( 'draft', 'pending' ), WP_Query::$__query['post_status'], 'get_current_draft() should never retrieve a published post ID' );
+		$this->assertEquals( 'ids', WP_Query::$__query['fields'], 'get_current_draft() should only query post IDs' );
+
+		// Break down the meta query
+		$this->assertCount( count( $meta_query ), WP_Query::$__query['meta_query'] );
+
+		foreach ( WP_Query::$__query['meta_query'] as $query ) {
+			$this->assertEquals( $meta_query[ $query['key'] ], $query['value'] );
+		}
+
+		// Reset the WP_Query mock.
+		WP_Query::tearDown();
+	}
+
+	public function testGetCurrentDraftReturns0IfNoDraftFound() {
+		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+
+		WP_Query::$__results = array();
+
+		M::userFunction( 'wp_parse_args', array(
+			'return_arg' => 1,
+		) );
+
+		$this->assertEquals( 0, get_current_draft( $project, $document ) );
+
+		// Reset the WP_Query mock.
+		WP_Query::tearDown();
+	}
 
 	public function testCreateDocument() {
 		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';

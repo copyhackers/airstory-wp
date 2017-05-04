@@ -21,7 +21,7 @@ use WP_Query;
  * @return int Either the ID of a NON-published post with those IDs or 0 if no such post exists.
  */
 function get_current_draft( $project_id, $document_id ) {
-	$query_args = array(
+	$defaults = array(
 		'post_type'              => 'post',
 		'post_status'            => array( 'draft', 'pending' ),
 		'no_found_rows'          => true,
@@ -45,9 +45,11 @@ function get_current_draft( $project_id, $document_id ) {
 	 * draft) into WordPress.
 	 *
 	 * @param array $query_args WP_Query arguments to find a matching draft.
+	 * @param array $defaults   Default WP_Query arguments, for reference; the $query_args array will
+	 *                          be merged with the defaults via wp_parse_args().
 	 */
-	$query_args = apply_filters( 'airstory_get_current_draft', $query_args );
-	$query      = new WP_Query( $query_args );
+	$query_args = (array) apply_filters( 'airstory_get_current_draft', array(), $defaults );
+	$query      = new WP_Query( wp_parse_args( $query_args, $defaults ) );
 
 	return empty( $query->posts ) ? 0 : (int) current( $query->posts );
 }

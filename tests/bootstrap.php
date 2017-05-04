@@ -29,6 +29,7 @@ if ( ! file_exists( __DIR__ . '/../vendor/autoload.php' ) ) {
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/test-tools/TestCase.php';
+require_once ABSPATH . 'wp-includes/class-wp-query.php';
 require_once ABSPATH . 'wp-includes/class-wp-user-query.php';
 require_once ABSPATH . 'wp-includes/class-wp-error.php';
 

@@ -47,9 +47,9 @@ function handle_webhook( WP_REST_Request $request ) {
 	$api->set_token( Credentials\get_token( $user_id ) );
 
 	// Import the document, acting as the connection owner.
-	$post_id  = Core\import_document( $api, $project, $document, $user_id );
+	$post_id  = Core\create_document( $api, $project, $document, $user_id );
 
-	// Return early if import_document() gave us a WP_Error object.
+	// Return early if create_document() gave us a WP_Error object.
 	if ( is_wp_error( $post_id ) ) {
 		return $post_id;
 	}

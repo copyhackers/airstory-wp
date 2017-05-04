@@ -83,7 +83,7 @@ function notify_user_of_missing_requirements() {
  * @return int|WP_Error The ID of the newly-created post or a WP_Error object if anything went
  *                      wrong during the creation of the post.
  */
-function import_document( Airstory\API $api, $project_id, $document_id, $author_id = null ) {
+function create_document( Airstory\API $api, $project_id, $document_id, $author_id = null ) {
 	$document = $api->get_document( $project_id, $document_id );
 
 	// Something went wrong getting metadata about the document.

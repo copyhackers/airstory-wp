@@ -57,7 +57,7 @@ class WebhookTest extends \Airstory\TestCase {
 			'return' => uniqid(),
 		) );
 
-		M::userFunction( 'Airstory\Core\import_document', array(
+		M::userFunction( 'Airstory\Core\create_document', array(
 			'args'   => array( M\Functions::type( 'Airstory\API' ), $project, $document, 5 ),
 			'return' => 123,
 		) );
@@ -91,7 +91,7 @@ class WebhookTest extends \Airstory\TestCase {
 		$request->shouldReceive( 'get_param' )->with( 'document' )->andReturn( $document );
 		$wp_error = Mockery::mock( 'WP_Error' );
 
-		M::userFunction( 'Airstory\Core\import_document', array(
+		M::userFunction( 'Airstory\Core\create_document', array(
 			'return' => $wp_error,
 		) );
 

@@ -14,15 +14,23 @@
 namespace Airstory\Connection;
 
 use Airstory;
+use Airstory\Credentials;
 
 /**
  * Retrieve basic information about the user.
  *
+ * @param int $user_id Optional. The ID of the user to retrieve. Defaults to the current user.
  * @return array Either an array containing basic information about the Airstory user (id, name,
  *               and email) or an empty array if the user could not be validated.
  */
-function get_user_profile() {
-	$api     = new Airstory\API;
+function get_user_profile( $user_id = null ) {
+	$api = new Airstory\API;
+
+	// If we have a user ID, set the API token accordingly.
+	if ( $user_id ) {
+		$api->set_token( get_token( $user_id ) );
+	}
+
 	$profile = $api->get_user();
 
 	// Nothing valid came back, so we have no data to store.

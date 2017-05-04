@@ -56,6 +56,39 @@ class ConnectionTest extends \Airstory\TestCase {
 		);
 	}
 
+	public function testGetUserProfileWithUserId() {
+		$token    = uniqid();
+		$response = new \stdClass;
+		$response->id         = 'uXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$response->first_name = 'Leroy';
+		$response->last_name  = 'Jenkins';
+		$response->email      = 'leroy.jenkins@example.com';
+		$response->created    = time();
+
+		Patchwork\replace( 'Airstory\API::set_token', function ( $val ) use ( $token ) {
+			if ( $token !== $val ) {
+				$this->fail( 'The API token is not being set based on the user ID argument.' );
+			}
+		} );
+
+		Patchwork\replace( 'Airstory\API::get_user', function () use ( $response ) {
+			return $response;
+		} );
+
+		M::userFunction( __NAMESPACE__ . '\get_token', array(
+			'args'   => array( 123 ),
+			'return' => $token,
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::passthruFunction( 'sanitize_text_field' );
+
+		get_user_profile( 123 );
+	}
+
 	public function testGetUserProfileReturnsEmptyArrayIfAPIResponseFails() {
 		Patchwork\replace( 'Airstory\API::get_user', function () {
 			return new WP_Error();

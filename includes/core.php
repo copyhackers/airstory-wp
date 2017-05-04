@@ -78,10 +78,12 @@ function notify_user_of_missing_requirements() {
  * @param Airstory\API $api         An instance of the Airstory API class.
  * @param string       $project_id  The Airstory project UUID.
  * @param string       $document_id The Airstory document UUID.
+ * @param int          $author_id   Optional. The user ID to attribute the post to. Default is the
+ *                                  current user.
  * @return int|WP_Error The ID of the newly-created post or a WP_Error object if anything went
  *                      wrong during the creation of the post.
  */
-function import_document( Airstory\API $api, $project_id, $document_id ) {
+function import_document( Airstory\API $api, $project_id, $document_id, $author_id = null ) {
 	$document = $api->get_document( $project_id, $document_id );
 
 	// Something went wrong getting metadata about the document.
@@ -92,6 +94,7 @@ function import_document( Airstory\API $api, $project_id, $document_id ) {
 	// Begin assembling the post.
 	$post = array(
 		'post_title'   => sanitize_text_field( $document->title ),
+		'post_author'  => $author_id,
 		'post_status'  => 'draft',
 		'post_type'    => 'post',
 		'post_content' => '',

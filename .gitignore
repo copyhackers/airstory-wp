@@ -1,2 +1,4 @@
+dist
 includes/lib
+node_modules
 vendor

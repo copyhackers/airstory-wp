@@ -38,7 +38,11 @@ class WebhookTest extends \Airstory\TestCase {
 	public function testHandleWebhook() {
 		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
-		$request = Mockery::mock( 'WP_REST_Request' )->makePartial();
+		$request  = Mockery::mock( 'WP_REST_Request' )->makePartial();
+		$request->shouldReceive( 'get_param' )
+			->once()
+			->with( 'id' )
+			->andReturn( 5 );
 		$request->shouldReceive( 'get_param' )
 			->once()
 			->with( 'project' )
@@ -48,7 +52,13 @@ class WebhookTest extends \Airstory\TestCase {
 			->with( 'document' )
 			->andReturn( $document );
 
+		M::userFunction( 'Credentials\Connection\get_token', array(
+			'args'   => array( 5 ),
+			'return' => uniqid(),
+		) );
+
 		M::userFunction( 'Airstory\Core\get_current_draft', array(
+			'args'   => array( $project, $document ),
 			'return' => 0,
 		) );
 
@@ -83,6 +93,10 @@ class WebhookTest extends \Airstory\TestCase {
 		$request = Mockery::mock( 'WP_REST_Request' )->makePartial();
 		$request->shouldReceive( 'get_param' )
 			->once()
+			->with( 'id' )
+			->andReturn( 5 );
+		$request->shouldReceive( 'get_param' )
+			->once()
 			->with( 'project' )
 			->andReturn( $project );
 		$request->shouldReceive( 'get_param' )
@@ -113,6 +127,7 @@ class WebhookTest extends \Airstory\TestCase {
 		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$request  = Mockery::mock( 'WP_REST_Request' )->makePartial();
+		$request->shouldReceive( 'get_param' )->with( 'id' )->andReturn( 5 );
 		$request->shouldReceive( 'get_param' )->with( 'project' )->andReturn( $project );
 		$request->shouldReceive( 'get_param' )->with( 'document' )->andReturn( $document );
 		$wp_error = Mockery::mock( 'WP_Error' );

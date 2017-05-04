@@ -11,6 +11,10 @@ use WP_Mock as M;
 use Mockery;
 use WP_Error;
 
+/**
+ * @require extension openssl
+ * @require extension mcrypt
+ */
 class CredentialsTest extends \Airstory\TestCase {
 
 	protected $testFiles = array(
@@ -21,6 +25,12 @@ class CredentialsTest extends \Airstory\TestCase {
 		$iv = get_iv();
 
 		$this->assertEquals( 16, strlen( $iv ) );
+	}
+
+	public function testGetIvIsNotBinary() {
+		$iv = get_iv();
+
+		$this->assertTrue( ctype_print( $iv ), 'WordPress will not store binary data, so we must run the IV through bin2hex()' );
 	}
 
 	/**
@@ -67,5 +77,21 @@ class CredentialsTest extends \Airstory\TestCase {
 		) );
 
 		$this->assertEquals( $token, get_token( 123 ), 'The same string, encrypted twice with the same arguments, should produce the same result' );
+	}
+
+	public function testClearToken() {
+		M::userFunction( 'delete_user_meta', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_iv' ),
+			'return' => true,
+		) );
+
+		M::userFunction( 'delete_user_meta', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_token' ),
+			'return' => true,
+		) );
+
+		$this->assertTrue( clear_token( 123 ) );
 	}
 }

@@ -14,7 +14,7 @@
 namespace Airstory\Connection;
 
 use Airstory;
-use Airstory\Credentials;
+use Airstory\Credentials as Credentials;
 
 /**
  * Retrieve basic information about the user.
@@ -28,7 +28,7 @@ function get_user_profile( $user_id = null ) {
 
 	// If we have a user ID, set the API token accordingly.
 	if ( $user_id ) {
-		$api->set_token( get_token( $user_id ) );
+		$api->set_token( Credentials\get_token( $user_id ) );
 	}
 
 	$profile = $api->get_user();
@@ -173,3 +173,62 @@ function remove_connection( $user_id ) {
 	do_action( 'airstory_remove_connection', $user_id, $connection_id );
 }
 add_action( 'airstory_user_disconnect', __NAMESPACE__ . '\remove_connection' );
+
+/**
+ * Triggers an asynchronous regeneration of all connections.
+ *
+ * Certain events, like renaming the site or changing the URL, should cause connections within
+ * Airstory to be updated.
+ *
+ * @param mixed $old_value The previous value for the option.
+ * @param mixed $new_value The new value for the option.
+ */
+function trigger_connection_refresh( $old_value, $new_value ) {
+	if ( $old_value === $new_value ) {
+		return;
+	}
+
+	/**
+	 * Cause Airstory to update all known connections.
+	 */
+	do_action( 'airstory_update_all_connections' );
+}
+add_action( 'update_option_blogname', __NAMESPACE__ . '\trigger_connection_refresh', 10, 2 );
+add_action( 'update_option_siteurl', __NAMESPACE__ . '\trigger_connection_refresh', 10, 2 );
+add_action( 'update_option_home', __NAMESPACE__ . '\trigger_connection_refresh', 10, 2 );
+
+/**
+ * Update connection details for all currently-connected users.
+ *
+ * Under certain conditions, it may be necessary to update the connection details within Airstory.
+ * For example, if the site URL changes, this would impact webhook URL.
+ */
+function update_all_connections() {
+	$user_args       = array(
+		'fields'     => 'ID',
+		'number'     => 100,
+		'paged'      => 1,
+		'meta_query' => array(
+			array(
+				'key'     => '_airstory_target',
+				'compare' => 'EXISTS',
+			),
+		),
+	);
+	$connected_users = new \WP_User_Query( $user_args );
+	$user_ids        = $connected_users->results;
+
+	while ( ! empty( $user_ids ) ) {
+		$user_id = array_shift( $user_ids );
+
+		update_connection( $user_id );
+
+		// If we've reached the end, get the next page.
+		if ( empty( $user_ids ) ) {
+			$user_args['paged']++;
+			$connected_users = new \WP_User_Query( $user_args );
+			$user_ids        = $connected_users->results;
+		}
+	}
+}
+add_action( 'wp_async_airstory_update_all_connections', __NAMESPACE__ . '\update_all_connections' );

@@ -17,6 +17,7 @@ class ConnectionTest extends \Airstory\TestCase {
 
 	protected $testFiles = array(
 		'connection.php',
+		'credentials.php',
 	);
 
 	public function tearDown() {
@@ -75,7 +76,7 @@ class ConnectionTest extends \Airstory\TestCase {
 			return $response;
 		} );
 
-		M::userFunction( __NAMESPACE__ . '\get_token', array(
+		M::userFunction( 'Airstory\Credentials\get_token', array(
 			'args'   => array( 123 ),
 			'return' => $token,
 		) );

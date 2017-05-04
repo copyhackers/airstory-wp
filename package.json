@@ -2,6 +2,7 @@
   "name": "airstory-wp",
   "version": "0.1.0",
   "description": "Publish content from Airstory to WordPress.",
+  "homepage": "http://www.airstory.co/integrations/",
   "scripts": {
     "test": "./vendor/bin/phpunit"
   },
@@ -11,6 +12,7 @@
   ],
   "author": "Liquid Web",
   "license": "MIT",
+  "dependencies": {},
   "devDependencies": {
     "grunt-composer": "^0.4.5",
     "grunt-contrib-copy": "^1.0.0",

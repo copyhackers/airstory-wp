@@ -10,6 +10,7 @@
 
 namespace Airstory;
 
+use Airstory\Credentials as Credentials;
 use WP_Error;
 
 /**
@@ -21,6 +22,13 @@ class API {
 	 * The base path for all API requests to Airstory (no trailing slash).
 	 */
 	const API_BASE = 'https://api.airstory.co/v1';
+
+	/**
+	 * Cache the user token, once it's been collected.
+	 *
+	 * @var string
+	 */
+	protected $token;
 
 	/**
 	 * Retrieve information about a particular project.
@@ -61,23 +69,102 @@ class API {
 	 * @return string|WP_Error The response from Airstory\API::make_authenticated_request().
 	 */
 	public function get_document_content( $project_id, $document_id ) {
-		return $this->make_authenticated_request( sprintf(
+		$request = $this->make_authenticated_request( sprintf(
 			'/projects/%s/documents/%s/content',
 			$project_id,
 			$document_id
 		) );
+
+		return wp_remote_retrieve_body( $request );
+	}
+
+	/**
+	 * Retrieve basic information about the current user.
+	 *
+	 * @return stdClass|WP_Error The response from Airstory\API::make_authenticated_request().
+	 */
+	public function get_user() {
+		return $this->decode_json_response( $this->make_authenticated_request( '/user' ) );
+	}
+
+	/**
+	 * Create a new target for the given user.
+	 *
+	 * @param string $email The user's Airstory email address.
+	 * @param array  $target {
+	 *   The target consists of three properties, all of which are required.
+	 *
+	 *   @var int    $identifier The WordPress user ID. The API would also accept a username, but this
+	 *                           should be something immutable.
+	 *   @var string $name       The WordPress site name.
+	 *   @var string $url        The webhook URL for this site.
+	 * }
+	 * @return string|WP_Error Either the UUID of the newly-created target within Airstory, or a
+	 *                         a WP_Error should anything go awry.
+	 */
+	public function post_target( $email, $target ) {
+		$response = $this->make_authenticated_request( sprintf( '/users/%s/targets', $email ), array(
+			'method'  => 'POST',
+			'headers' => array( 'content-type' => 'application/json' ),
+			'body'    => wp_json_encode( $target ),
+		) );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		if ( empty( $response['headers']['link'] ) ) {
+			return new WP_Error( 'airstory-link', __( 'Invalid response from Airstory when connecting account' ) );
+		}
+
+		return $response['headers']['link'];
+	}
+
+	/**
+	 * Remove an existing target from within Airstory.
+	 *
+	 * @param string $email  The user's Airstory email address.
+	 * @param string $target The target ID.
+	 * @return string|WP_Error Either the UUID of the now-destroyed target within Airstory, or a
+	 *                         a WP_Error should anything go awry.
+	 */
+	public function delete_target( $email, $target ) {
+		$response = $this->make_authenticated_request( sprintf( '/users/%s/targets/%s', $email, $target ), array(
+			'method'  => 'DELETE',
+		) );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		return $target;
+	}
+
+	/**
+	 * Explicitly set the Airstory user token.
+	 *
+	 * This can be used to run a request as a given user, since get_credentials() will return the
+	 * $this->token property if it's already set.
+	 *
+	 * @param string $token The Airstory user token to use.
+	 */
+	public function set_token( $token ) {
+		$this->token = (string) $token;
 	}
 
 	/**
 	 * Retrieve the credentials for the currently logged-in user.
 	 *
 	 * @return string The bearer token to be passed with API requests.
-	 *
-	 * @todo While the authentication is being worked out on Airstory's side, the token will be
-	 *       stored in a constant, defined in wp-config.php.
 	 */
 	protected function get_credentials() {
-		return defined( 'AIRSTORY_API_KEY' ) ? AIRSTORY_API_KEY : null;
+		if ( ! empty( $this->token ) ) {
+			return $this->token;
+		}
+
+		$this->token = Credentials\get_token( wp_get_current_user()->ID );
+
+		return $this->token;
 	}
 
 	/**
@@ -85,12 +172,16 @@ class API {
 	 *
 	 * @param string $path The API endpoint, relative to the API_BASE constant. The path should begin
 	 *                     with a leading slash.
-	 * @return stdClass|WP_Error If everything comes back okay, the JSON-decoded response will be
-	 *                           returned as a stdClass object. Otherwise, a WP_Error object will be
-	 *                           given with an explanation of what went wrong.
+	 * @param array  $args {
+	 *   Optional. Additional arguments to pass to wp_remote_request(), which will be merged with
+	 *   defaults. For a full list of available settings, @see wp_remote_request().
+	 *
+	 *   @var string $method The HTTP method (verb) to use. Default is "GET".
+	 * }
+	 * @return array|WP_Error If everything comes back okay, the response array. Otherwise, a
+	 *                        WP_Error object will be given with an explanation of what went wrong.
 	 */
-	protected function make_authenticated_request( $path ) {
-		$url   = sprintf( '%s%s', self::API_BASE, $path );
+	protected function make_authenticated_request( $path, $args = array() ) {
 		$token = $this->get_credentials();
 
 		// Don't even attempt the request if we don't have a token.
@@ -101,37 +192,37 @@ class API {
 			);
 		}
 
-		// Assemble the request, along with an Authorization header.
-		$request = wp_remote_get( $url, array(
-			'headers' => array(
-				'Authorization' => sprintf( 'Bearer=%s', $token ),
-			),
+		// Begin assembling the URL and arguments.
+		$url  = sprintf( '%s%s', self::API_BASE, $path );
+		$args = wp_parse_args( $args, array(
+			'method'  => 'GET',
+			'headers' => array(),
 		) );
 
-		if ( is_wp_error( $request ) ) {
-			return $request;
-		}
+		// Explicitly append the Authorization header, which is required by Airstory.
+		$args['headers']['Authorization'] = sprintf( 'Bearer=%s', $token );
 
-		return wp_remote_retrieve_body( $request );
+		// Assemble the request, along with an Authorization header.
+		return wp_remote_request( $url, $args );
 	}
 
 	/**
 	 * For requests that return JSON (e.g. anything except getting the generated HTML), JSON-decode
 	 * the API response and return it.
 	 *
-	 * @param string $response_body The HTTP response body.
+	 * @param array $response The HTTP response array.
 	 * @return stdClass|WP_Error If JSON-decoded successfully, a stdClass representation of the
 	 *                           response body, otherwise a WP_Error object.
 	 */
-	protected function decode_json_response( $response_body ) {
-		$result = json_decode( $response_body, false );
+	protected function decode_json_response( $response ) {
+		$result = json_decode( wp_remote_retrieve_body( $response ), false );
 
 		// Something went wrong decoding the JSON.
-		if ( ! $result ) {
+		if ( empty( $result ) ) {
 			return new WP_Error(
 				'airstory-invalid-json',
 				__( 'The request did not return valid JSON', 'airstory' ),
-				array( 'body' => $response_body )
+				$response
 			);
 		}
 

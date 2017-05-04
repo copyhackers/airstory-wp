@@ -8,7 +8,9 @@
 namespace Airstory\Webhook;
 
 use Airstory;
+use Airstory\Connection as Connection;
 use Airstory\Core as Core;
+use Airstory\Credentials as Credentials;
 use WP_REST_Request;
 
 /**
@@ -28,16 +30,23 @@ add_action( 'rest_api_init', __NAMESPACE__ . '\register_webhook_endpoint' );
  * The payload should be delivered via an HTTP POST request, with the following structure:
  *
  * {
- *   project: 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
+ *   id: XXX,
+ *   project: 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
  *   document: 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
  * }
  *
  * @param WP_REST_Request $request The WP REST API request object.
  */
 function handle_webhook( WP_REST_Request $request ) {
-	$api      = new Airstory\API;
+	$user_id  = $request->get_param( 'id' );
 	$project  = $request->get_param( 'project' );
 	$document = $request->get_param( 'document' );
+
+	// Establish an API connection, using the Airstory token of the connection owner.
+	$api = new Airstory\API;
+	$api->set_token( Credentials\get_token( $user_id ) );
+
+	// Import the document, acting as the connection owner.
 	$post_id  = Core\import_document( $api, $project, $document );
 
 	// Return early if import_document() gave us a WP_Error object.

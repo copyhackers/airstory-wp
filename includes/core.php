@@ -123,7 +123,7 @@ function import_document( Airstory\API $api, $project_id, $document_id ) {
 	$post = apply_filters( 'airstory_before_insert_post', $post );
 
 	// Finally, insert the post.
-	$post_id = wp_insert_post( $post, true );
+	$post_id = wp_insert_post( (array) $post, true );
 
 	if ( is_wp_error( $post_id ) ) {
 		return $post_id;

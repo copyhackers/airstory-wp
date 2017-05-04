@@ -8,6 +8,8 @@
  * Author URI:  https://www.liquidweb.com
  * Text Domain: airstory
  * Domain Path: /languages
+ * License:     MIT
+ * License URI: https://opensource.org/licenses/MIT
  *
  * @package Airstory
  */

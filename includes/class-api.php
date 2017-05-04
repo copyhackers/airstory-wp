@@ -100,7 +100,7 @@ class API {
 	 *   @var string $url        The webhook URL for this site.
 	 * }
 	 * @return string|WP_Error Either the UUID of the newly-created target within Airstory, or a
-	 *                         a WP_Error should anything go awry.
+	 *                         WP_Error should anything go awry.
 	 */
 	public function post_target( $email, $target ) {
 		$response = $this->make_authenticated_request( sprintf( '/users/%s/targets', $email ), array(
@@ -114,10 +114,36 @@ class API {
 		}
 
 		if ( empty( $response['headers']['link'] ) ) {
-			return new WP_Error( 'airstory-link', __( 'Invalid response from Airstory when connecting account' ) );
+			return new WP_Error( 'airstory-link', __( 'Invalid response from Airstory when connecting account', 'airstory' ), $response );
 		}
 
 		return $response['headers']['link'];
+	}
+
+	/**
+	 * Update an existing target within Airstory.
+	 *
+	 * @param string $email         The user's Airstory email address.
+	 * @param string $connection_id The target connection's UUID.
+	 * @param array  $target        Updated target properties. For the full list, @see API::post_target().
+	 * @return bool|WP_Error Either a boolean TRUE or a WP_Error should anything go awry.
+	 */
+	public function put_target( $email, $connection_id, $target ) {
+		$response = $this->make_authenticated_request( sprintf( '/users/%s/targets/%s', $email, $connection_id ), array(
+			'method'  => 'PUT',
+			'headers' => array( 'content-type' => 'application/json' ),
+			'body'    => wp_json_encode( $target ),
+		) );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			return new WP_Error( 'airstory-link', __( 'Invalid response from Airstory when updating account', 'airstory' ), $response );
+		}
+
+		return true;
 	}
 
 	/**
@@ -158,7 +184,7 @@ class API {
 	 * @return string The bearer token to be passed with API requests.
 	 */
 	protected function get_credentials() {
-		if ( ! empty( $this->token ) ) {
+		if ( null !== $this->token ) {
 			return $this->token;
 		}
 

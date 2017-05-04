@@ -137,6 +137,74 @@ class APITest extends \Airstory\TestCase {
 		$this->assertEquals( 'airstory-link', $response->get_error_code() );
 	}
 
+	public function testPutTarget() {
+		$target   = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$email    = 'test@example.com';
+		$data     = array(
+			'identifier' => 123,
+			'name'       => 'Test Site',
+			'url'        => 'http://example.com/webhook',
+		);
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )
+			->once()
+			->andReturn( array() );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'wp_remote_retrieve_response_code', array(
+			'return' => 200,
+		) );
+
+		$this->assertTrue( $instance->put_target( $email, $target, $data ) );
+	}
+
+	public function testPutTargetReturnsWPErrors() {
+		$target   = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$email    = 'test@example.com';
+		$data     = array(
+			'identifier' => 123,
+			'name'       => 'Test Site',
+			'url'        => 'http://example.com/webhook',
+		);
+		$error    = new \WP_Error;
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )
+			->once()
+			->andReturn( $error );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => true,
+		) );
+
+		$this->assertSame( $error, $instance->put_target( $email, $target, $data ) );
+	}
+
+	public function testPutTargetThrowsWPErrorIfNot200StatusCode() {
+		$target   = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$email    = 'test@example.com';
+		$data     = array(
+			'identifier' => 123,
+			'name'       => 'Test Site',
+			'url'        => 'http://example.com/webhook',
+		);
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )
+			->once();
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'wp_remote_retrieve_response_code', array(
+			'return' => 403,
+		) );
+
+		$this->assertInstanceOf( 'WP_Error', $instance->put_target( $email, $target, $data ) );
+	}
+
 	public function testDeleteTarget() {
 		$target   = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$email    = 'test@example.com';

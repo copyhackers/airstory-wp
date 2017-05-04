@@ -9,6 +9,7 @@
             "homepage": "https://www.liquidweb.com"
         }
     ],
+    "license": "MIT",
     "require-dev": {
         "stevegrunwell/wp-enforcer": "dev-master",
         "10up/wp_mock": "dev-dev"

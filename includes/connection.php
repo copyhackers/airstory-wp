@@ -48,6 +48,21 @@ function get_user_profile( $user_id = null ) {
 }
 
 /**
+ * Build a target array for Airstory.
+ *
+ * @param int $user_id The ID of the WordPress user associated with the target.
+ * @return array An array that will serve as a the post body for the target, containing three keys:
+ *               identifier (user ID), name (blog name), and url (webhook URL).
+ */
+function get_target( $user_id ) {
+	return array(
+		'identifier' => (string) $user_id, // Airstory expects a string.
+		'name'       => get_bloginfo( 'name' ),
+		'url'        => get_rest_url( null, '/airstory/v1/webhook' ),
+	);
+}
+
+/**
  * Once a user has provided their token, authenticate with Airstory and save information locally.
  *
  * This information will include the Airstory user's first/last name, email, and user_id, which
@@ -59,17 +74,13 @@ function get_user_profile( $user_id = null ) {
  * @param int $user_id The ID of the user who has connected.
  */
 function register_connection( $user_id ) {
-	$profile = get_user_profile();
+	$profile = get_user_profile( $user_id );
 
 	if ( empty( $profile ) ) {
 		return;
 	}
 
-	$target        = array(
-		'identifier' => (string) $user_id, // Airstory expects a string.
-		'name'       => get_bloginfo( 'name' ),
-		'url'        => get_rest_url( null, '/airstory/v1/webhook' ),
-	);
+	$target        = get_target( $user_id );
 	$api           = new Airstory\API;
 	$connection_id = $api->post_target( $profile['email'], $target );
 

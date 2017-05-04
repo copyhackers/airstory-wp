@@ -101,6 +101,24 @@ class ConnectionTest extends \Airstory\TestCase {
 		$this->assertEquals( array(), get_user_profile(), 'WP_Errors should produce empty profile arrays' );
 	}
 
+	public function testGetTarget() {
+		M::userFunction( 'get_bloginfo', array(
+			'args'   => array( 'name' ),
+			'return' => 'Example Blog',
+		) );
+
+		M::userFunction( 'get_rest_url', array(
+			'args'   => array( null, '/airstory/v1/webhook' ),
+			'return' => 'http://example.com/airstory/v1/webhook'
+		) );
+
+		$response = get_target( 5 );
+
+		$this->assertEquals( '5', $response['identifier'] );
+		$this->assertEquals( 'Example Blog', $response['name'] );
+		$this->assertEquals( 'http://example.com/airstory/v1/webhook', $response['url'] );
+	}
+
 	public function testRegisterConnection() {
 		Patchwork\replace( 'Airstory\API::post_target', function () {
 			return 'connection-id';

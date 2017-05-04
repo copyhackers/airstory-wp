@@ -52,10 +52,10 @@ function handle_webhook( WP_REST_Request $request ) {
 	if ( $post_id ) {
 		$post_id = Core\update_document( $api, $project, $document, $post_id );
 	} else {
-		$post_id = Core\import_document( $api, $project, $document );
+		$post_id = Core\create_document( $api, $project, $document );
 	}
 
-	// Return early if import_document() gave us a WP_Error object.
+	// Return early if create_document() gave us a WP_Error object.
 	if ( is_wp_error( $post_id ) ) {
 		return $post_id;
 	}

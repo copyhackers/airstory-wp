@@ -16,7 +16,7 @@ class CoreTest extends \Airstory\TestCase {
 		'core.php',
 	);
 
-	public function testImportDocument() {
+	public function testCreateDocument() {
 		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 
@@ -59,10 +59,10 @@ class CoreTest extends \Airstory\TestCase {
 
 		M::expectAction( 'airstory_import_post', 123 );
 
-		$this->assertEquals( 123, import_document( $api, $project, $document ) );
+		$this->assertEquals( 123, create_document( $api, $project, $document ) );
 	}
 
-	public function testImportDocumentFailsToGetDocument() {
+	public function testCreateDocumentFailsToGetDocument() {
 		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 
@@ -77,10 +77,10 @@ class CoreTest extends \Airstory\TestCase {
 			'return' => true,
 		) );
 
-		$this->assertSame( $error, import_document( $api, $project, $document ) );
+		$this->assertSame( $error, create_document( $api, $project, $document ) );
 	}
 
-	public function testImportDocumentFailsToGetDocumentContent() {
+	public function testCreateDocumentFailsToGetDocumentContent() {
 		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 
@@ -108,7 +108,7 @@ class CoreTest extends \Airstory\TestCase {
 
 		M::passthruFunction( 'sanitize_text_field' );
 
-		$this->assertSame( $error, import_document( $api, $project, $document ) );
+		$this->assertSame( $error, create_document( $api, $project, $document ) );
 	}
 
 	public function testUpdateDocument() {

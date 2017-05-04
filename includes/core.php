@@ -62,7 +62,7 @@ function get_current_draft( $project_id, $document_id ) {
  * @return int|WP_Error The ID of the newly-created post or a WP_Error object if anything went
  *                      wrong during the creation of the post.
  */
-function import_document( Airstory\API $api, $project_id, $document_id ) {
+function create_document( Airstory\API $api, $project_id, $document_id ) {
 	$document = $api->get_document( $project_id, $document_id );
 
 	// Something went wrong getting metadata about the document.

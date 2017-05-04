@@ -62,7 +62,7 @@ class WebhookTest extends \Airstory\TestCase {
 			'return' => 0,
 		) );
 
-		M::userFunction( 'Airstory\Core\import_document', array(
+		M::userFunction( 'Airstory\Core\create_document', array(
 			'args'   => array( M\Functions::type( 'Airstory\API' ), $project, $document ),
 			'return' => 123,
 		) );
@@ -136,7 +136,7 @@ class WebhookTest extends \Airstory\TestCase {
 			'return' => 0,
 		) );
 
-		M::userFunction( 'Airstory\Core\import_document', array(
+		M::userFunction( 'Airstory\Core\create_document', array(
 			'return' => $wp_error,
 		) );
 

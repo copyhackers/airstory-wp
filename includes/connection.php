@@ -107,6 +107,41 @@ function register_connection( $user_id ) {
 add_action( 'airstory_user_connect', __NAMESPACE__ . '\register_connection' );
 
 /**
+ * Update an existing connection for an Airstory user.
+ *
+ * @param int $user_id The ID of the user whose connection should be updated.
+ */
+function update_connection( $user_id ) {
+	$profile = get_user_profile( $user_id );
+
+	if ( empty( $profile ) ) {
+		return;
+	}
+
+	// Overwrite the existing target info for $connection_id.
+	$connection_id = get_user_meta( $user_id, '_airstory_target', true );
+	$target        = get_target( $user_id );
+	$api           = new Airstory\API;
+	$response      = $api->put_target( $profile['email'], $connection_id, $target );
+
+	if ( is_wp_error( $response ) ) {
+		return;
+	}
+
+	/**
+	 * A connection between WordPress and Airstory has been established successfully.
+	 *
+	 * @param int    $user_id       The ID of the user that has connected.
+	 * @param string $connection_id The UUID of the connection within Airstory.
+	 * @param array  $target        The information sent to create the target within Airstory: site
+	 *                              name, callback URL, and the WordPress user ID.
+	 */
+	do_action( 'airstory_update_connection', $user_id, $connection_id, $target );
+
+	return $connection_id;
+}
+
+/**
  * If a user disconnects from Airstory, the corresponding connection should be removed as well.
  *
  * This function will remove the target within the user's Airstory profile, then remove any stored

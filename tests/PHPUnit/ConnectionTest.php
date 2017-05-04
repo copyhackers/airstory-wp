@@ -199,6 +199,39 @@ class ConnectionTest extends \Airstory\TestCase {
 		$this->assertNull( register_connection( 123 ) );
 	}
 
+	public function testUpdateConnection() {
+		$phpunit = $this;
+		$target  = uniqid();
+
+		Patchwork\replace( 'Airstory\API::put_target', function ( $email, $connection_id, $target_arr ) use ( $phpunit, $target ) {
+			if ( 'test@example.com' !== $email ) {
+				$phpunit->fail( 'The expected email address was not passed' );
+			} elseif ( $target !== $connection_id ) {
+				$phpunit->fail( 'The expected connection ID was not passed' );
+			} elseif ( array( 'identifier' => '5' ) !== $target_arr ) {
+				$phpunit->fail( 'The expected target was not passed' );
+			}
+		} );
+
+		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
+			'args'   => array( 5 ),
+			'return' => array( 'email' => 'test@example.com' ),
+		) );
+
+		M::userFunction( 'get_user_meta', array(
+			'args'   => array( 5, '_airstory_target', true ),
+			'return' => $target,
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\get_target', array(
+			'return' => array( 'identifier' => '5' ),
+		) );
+
+		M::expectAction( 'airstory_update_connection', 5, $target, array( 'identifier' => '5' ) );
+
+		$this->assertEquals( $target, update_connection( 5 ) );
+	}
+
 	public function testRemoveConnection() {
 		$connection_id = uniqid();
 		$profile       = array(

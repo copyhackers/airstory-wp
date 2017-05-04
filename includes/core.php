@@ -10,6 +10,68 @@ namespace Airstory\Core;
 use Airstory;
 
 /**
+ * Verify whether or not the current environment meets plugin requirements.
+ *
+ * The requirements for the plugin should be documented in the plugin README, but include:
+ *
+ * - PHP >= 5.3        - Namespace support, though the plugin will fail before reaching this check
+ *                       if namespaces are unsupported.
+ * - dom extension     - Used by DOMDocument in formatters.php.
+ * - mcrypt extension  - Used as a backup for older systems that don't support PHP 7's random_bytes().
+ * - openssl extension - Used to securely encrypt Airstory credentials.
+ *
+ * @return bool True if all requirements are met, false otherwise.
+ */
+function check_requirements() {
+	$requirements_met = true;
+
+	// Find any missing extensions; $missing_exts will contain any that fail extension_loaded().
+	$extensions = array( 'dom', 'mcrypt', 'openssl' );
+	if ( array_filter( $extensions, 'extension_loaded' ) !== $extensions ) {
+		$requirements_met = false;
+	}
+
+	return $requirements_met;
+}
+
+/**
+ * Deactivate the plugin and notify the user if the plugin doesn't meet requirements.
+ *
+ * @global $pagenow
+ */
+function deactivate_if_missing_requirements() {
+	global $pagenow;
+
+	if ( 'plugins.php' !== $pagenow || check_requirements() ) {
+		return;
+	}
+
+	// Deactivate the plugin.
+	deactivate_plugins( plugin_basename( AIRSTORY_DIR . '/airstory.php' ) );
+	unset( $_GET['activate'] );
+
+	// Display a notice, informing the user why the plugin was deactivated.
+	add_action( 'admin_notices', __NAMESPACE__ . '\notify_user_of_missing_requirements' );
+}
+add_action( 'admin_init', __NAMESPACE__ . '\deactivate_if_missing_requirements' );
+
+/**
+ * Notify the user of missing plugin requirements and direct them to more detailed information.
+ *
+ * @todo Fill in the FAQ URL.
+ */
+function notify_user_of_missing_requirements() {
+?>
+
+	<div class="notice notice-warning">
+		<p><?php esc_html_e( 'The Airstory plugin is missing one or more of its dependencies, so it\'s automatically been deactivated.', 'airstory' ); ?></p>
+		<p><?php echo wp_kses_post( __( 'For more information, <a href="#" target="_blank">please see the plugin\'s <abbr title="Frequently Asked Questions">FAQ</abbr></a>.', 'airstory' ) );?></p>
+	</div>
+
+<?php
+}
+
+/**
  * Given an Airstory project and document UUIDs, call out to the Airstory API and assemble a
  * WordPress post.
  *
@@ -61,7 +123,7 @@ function import_document( Airstory\API $api, $project_id, $document_id ) {
 	$post = apply_filters( 'airstory_before_insert_post', $post );
 
 	// Finally, insert the post.
-	$post_id = wp_insert_post( $post );
+	$post_id = wp_insert_post( (array) $post, true );
 
 	if ( is_wp_error( $post_id ) ) {
 		return $post_id;

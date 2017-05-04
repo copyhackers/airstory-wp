@@ -5,8 +5,12 @@
  * @package Airstory
  */
 
+if ( ! defined( 'PROJECT_ROOT' ) ) {
+	define( 'PROJECT_ROOT', dirname( __DIR__ ) );
+}
+
 if ( ! defined( 'PROJECT' ) ) {
-	define( 'PROJECT', __DIR__ . '/../includes/' );
+	define( 'PROJECT', PROJECT_ROOT . '/includes/' );
 }
 
 if ( ! defined( 'ABSPATH' ) ) {

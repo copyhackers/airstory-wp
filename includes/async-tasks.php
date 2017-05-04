@@ -14,8 +14,8 @@
 
 namespace Airstory\AsyncTasks;
 
-require_once AIRSTORY_INC . '/lib/wp-async-task/wp-async-task.php';
-require_once AIRSTORY_INC . '/async-tasks/import-post.php';
+require_once AIRSTORY_DIR . '/includes/lib/wp-async-task/wp-async-task.php';
+require_once AIRSTORY_DIR . '/includes/async-tasks/import-post.php';
 
 /**
  * Each task must be initialized, no earlier than plugins_loaded.

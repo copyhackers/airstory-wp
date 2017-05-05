@@ -9,12 +9,58 @@ namespace Airstory\Core;
 
 use WP_Mock as M;
 use Mockery;
+use WP_Query;
 
 class CoreTest extends \Airstory\TestCase {
 
 	protected $testFiles = array(
 		'core.php',
 	);
+
+	public function testGetCurrentDraft() {
+		$meta_query = array(
+			'_airstory_project_id'  => 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
+			'_airstory_document_id' => 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
+		);
+
+		WP_Query::$__results = array( 123 );
+
+		M::userFunction( 'wp_parse_args', array(
+			'return_arg' => 1,
+		) );
+
+		$this->assertEquals( 123, get_current_draft( $meta_query['_airstory_project_id'], $meta_query['_airstory_document_id'] ) );
+
+		// Disect key parts of the resulting query args.
+		$this->assertEquals( array( 'draft', 'pending' ), WP_Query::$__query['post_status'], 'get_current_draft() should never retrieve a published post ID' );
+		$this->assertEquals( 'ids', WP_Query::$__query['fields'], 'get_current_draft() should only query post IDs' );
+
+		// Break down the meta query
+		$this->assertCount( count( $meta_query ), WP_Query::$__query['meta_query'] );
+
+		foreach ( WP_Query::$__query['meta_query'] as $query ) {
+			$this->assertEquals( $meta_query[ $query['key'] ], $query['value'] );
+		}
+
+		// Reset the WP_Query mock.
+		WP_Query::tearDown();
+	}
+
+	public function testGetCurrentDraftReturns0IfNoDraftFound() {
+		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+
+		WP_Query::$__results = array();
+
+		M::userFunction( 'wp_parse_args', array(
+			'return_arg' => 1,
+		) );
+
+		$this->assertEquals( 0, get_current_draft( $project, $document ) );
+
+		// Reset the WP_Query mock.
+		WP_Query::tearDown();
+	}
 
 	public function testDeactivateIfMissingRequirements() {
 		global $pagenow;
@@ -188,5 +234,50 @@ class CoreTest extends \Airstory\TestCase {
 		M::passthruFunction( 'sanitize_text_field' );
 
 		$this->assertSame( $error, create_document( $api, $project, $document ) );
+	}
+
+	public function testUpdateDocument() {
+		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+
+		$doc = new \stdClass;
+		$doc->title = 'My sample document';
+
+		$api = Mockery::mock( 'Airstory\API' )->makePartial();
+		$api->shouldReceive( 'get_document' )
+			->once()
+			->andReturn( $doc );
+		$api->shouldReceive( 'get_document_content' )
+			->once()
+			->andReturn( 'My document body' );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'wp_update_post', array(
+			'times'  => 1,
+			'return' => function ( $args ) {
+				if ( 123 !== $args['ID'] ) {
+					$this->fail( 'The post ID must be passed in to wp_update_post' );
+
+				} elseif ( 'My filtered body' !== $args['post_content'] ) {
+					$this->fail( 'The post content does not appear to be filtered by airstory_before_insert_content' );
+				}
+
+				return 123;
+			},
+		) );
+
+		M::passthruFunction( 'sanitize_text_field' );
+		M::passthruFunction( 'wp_kses_post' );
+
+		M::onFilter( 'airstory_before_insert_content' )
+			->with( 'My document body' )
+			->reply( 'My filtered body' );
+
+		M::expectAction( 'airstory_update_post', 123 );
+
+		$this->assertEquals( 123, update_document( $api, $project, $document, 123 ) );
 	}
 }

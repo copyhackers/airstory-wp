@@ -15,6 +15,9 @@
 	<filter>
 		<whitelist>
 			<directory suffix=".php">includes</directory>
+			<exclude>
+				<directory suffix=".php">includes/lib</directory>
+			</exclude>
 		</whitelist>
 	</filter>
 	<php>

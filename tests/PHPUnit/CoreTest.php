@@ -62,6 +62,46 @@ class CoreTest extends \Airstory\TestCase {
 		WP_Query::tearDown();
 	}
 
+	public function testDeactivateIfMissingRequirements() {
+		global $pagenow;
+
+		$pagenow = 'plugins.php';
+
+		if ( ! defined( 'AIRSTORY_DIR' ) ) {
+			define( 'AIRSTORY_DIR', '/path/to' );
+		}
+
+		M::userFunction( __NAMESPACE__ . '\check_requirements', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'deactivate_plugins', array(
+			'times' => 1,
+		) );
+
+		M::passthruFunction( 'plugin_basename' );
+
+		M::expectActionAdded( 'admin_notices', __NAMESPACE__ . '\notify_user_of_missing_requirements' );
+
+		deactivate_if_missing_requirements();
+	}
+
+	public function testDeactivateIfMissingRequirementsOnlyFiresOnPluginPage() {
+		global $pagenow;
+
+		$pagenow = 'not-plugins.php';
+
+		M::userFunction( __NAMESPACE__ . '\check_requirements', array(
+			'times' => 0,
+		) );
+
+		M::userFunction( 'deactivate_plugins', array(
+			'times' => 0,
+		) );
+
+		deactivate_if_missing_requirements();
+	}
+
 	public function testCreateDocument() {
 		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';

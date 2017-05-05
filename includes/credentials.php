@@ -67,6 +67,12 @@ function set_token( $user_id, $token ) {
  *                         string if no token exists, or a WP_Error if we're unable to decrypt.
  */
 function get_token( $user_id ) {
+
+	// Verify the user actually exists.
+	if ( ! get_user_by( 'ID', $user_id ) ) {
+		return '';
+	}
+
 	$encrypted = get_user_option( '_airstory_token', $user_id );
 	$iv        = get_user_option( '_airstory_iv', $user_id );
 

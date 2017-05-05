@@ -17,6 +17,7 @@ class ConnectionTest extends \Airstory\TestCase {
 
 	protected $testFiles = array(
 		'connection.php',
+		'credentials.php',
 	);
 
 	public function tearDown() {
@@ -56,6 +57,39 @@ class ConnectionTest extends \Airstory\TestCase {
 		);
 	}
 
+	public function testGetUserProfileWithUserId() {
+		$token    = uniqid();
+		$response = new \stdClass;
+		$response->id         = 'uXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$response->first_name = 'Leroy';
+		$response->last_name  = 'Jenkins';
+		$response->email      = 'leroy.jenkins@example.com';
+		$response->created    = time();
+
+		Patchwork\replace( 'Airstory\API::set_token', function ( $val ) use ( $token ) {
+			if ( $token !== $val ) {
+				$this->fail( 'The API token is not being set based on the user ID argument.' );
+			}
+		} );
+
+		Patchwork\replace( 'Airstory\API::get_user', function () use ( $response ) {
+			return $response;
+		} );
+
+		M::userFunction( 'Airstory\Credentials\get_token', array(
+			'args'   => array( 123 ),
+			'return' => $token,
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::passthruFunction( 'sanitize_text_field' );
+
+		get_user_profile( 123 );
+	}
+
 	public function testGetUserProfileReturnsEmptyArrayIfAPIResponseFails() {
 		Patchwork\replace( 'Airstory\API::get_user', function () {
 			return new WP_Error();
@@ -66,6 +100,24 @@ class ConnectionTest extends \Airstory\TestCase {
 		) );
 
 		$this->assertEquals( array(), get_user_profile(), 'WP_Errors should produce empty profile arrays' );
+	}
+
+	public function testGetTarget() {
+		M::userFunction( 'get_bloginfo', array(
+			'args'   => array( 'name' ),
+			'return' => 'Example Blog',
+		) );
+
+		M::userFunction( 'get_rest_url', array(
+			'args'   => array( null, '/airstory/v1/webhook' ),
+			'return' => 'http://example.com/airstory/v1/webhook'
+		) );
+
+		$response = get_target( 5 );
+
+		$this->assertEquals( '5', $response['identifier'] );
+		$this->assertEquals( 'Example Blog', $response['name'] );
+		$this->assertEquals( 'http://example.com/airstory/v1/webhook', $response['url'] );
 	}
 
 	public function testHasConnection() {
@@ -157,6 +209,39 @@ class ConnectionTest extends \Airstory\TestCase {
 		) );
 
 		$this->assertNull( register_connection( 123 ) );
+	}
+
+	public function testUpdateConnection() {
+		$phpunit = $this;
+		$target  = uniqid();
+
+		Patchwork\replace( 'Airstory\API::put_target', function ( $email, $connection_id, $target_arr ) use ( $phpunit, $target ) {
+			if ( 'test@example.com' !== $email ) {
+				$phpunit->fail( 'The expected email address was not passed' );
+			} elseif ( $target !== $connection_id ) {
+				$phpunit->fail( 'The expected connection ID was not passed' );
+			} elseif ( array( 'identifier' => '5' ) !== $target_arr ) {
+				$phpunit->fail( 'The expected target was not passed' );
+			}
+		} );
+
+		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
+			'args'   => array( 5 ),
+			'return' => array( 'email' => 'test@example.com' ),
+		) );
+
+		M::userFunction( 'get_user_meta', array(
+			'args'   => array( 5, '_airstory_target', true ),
+			'return' => $target,
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\get_target', array(
+			'return' => array( 'identifier' => '5' ),
+		) );
+
+		M::expectAction( 'airstory_update_connection', 5, $target, array( 'identifier' => '5' ) );
+
+		$this->assertEquals( $target, update_connection( 5 ) );
 	}
 
 	public function testRemoveConnection() {

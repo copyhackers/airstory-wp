@@ -1,5 +1,9 @@
 # Airstory WordPress Plugin
 
+[![Build Status](https://travis-ci.org/liquidweb/airstory-wp.svg?branch=develop)](https://travis-ci.org/liquidweb/airstory-wp)
+[![Code Climate](https://codeclimate.com/github/liquidweb/airstory-wp/badges/gpa.svg)](https://codeclimate.com/github/liquidweb/airstory-wp)
+[![Test Coverage](https://codeclimate.com/github/liquidweb/airstory-wp/badges/coverage.svg)](https://codeclimate.com/github/liquidweb/airstory-wp/coverage)
+
 This plugin enables [Airstory](http://www.airstory.co/) users to connect their WordPress sites, enabling authors to leverage the exceptional editorial experience of Airstory with the powerful publishing of WordPress.
 
 ## Requirements

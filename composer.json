@@ -19,7 +19,8 @@
     },
     "require-dev": {
         "stevegrunwell/wp-enforcer": "dev-master",
-        "10up/wp_mock": "dev-dev"
+        "10up/wp_mock": "dev-dev",
+        "codeclimate/php-test-reporter": "^0.4.4"
     },
     "scripts": {
         "post-install-cmd": [

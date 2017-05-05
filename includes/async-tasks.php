@@ -16,11 +16,13 @@ namespace Airstory\AsyncTasks;
 
 require_once AIRSTORY_DIR . '/includes/lib/wp-async-task/wp-async-task.php';
 require_once AIRSTORY_DIR . '/includes/async-tasks/import-post.php';
+require_once AIRSTORY_DIR . '/includes/async-tasks/update-all-connections.php';
 
 /**
  * Each task must be initialized, no earlier than plugins_loaded.
  */
 function init_async_tasks() {
 	new ImportPost;
+	new UpdateAllConnections;
 }
 add_action( 'plugins_loaded', __NAMESPACE__ . '\init_async_tasks' );

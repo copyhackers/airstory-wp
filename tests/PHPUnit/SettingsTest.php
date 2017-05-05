@@ -13,6 +13,7 @@ use Mockery;
 class SettingsTest extends \Airstory\TestCase {
 
 	protected $testFiles = array(
+		'connection.php',
 		'settings.php',
 	);
 
@@ -110,5 +111,68 @@ class SettingsTest extends \Airstory\TestCase {
 		M::expectAction( 'airstory_user_disconnect', 123 );
 
 		$this->assertTrue( save_profile_settings( 123 ) );
+	}
+
+	public function testGetAvailableBlogs() {
+		$site1 = new \stdClass;
+		$site1->blogname = 'First site';
+		$site2 = new \stdClass;
+		$site2->blogname = 'Second site';
+
+		M::userFunction( 'get_blogs_of_user', array(
+			'args'   => array( 5 ),
+			'return' => array( '1' => $site1, '2' => $site2 ),
+		) );
+
+		M::userFunction( 'switch_to_blog', array(
+			'times'  => 2,
+		) );
+
+		M::userFunction( 'restore_current_blog', array(
+			'times'  => 2,
+		) );
+
+		M::userFunction( 'user_can', array(
+			'args'   => array( 5, 'edit_posts' ),
+			'return' => true,
+		) );
+
+		M::userFunction( 'Airstory\Connection\has_connection', array(
+			'args'            => array( 5 ),
+			'return_in_order' => array( true, false ),
+		) );
+
+		$this->assertEquals( array(
+			array(
+				'id'        => 1,
+				'title'     => 'First site',
+				'connected' => true,
+			),
+			array(
+				'id'        => 2,
+				'title'     => 'Second site',
+				'connected' => false,
+			),
+		), get_available_blogs( 5 ) );
+	}
+
+	public function testGetAvailableBlogsFiltersOutSitesWhereUserCannotCreatePosts() {
+		$site1 = new \stdClass;
+		$site1->blogname = 'First site';
+		$site2 = new \stdClass;
+		$site2->blogname = 'Second site';
+
+		M::userFunction( 'get_blogs_of_user', array(
+			'return' => array( '1' => $site1, '2' => $site2 ),
+		) );
+
+		M::userFunction( 'switch_to_blog' );
+		M::userFunction( 'restore_current_blog' );
+
+		M::userFunction( 'user_can', array(
+			'return_in_order' => array( true, false ),
+		) );
+
+		$this->assertCount( 1, get_available_blogs( 5 ) );
 	}
 }

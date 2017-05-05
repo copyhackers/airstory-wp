@@ -7,6 +7,7 @@
 
 namespace Airstory\Settings;
 
+use Airstory\Connection as Connection;
 use Airstory\Credentials as Credentials;
 
 /**
@@ -95,3 +96,49 @@ function save_profile_settings( $user_id ) {
 	return (bool) $result;
 }
 add_action( 'personal_options_update', __NAMESPACE__ . '\save_profile_settings' );
+
+/**
+ * Generate a list of blogs that $user_id is a member of *and* can publish to.
+ *
+ * This is only used in WordPress Multisite, but will allow users to manage their connections with
+ * each site in a network from their profile page.
+ *
+ * @param int $user_id The WordPress user ID.
+ * @return array {
+ *   An array of blogs the user is able to publish to. This will be an array of arrays.
+ *
+ *   @var int    $id    The WordPress blog ID.
+ *   @var string $title The WordPress blog name.
+ *   @var bool   $connected Whether or not there's an active connection with the blog.
+ * }
+ */
+function get_available_blogs( $user_id ) {
+	$all_blogs = get_blogs_of_user( $user_id );
+	$blogs     = array();
+
+	/*
+	 * Go through each blog this user is a member of and determine if the user:
+	 * - Can at least create (if not publish) new posts, making them at least a Contributor.
+	 * - Already has an active Airstory connection for the blog.
+	 *
+	 * This is a rather intensive process, and may take a while for users that are members of many
+	 * blogs in the network.
+	 */
+	foreach ( $all_blogs as $blog_id => $blog ) {
+		switch_to_blog( $blog_id );
+
+		// Don't bother checking tokens if the user can't publish.
+		if ( user_can( $user_id, 'edit_posts' ) ) {
+
+			$blogs[] = array(
+				'id'        => (int) $blog_id,
+				'title'     => $blog->blogname,
+				'connected' => Connection\has_connection( $user_id ),
+			);
+		}
+
+		restore_current_blog();
+	}
+
+	return $blogs;
+}

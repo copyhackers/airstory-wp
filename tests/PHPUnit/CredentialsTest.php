@@ -45,14 +45,14 @@ class CredentialsTest extends \Airstory\TestCase {
 			'return' => $iv,
 		) );
 
-		M::userFunction( 'update_user_meta', array(
+		M::userFunction( 'update_user_option', array(
 			'times'  => 1,
-			'args'   => array( 123, '_airstory_token', $encrypted ),
+			'args'   => array( 123, '_airstory_token', $encrypted, true ),
 		) );
 
-		M::userFunction( 'update_user_meta', array(
+		M::userFunction( 'update_user_option', array(
 			'times'  => 1,
-			'args'   => array( 123, '_airstory_iv', $iv ),
+			'args'   => array( 123, '_airstory_iv', $iv, true ),
 		) );
 
 		$this->assertEquals( $encrypted, set_token( 123, $token ), 'The same string, encrypted twice with the same arguments, should produce the same result' );
@@ -66,13 +66,13 @@ class CredentialsTest extends \Airstory\TestCase {
 		$iv        = '1234567890123456';
 		$encrypted = openssl_encrypt( $token, AIRSTORY_ENCRYPTION_ALGORITHM, AUTH_KEY, null, $iv );
 
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 123, '_airstory_token', true ),
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( '_airstory_token', 123 ),
 			'return' => $encrypted,
 		) );
 
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 123, '_airstory_iv', true ),
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( '_airstory_iv', 123 ),
 			'return' => $iv,
 		) );
 
@@ -84,15 +84,15 @@ class CredentialsTest extends \Airstory\TestCase {
 	}
 
 	public function testClearToken() {
-		M::userFunction( 'delete_user_meta', array(
+		M::userFunction( 'delete_user_option', array(
 			'times'  => 1,
-			'args'   => array( 123, '_airstory_iv' ),
+			'args'   => array( 123, '_airstory_iv', true ),
 			'return' => true,
 		) );
 
-		M::userFunction( 'delete_user_meta', array(
+		M::userFunction( 'delete_user_option', array(
 			'times'  => 1,
-			'args'   => array( 123, '_airstory_token' ),
+			'args'   => array( 123, '_airstory_token', true ),
 			'return' => true,
 		) );
 

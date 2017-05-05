@@ -15,7 +15,7 @@ use Airstory\Credentials as Credentials;
  * @param WP_User $user The current user object.
  */
 function render_profile_settings( $user ) {
-	$profile = get_user_meta( $user->ID, '_airstory_profile', true );
+	$profile = get_user_option( '_airstory_profile', $user->ID );
 ?>
 
 	<h2><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>
@@ -61,7 +61,7 @@ function save_profile_settings( $user_id ) {
 		return false;
 	}
 
-	$token = get_user_meta( $user_id, '_airstory_token', true );
+	$token = get_user_option( '_airstory_token', $user_id );
 
 	// The user is disconnecting.
 	if ( $token && isset( $_POST['airstory-disconnect'] ) ) {
@@ -81,7 +81,7 @@ function save_profile_settings( $user_id ) {
 		return false;
 	}
 
-	// Store the user meta. Casting, since update_user_meta() can return an int or boolean.
+	// Store the user meta.
 	$new_token = sanitize_text_field( $_POST['airstory-token'] );
 	$result    = Credentials\set_token( $user_id, $new_token );
 

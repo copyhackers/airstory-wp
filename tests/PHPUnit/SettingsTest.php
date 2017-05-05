@@ -30,8 +30,8 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => true,
 		) );
 
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 123, '_airstory_token', true ),
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( '_airstory_token', 123 ),
 			'return' => 'my-old-token',
 		) );
 
@@ -96,8 +96,8 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => true,
 		) );
 
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 123, '_airstory_token', true ),
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( '_airstory_token', 123 ),
 			'return' => 'my-old-token',
 		) );
 

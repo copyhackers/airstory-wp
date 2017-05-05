@@ -91,12 +91,12 @@ class ConnectionTest extends \Airstory\TestCase {
 			'return' => false,
 		) );
 
-		M::userFunction( 'update_user_meta', array(
+		M::userFunction( 'update_user_option', array(
 			'times'  => 1,
-			'args'   => array( 123, '_airstory_profile', array( 'email' => 'test@example.com' ) ),
+			'args'   => array( 123, '_airstory_profile', array( 'email' => 'test@example.com' ), true ),
 		) );
 
-		M::userFunction( 'update_user_meta', array(
+		M::userFunction( 'update_user_option', array(
 			'times'  => 1,
 			'args'   => array( 123, '_airstory_target', 'connection-id' ),
 		) );
@@ -158,24 +158,24 @@ class ConnectionTest extends \Airstory\TestCase {
 			return $connection_id;
 		} );
 
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 123, '_airstory_profile', true ),
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( '_airstory_profile', 123 ),
 			'return' => $profile,
 		) );
 
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 123, '_airstory_target', true ),
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( '_airstory_target', 123 ),
 			'return' => $connection_id,
 		) );
 
-		M::userFunction( 'delete_user_meta', array(
+		M::userFunction( 'delete_user_option', array(
 			'times'  => 1,
-			'args'   => array( 123, '_airstory_profile', array( 'email' => 'test@example.com' ) ),
+			'args'   => array( 123, '_airstory_profile', true ),
 		) );
 
-		M::userFunction( 'delete_user_meta', array(
+		M::userFunction( 'delete_user_option', array(
 			'times'  => 1,
-			'args'   => array( 123, '_airstory_target', $connection_id ),
+			'args'   => array( 123, '_airstory_target' ),
 		) );
 
 		M::expectAction( 'airstory_remove_connection', 123, $connection_id );
@@ -184,17 +184,17 @@ class ConnectionTest extends \Airstory\TestCase {
 	}
 
 	public function testRemoveConnectionOnlyDeletesIfItHasTheUserEmail() {
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 123, '_airstory_profile', true ),
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( '_airstory_profile', 123 ),
 			'return' => array( 'email' => '' )
 		) );
 
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 123, '_airstory_target', true ),
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( '_airstory_target', 123 ),
 			'return' => uniqid(),
 		) );
 
-		M::userFunction( 'delete_user_meta', array(
+		M::userFunction( 'delete_user_option', array(
 			'times'  => 0,
 		) );
 
@@ -202,17 +202,17 @@ class ConnectionTest extends \Airstory\TestCase {
 	}
 
 	public function testRemoveConnectionOnlyDeletesIfItHasTheConnectionID() {
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 123, '_airstory_profile', true ),
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( '_airstory_profile', 123 ),
 			'return' => array( 'email' => 'test@example.com' ),
 		) );
 
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 123, '_airstory_target', true ),
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( '_airstory_target', 123 ),
 			'return' => null,
 		) );
 
-		M::userFunction( 'delete_user_meta', array(
+		M::userFunction( 'delete_user_option', array(
 			'times'  => 0,
 		) );
 

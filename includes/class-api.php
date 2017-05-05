@@ -117,7 +117,7 @@ class API {
 			return new WP_Error( 'airstory-link', __( 'Invalid response from Airstory when connecting account' ) );
 		}
 
-		return $response['headers']['link'];
+		return sanitize_text_field( $response['headers']['link'] );
 	}
 
 	/**

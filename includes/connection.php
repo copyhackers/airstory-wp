@@ -40,6 +40,19 @@ function get_user_profile() {
 }
 
 /**
+ * Does the given user have a connection to Airstory?
+ *
+ * Note that this function does not check the validity of a connection, only whether or not one
+ * exists in the database.
+ *
+ * @param int $user_id The user ID to inspect.
+ * @return bool True if there's an _airstory_target for the given user, false otherwise.
+ */
+function has_connection( $user_id ) {
+	return (bool) get_user_option( '_airstory_target', $user_id );
+}
+
+/**
  * Once a user has provided their token, authenticate with Airstory and save information locally.
  *
  * This information will include the Airstory user's first/last name, email, and user_id, which

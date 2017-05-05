@@ -68,6 +68,17 @@ class ConnectionTest extends \Airstory\TestCase {
 		$this->assertEquals( array(), get_user_profile(), 'WP_Errors should produce empty profile arrays' );
 	}
 
+	public function testHasConnection() {
+		M::userFunction( 'get_user_option', array(
+			'args'            => array( '_airstory_target', 5 ),
+			'return_in_order' => array( uniqid(), '', false ),
+		) );
+
+		$this->assertTrue( has_connection( 5 ) );
+		$this->assertFalse( has_connection( 5 ) );
+		$this->assertFalse( has_connection( 5 ) );
+	}
+
 	public function testRegisterConnection() {
 		Patchwork\replace( 'Airstory\API::post_target', function () {
 			return 'connection-id';

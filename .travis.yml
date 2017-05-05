@@ -1,0 +1,29 @@
+language: php
+
+php:
+  - 5.6
+  - 7.0
+  - 7.1
+
+env:
+  global:
+    - WP_VERSION=trunk
+    - WP_VERSION=4.7
+
+before_script:
+  - composer install --prefer-source
+  - mkdir -p build/logs
+
+script:
+  - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+
+after_script:
+  - if [ $CODECLIMATE_REPO_TOKEN ]; then ./vendor/bin/test-reporter; fi;
+
+cache:
+  directories:
+    - includes/lib/
+    - vendor/
+
+notifications:
+  email: false

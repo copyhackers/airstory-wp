@@ -94,7 +94,7 @@ function create_document( Airstory\API $api, $project_id, $document_id, $author_
 	// Begin assembling the post.
 	$post = array(
 		'post_title'   => sanitize_text_field( $document->title ),
-		'post_author'  => $author_id,
+		'post_author'  => (int) $author_id,
 		'post_status'  => 'draft',
 		'post_type'    => 'post',
 		'post_content' => '',

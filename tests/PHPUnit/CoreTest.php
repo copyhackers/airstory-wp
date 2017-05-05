@@ -77,7 +77,13 @@ class CoreTest extends \Airstory\TestCase {
 
 		M::userFunction( 'wp_insert_post', array(
 			'times'  => 1,
-			'return' => 123,
+			'return' => function ( $post ) {
+				if ( ! is_int( $post['post_author'] ) ) {
+					$this->fail( 'The author ID should be explicitly cast as an integer' );
+				}
+
+				return 123;
+			},
 		) );
 
 		M::userFunction( 'add_post_meta', array(

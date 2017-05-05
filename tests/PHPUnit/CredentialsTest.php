@@ -76,6 +76,10 @@ class CredentialsTest extends \Airstory\TestCase {
 			'return' => $iv,
 		) );
 
+		M::passthruFunction( 'sanitize_text_field', array(
+			'times'  => 1,
+		) );
+
 		$this->assertEquals( $token, get_token( 123 ), 'The same string, encrypted twice with the same arguments, should produce the same result' );
 	}
 

@@ -46,10 +46,16 @@ function handle_webhook( WP_REST_Request $request ) {
 	$api = new Airstory\API;
 	$api->set_token( Credentials\get_token( $user_id ) );
 
-	// Import the document, acting as the connection owner.
-	$post_id  = Core\import_document( $api, $project, $document );
+	// Determine if there's a current post that matches.
+	$post_id = Core\get_current_draft( $project, $document );
 
-	// Return early if import_document() gave us a WP_Error object.
+	if ( $post_id ) {
+		$post_id = Core\update_document( $api, $project, $document, $post_id );
+	} else {
+		$post_id = Core\create_document( $api, $project, $document, $user_id );
+	}
+
+	// Return early if create_document() gave us a WP_Error object.
 	if ( is_wp_error( $post_id ) ) {
 		return $post_id;
 	}

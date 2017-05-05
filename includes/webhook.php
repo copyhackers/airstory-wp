@@ -52,7 +52,7 @@ function handle_webhook( WP_REST_Request $request ) {
 	if ( $post_id ) {
 		$post_id = Core\update_document( $api, $project, $document, $post_id );
 	} else {
-		$post_id = Core\create_document( $api, $project, $document );
+		$post_id = Core\create_document( $api, $project, $document, $user_id );
 	}
 
 	// Return early if create_document() gave us a WP_Error object.

@@ -103,6 +103,10 @@ class APITest extends \Airstory\TestCase {
 			'return' => false,
 		) );
 
+		M::passthruFunction( 'sanitize_text_field', array(
+			'times' => 1,
+		) );
+
 		$this->assertEquals( $target, $instance->post_target( $email, $data ) );
 	}
 

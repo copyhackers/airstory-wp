@@ -123,7 +123,13 @@ class CoreTest extends \Airstory\TestCase {
 
 		M::userFunction( 'wp_insert_post', array(
 			'times'  => 1,
-			'return' => 123,
+			'return' => function ( $post ) {
+				if ( ! is_int( $post['post_author'] ) ) {
+					$this->fail( 'The author ID should be explicitly cast as an integer' );
+				}
+
+				return 123;
+			},
 		) );
 
 		M::userFunction( 'add_post_meta', array(
@@ -146,6 +152,39 @@ class CoreTest extends \Airstory\TestCase {
 		M::expectAction( 'airstory_import_post', 123 );
 
 		$this->assertEquals( 123, create_document( $api, $project, $document ) );
+	}
+
+	public function testCreateDocumentSetsAuthorId() {
+		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+
+		$doc = new \stdClass;
+		$doc->title = 'My sample document';
+
+		$api = Mockery::mock( 'Airstory\API' )->makePartial();
+		$api->shouldReceive( 'get_document' )->andReturn( $doc );
+		$api->shouldReceive( 'get_document_content' )->andReturn( 'My document body' );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'wp_insert_post', array(
+			'times'  => 1,
+			'return' => function ( $post ) {
+				if ( 5 !== $post['post_author'] ) {
+					$this->fail( 'The author ID is not being set' );
+				}
+
+				return 123;
+			},
+		) );
+
+		M::userFunction( 'add_post_meta' );
+		M::passthruFunction( 'sanitize_text_field' );
+		M::passthruFunction( 'wp_kses_post' );
+
+		$this->assertEquals( 123, create_document( $api, $project, $document, 5 ) );
 	}
 
 	public function testCreateDocumentFailsToGetDocument() {

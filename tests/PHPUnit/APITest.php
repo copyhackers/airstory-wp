@@ -230,16 +230,36 @@ class APITest extends \Airstory\TestCase {
 		$property = new ReflectionProperty( $instance, 'token' );
 		$property->setAccessible( true );
 
-		$instance->set_token( $token );
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
 
+		$this->assertEquals( $token, $instance->set_token( $token ) );
 		$this->assertEquals( $token, $property->getValue( $instance ) );
+	}
+
+	public function testSetTokenHandlesWPErrors() {
+		$instance = new API;
+		$token    = new \WP_Error;
+		$property = new ReflectionProperty( $instance, 'token' );
+		$property->setAccessible( true );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => true,
+		) );
+
+		$this->assertEquals( '', $instance->set_token( $token ) );
+		$this->assertEquals( '', $property->getValue( $instance ) );
 	}
 
 	/**
 	 * @runInSeparateProcess to avoid collision with other calls to get_token().
 	 */
 	public function testGetCredentials() {
-		$instance = new API;
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->makePartial();
+		$instance->shouldReceive( 'set_token' )
+			->once()
+			->andReturn( 'my-unencrypted-token' );
 		$method   = new ReflectionMethod( $instance, 'get_credentials' );
 		$method->setAccessible( true );
 		$user     = new \stdClass;
@@ -255,36 +275,6 @@ class APITest extends \Airstory\TestCase {
 		) );
 
 		$this->assertEquals( 'my-unencrypted-token', $method->invoke( $instance ) );
-	}
-
-	/**
-	 * @runInSeparateProcess to avoid collision with other calls to get_token().
-	 */
-	public function testGetCredentialsCachesValue() {
-		$instance = new API;
-		$method   = new ReflectionMethod( $instance, 'get_credentials' );
-		$method->setAccessible( true );
-		$property = new ReflectionProperty( $instance, 'token' );
-		$property->setAccessible( true );
-		$user     = new \stdClass;
-		$user->ID = 123;
-
-		M::userFunction( 'wp_get_current_user', array(
-			'return' => $user,
-		) );
-
-		M::userFunction( 'Airstory\Credentials\get_token', array(
-			'return' => 'my-unencrypted-token',
-		) );
-
-		// Start empty.
-		$this->assertEmpty( $property->getValue( $instance ) );
-
-		// Execute.
-		$method->invoke( $instance );
-
-		// Make sure the value is cached.
-		$this->assertEquals( 'my-unencrypted-token', $property->getValue( $instance ) );
 	}
 
 	public function testGetCredentialsPullsFromCache() {

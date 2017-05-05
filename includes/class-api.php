@@ -172,10 +172,19 @@ class API {
 	 * This can be used to run a request as a given user, since get_credentials() will return the
 	 * $this->token property if it's already set.
 	 *
-	 * @param string $token The Airstory user token to use.
+	 * @param string|WP_Error $token The Airstory user token to use, or a WP_Error object that may
+	 *                               have been returned by Credentials\get_token().
+	 * @return string The token that has been set. If $token was a valid string, this will just be
+	 *                the value of $token.
 	 */
 	public function set_token( $token ) {
+		if ( is_wp_error( $token ) ) {
+			$token = '';
+		}
+
 		$this->token = (string) $token;
+
+		return $this->token;
 	}
 
 	/**
@@ -193,9 +202,7 @@ class API {
 			return $this->token;
 		}
 
-		$this->token = Credentials\get_token( wp_get_current_user()->ID );
-
-		return $this->token;
+		return $this->set_token( Credentials\get_token( wp_get_current_user()->ID ) );
 	}
 
 	/**

@@ -141,6 +141,74 @@ class APITest extends \Airstory\TestCase {
 		$this->assertEquals( 'airstory-link', $response->get_error_code() );
 	}
 
+	public function testPutTarget() {
+		$target   = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$email    = 'test@example.com';
+		$data     = array(
+			'identifier' => 123,
+			'name'       => 'Test Site',
+			'url'        => 'http://example.com/webhook',
+		);
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )
+			->once()
+			->andReturn( array() );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'wp_remote_retrieve_response_code', array(
+			'return' => 200,
+		) );
+
+		$this->assertTrue( $instance->put_target( $email, $target, $data ) );
+	}
+
+	public function testPutTargetReturnsWPErrors() {
+		$target   = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$email    = 'test@example.com';
+		$data     = array(
+			'identifier' => 123,
+			'name'       => 'Test Site',
+			'url'        => 'http://example.com/webhook',
+		);
+		$error    = new \WP_Error;
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )
+			->once()
+			->andReturn( $error );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => true,
+		) );
+
+		$this->assertSame( $error, $instance->put_target( $email, $target, $data ) );
+	}
+
+	public function testPutTargetThrowsWPErrorIfNot200StatusCode() {
+		$target   = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
+		$email    = 'test@example.com';
+		$data     = array(
+			'identifier' => 123,
+			'name'       => 'Test Site',
+			'url'        => 'http://example.com/webhook',
+		);
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )
+			->once();
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'wp_remote_retrieve_response_code', array(
+			'return' => 403,
+		) );
+
+		$this->assertInstanceOf( 'WP_Error', $instance->put_target( $email, $target, $data ) );
+	}
+
 	public function testDeleteTarget() {
 		$target   = 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$email    = 'test@example.com';
@@ -162,16 +230,36 @@ class APITest extends \Airstory\TestCase {
 		$property = new ReflectionProperty( $instance, 'token' );
 		$property->setAccessible( true );
 
-		$instance->set_token( $token );
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
 
+		$this->assertEquals( $token, $instance->set_token( $token ) );
 		$this->assertEquals( $token, $property->getValue( $instance ) );
+	}
+
+	public function testSetTokenHandlesWPErrors() {
+		$instance = new API;
+		$token    = new \WP_Error;
+		$property = new ReflectionProperty( $instance, 'token' );
+		$property->setAccessible( true );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => true,
+		) );
+
+		$this->assertEquals( '', $instance->set_token( $token ) );
+		$this->assertEquals( '', $property->getValue( $instance ) );
 	}
 
 	/**
 	 * @runInSeparateProcess to avoid collision with other calls to get_token().
 	 */
 	public function testGetCredentials() {
-		$instance = new API;
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->makePartial();
+		$instance->shouldReceive( 'set_token' )
+			->once()
+			->andReturn( 'my-unencrypted-token' );
 		$method   = new ReflectionMethod( $instance, 'get_credentials' );
 		$method->setAccessible( true );
 		$user     = new \stdClass;
@@ -189,36 +277,6 @@ class APITest extends \Airstory\TestCase {
 		$this->assertEquals( 'my-unencrypted-token', $method->invoke( $instance ) );
 	}
 
-	/**
-	 * @runInSeparateProcess to avoid collision with other calls to get_token().
-	 */
-	public function testGetCredentialsCachesValue() {
-		$instance = new API;
-		$method   = new ReflectionMethod( $instance, 'get_credentials' );
-		$method->setAccessible( true );
-		$property = new ReflectionProperty( $instance, 'token' );
-		$property->setAccessible( true );
-		$user     = new \stdClass;
-		$user->ID = 123;
-
-		M::userFunction( 'wp_get_current_user', array(
-			'return' => $user,
-		) );
-
-		M::userFunction( 'Airstory\Credentials\get_token', array(
-			'return' => 'my-unencrypted-token',
-		) );
-
-		// Start empty.
-		$this->assertEmpty( $property->getValue( $instance ) );
-
-		// Execute.
-		$method->invoke( $instance );
-
-		// Make sure the value is cached.
-		$this->assertEquals( 'my-unencrypted-token', $property->getValue( $instance ) );
-	}
-
 	public function testGetCredentialsPullsFromCache() {
 		$instance = new API;
 		$method   = new ReflectionMethod( $instance, 'get_credentials' );
@@ -228,6 +286,21 @@ class APITest extends \Airstory\TestCase {
 		$property->setValue( $instance, 'my-token' );
 
 		$this->assertEquals( 'my-token', $method->invoke( $instance ) );
+	}
+
+	/**
+	 * Can occur if someone attempts to set the user token via API::set_token(), but doesn't have a
+	 * good value.
+	 */
+	public function testGetCredentialsPullsFromCacheWithEmptyString() {
+		$instance = new API;
+		$method   = new ReflectionMethod( $instance, 'get_credentials' );
+		$method->setAccessible( true );
+		$property = new ReflectionProperty( $instance, 'token' );
+		$property->setAccessible( true );
+		$property->setValue( $instance, '' );
+
+		$this->assertEquals( '', $method->invoke( $instance ), 'If API::set_token() was called with an empty string, respect that as a cached value' );
 	}
 
 	public function testMakeAuthenticatedRequest() {

@@ -66,6 +66,11 @@ class CredentialsTest extends \Airstory\TestCase {
 		$iv        = '1234567890123456';
 		$encrypted = openssl_encrypt( $token, AIRSTORY_ENCRYPTION_ALGORITHM, AUTH_KEY, null, $iv );
 
+		M::userFunction( 'get_user_by', array(
+			'args'   => array( 'ID', 123 ),
+			'return' => new \stdClass,
+		) );
+
 		M::userFunction( 'get_user_meta', array(
 			'args'   => array( 123, '_airstory_token', true ),
 			'return' => $encrypted,

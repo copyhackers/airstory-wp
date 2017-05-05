@@ -8,6 +8,8 @@ module.exports = function(grunt) {
 					'languages/**',
 					'airstory.php',
 					'composer.json',
+					'CHANGELOG.md',
+					'LICENSE.md',
 				],
 				dest: 'dist/'
 			},

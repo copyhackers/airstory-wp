@@ -17,6 +17,9 @@ before_script:
 script:
   - ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
+after_script:
+  - if [ $CODECLIMATE_REPO_TOKEN ]; then ./vendor/bin/test-reporter; fi;
+
 cache:
   directories:
     - includes/lib/

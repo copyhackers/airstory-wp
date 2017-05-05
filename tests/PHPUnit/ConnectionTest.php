@@ -120,6 +120,13 @@ class ConnectionTest extends \Airstory\TestCase {
 		$this->assertEquals( 'http://example.com/airstory/v1/webhook', $response['url'] );
 	}
 
+	public function testUserConnectionError() {
+		$error = Mockery::mock( 'WP_Error' )->makePartial();
+		$error->shouldReceive( 'add' )->once();
+
+		user_connection_error( $error );
+	}
+
 	public function testRegisterConnection() {
 		Patchwork\replace( 'Airstory\API::post_target', function () {
 			return 'connection-id';
@@ -168,6 +175,8 @@ class ConnectionTest extends \Airstory\TestCase {
 		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
 			'return' => array(),
 		) );
+
+		M::expectActionAdded( 'user_profile_update_errors', __NAMESPACE__ . '\user_connection_error' );
 
 		$this->assertNull( register_connection( 123 ) );
 	}

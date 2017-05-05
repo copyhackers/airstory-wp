@@ -298,6 +298,21 @@ class APITest extends \Airstory\TestCase {
 		$this->assertEquals( 'my-token', $method->invoke( $instance ) );
 	}
 
+	/**
+	 * Can occur if someone attempts to set the user token via API::set_token(), but doesn't have a
+	 * good value.
+	 */
+	public function testGetCredentialsPullsFromCacheWithEmptyString() {
+		$instance = new API;
+		$method   = new ReflectionMethod( $instance, 'get_credentials' );
+		$method->setAccessible( true );
+		$property = new ReflectionProperty( $instance, 'token' );
+		$property->setAccessible( true );
+		$property->setValue( $instance, '' );
+
+		$this->assertEquals( '', $method->invoke( $instance ), 'If API::set_token() was called with an empty string, respect that as a cached value' );
+	}
+
 	public function testMakeAuthenticatedRequest() {
 		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
 		$instance->shouldReceive( 'get_credentials' )->andReturn( 'abc123' );

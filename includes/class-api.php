@@ -184,6 +184,11 @@ class API {
 	 * @return string The bearer token to be passed with API requests.
 	 */
 	protected function get_credentials() {
+		/*
+		 * If someone's attempted to assign a token via set_token(), this value will be an empty string
+		 * instead of NULL. This should be enough to indicate we may not necessarily want to default to
+		 * the current user.
+		 */
 		if ( null !== $this->token ) {
 			return $this->token;
 		}

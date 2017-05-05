@@ -7,6 +7,7 @@ module.exports = function(grunt) {
 					'includes/**',
 					'languages/**',
 					'airstory.php',
+					'uninstall.php',
 					'composer.json',
 					'CHANGELOG.md',
 					'LICENSE.md',

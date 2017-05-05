@@ -81,7 +81,8 @@ function get_token( $user_id ) {
 		return new WP_Error( 'airstory-decryption', __( 'Unable to decrypt Airstory token', 'airstory' ) );
 	}
 
-	return $token;
+	// Extra sanitization on the now-unencrypted value.
+	return sanitize_text_field( $token );
 }
 
 /**

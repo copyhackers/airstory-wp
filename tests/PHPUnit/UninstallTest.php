@@ -35,7 +35,7 @@ class UninstallTest extends \Airstory\TestCase {
 					$this->fail( 'Uninstall query does not seem to target $wpdb->usermeta' );
 				}
 
-				$known_keys = array( '_airstory_token', '_airstory_iv', '_airstory_profile' );
+				$known_keys = array( '_airstory_data', '_airstory_token', '_airstory_iv' );
 
 				foreach ( $known_keys as $key ) {
 					if ( false === strpos( $query, "'$key'" ) ) {

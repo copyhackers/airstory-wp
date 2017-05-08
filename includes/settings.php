@@ -9,6 +9,7 @@ namespace Airstory\Settings;
 
 use Airstory\Connection as Connection;
 use Airstory\Credentials as Credentials;
+use Airstory\Settings as Settings;
 
 /**
  * Retrieve a value from the _airstory_data user meta key.
@@ -25,7 +26,6 @@ function get_user_data( $user_id, $key, $default = null ) {
 
 	return isset( $data[ $key ] ) ? $data[ $key ] : $default;
 }
-
 
 /**
  * Set a value for a key in the _airstory_data user meta key.

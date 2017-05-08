@@ -11,6 +11,39 @@ use Airstory\Connection as Connection;
 use Airstory\Credentials as Credentials;
 
 /**
+ * Retrieve a value from the _airstory_data user meta key.
+ *
+ * @param int    $user_id The user ID to update.
+ * @param string $key     The key within the _airstory_data array.
+ * @param mixed  $default Optional. The value to return if no value is found in the array. Default
+ *                        is null.
+ * @return mixed The value assigned to $key, or $default if a corresponding value wasn't found.
+ */
+function get_user_data( $user_id, $key, $default = null ) {
+	$key  = sanitize_title( $key );
+	$data = (array) get_user_option( $user_id, '_airstory_data' );
+
+	return isset( $data[ $key ] ) ? $data[ $key ] : $default;
+}
+
+
+/**
+ * Set a value for a key in the _airstory_data user meta key.
+ *
+ * @param int    $user_id The user ID to update.
+ * @param string $key     The key within the _airstory_data array.
+ * @param mixed  $value   Optional. The value to assign to $key. Default is null.
+ * @return bool True if the _airstory_data user meta was updated, false otherwise.
+ */
+function set_user_data( $user_id, $key, $value = null ) {
+	$key  = sanitize_title( $key );
+	$data = (array) get_user_option( $user_id, '_airstory_data' );
+	$data[ $key ] = $value;
+
+	return update_user_option( $user_id, '_airstory_data', $data, true );
+}
+
+/**
  * Render the "Airstory" settings section on the user profile page.
  *
  * @param WP_User $user The current user object.

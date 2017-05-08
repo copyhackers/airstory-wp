@@ -17,6 +17,71 @@ class SettingsTest extends \Airstory\TestCase {
 		'settings.php',
 	);
 
+	public function testGetUserData() {
+		M::userFunction( 'get_user_option', array(
+			'times'  => 1,
+			'args'   => array( 5, '_airstory_data' ),
+			'return' => array( 'some-key' => 'foo' ),
+		) );
+
+		M::passthruFunction( 'sanitize_title' );
+
+		$this->assertEquals( 'foo', get_user_data( 5, 'some-key' ) );
+	}
+
+	public function testGetUserDataUsesDefault() {
+		$default = uniqid();
+
+		M::userFunction( 'get_user_option', array(
+			'times'  => 1,
+			'args'   => array( 5, '_airstory_data' ),
+			'return' => array( 'some-key' => 'foo' ),
+		) );
+
+		M::passthruFunction( 'sanitize_title' );
+
+		$this->assertEquals( $default, get_user_data( 5, 'some-different-key', $default ) );
+	}
+
+	public function testSetUserData() {
+		M::userFunction( 'get_user_option', array(
+			'times'  => 1,
+			'args'   => array( 5, '_airstory_data' ),
+			'return' => array( 'some-key' => 'foo' ),
+		) );
+
+		M::userFunction( 'update_user_option', array(
+			'times'  => 1,
+			'args'   => array( 5, '_airstory_data', array( 'some-key' => 'bar' ), true ),
+			'return' => true,
+		) );
+
+		M::passthruFunction( 'sanitize_title' );
+
+		$this->assertTrue( set_user_data( 5, 'some-key', 'bar' ) );
+	}
+
+	public function testSetUserDataCanAddNewKeys() {
+		M::userFunction( 'get_user_option', array(
+			'times'  => 1,
+			'args'   => array( 5, '_airstory_data' ),
+			'return' => array( 'some-key' => 'foo' ),
+		) );
+
+		M::userFunction( 'update_user_option', array(
+			'times'  => 1,
+			'args'   => array( 5, '_airstory_data', array(
+				'some-key'           => 'foo',
+				'some-different-key' => 'bar',
+			), true ),
+			'return' => true,
+		) );
+
+		M::passthruFunction( 'sanitize_title' );
+
+		$this->assertTrue( set_user_data( 5, 'some-different-key', 'bar' ) );
+	}
+
 	public function testSaveProfileSettings() {
 		$_POST = array(
 			'_airstory_nonce' => 'abc123',

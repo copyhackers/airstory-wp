@@ -34,6 +34,8 @@ class CoreTest extends \Airstory\TestCase {
 		// Disect key parts of the resulting query args.
 		$this->assertEquals( array( 'draft', 'pending' ), WP_Query::$__query['post_status'], 'get_current_draft() should never retrieve a published post ID' );
 		$this->assertEquals( 'ids', WP_Query::$__query['fields'], 'get_current_draft() should only query post IDs' );
+		$this->assertEquals( 'date', WP_Query::$__query['orderby'], 'get_current_draft() should only query post IDs' );
+		$this->assertEquals( 'ASC', WP_Query::$__query['order'], 'get_current_draft() should only query post IDs' );
 
 		// Break down the meta query
 		$this->assertCount( count( $meta_query ), WP_Query::$__query['meta_query'] );

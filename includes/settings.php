@@ -22,7 +22,7 @@ use Airstory\Settings as Settings;
  */
 function get_user_data( $user_id, $key, $default = null ) {
 	$key  = sanitize_title( $key );
-	$data = (array) get_user_option( $user_id, '_airstory_data' );
+	$data = (array) get_user_option( '_airstory_data', $user_id );
 
 	return isset( $data[ $key ] ) ? $data[ $key ] : $default;
 }
@@ -37,7 +37,7 @@ function get_user_data( $user_id, $key, $default = null ) {
  */
 function set_user_data( $user_id, $key, $value = null ) {
 	$key  = sanitize_title( $key );
-	$data = (array) get_user_option( $user_id, '_airstory_data' );
+	$data = (array) get_user_option( '_airstory_data', $user_id );
 	$data[ $key ] = $value;
 
 	return update_user_option( $user_id, '_airstory_data', $data, true );
@@ -95,7 +95,7 @@ function save_profile_settings( $user_id ) {
 		return false;
 	}
 
-	$token = get_user_option( '_airstory_token', $user_id );
+	$token = get_user_data( $user_id, 'user_token', false );
 
 	// The user is disconnecting.
 	if ( $token && isset( $_POST['airstory-disconnect'] ) ) {

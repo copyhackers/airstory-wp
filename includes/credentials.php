@@ -80,7 +80,7 @@ function get_token( $user_id ) {
 	$encrypted = Settings\get_user_data( $user_id, 'user_token', false );
 
 	// Return early if either meta value is empty.
-	if ( false === $encrypted ) {
+	if ( ! isset( $encrypted['token'], $encrypted['iv'] ) ) {
 		return '';
 	}
 

@@ -20,7 +20,7 @@ class SettingsTest extends \Airstory\TestCase {
 	public function testGetUserData() {
 		M::userFunction( 'get_user_option', array(
 			'times'  => 1,
-			'args'   => array( 5, '_airstory_data' ),
+			'args'   => array( '_airstory_data', 5 ),
 			'return' => array( 'some-key' => 'foo' ),
 		) );
 
@@ -34,7 +34,7 @@ class SettingsTest extends \Airstory\TestCase {
 
 		M::userFunction( 'get_user_option', array(
 			'times'  => 1,
-			'args'   => array( 5, '_airstory_data' ),
+			'args'   => array( '_airstory_data', 5 ),
 			'return' => array( 'some-key' => 'foo' ),
 		) );
 
@@ -45,7 +45,7 @@ class SettingsTest extends \Airstory\TestCase {
 
 	public function testGetUserDataUsesDefaultForOnlyNullValues() {
 		M::userFunction( 'get_user_option', array(
-			'args'   => array( 5, '_airstory_data' ),
+			'args'   => array( '_airstory_data', 5 ),
 			'return' => array(
 				'value_exists'   => 'foo',
 				'value_is_null'  => null,
@@ -63,7 +63,7 @@ class SettingsTest extends \Airstory\TestCase {
 	public function testSetUserData() {
 		M::userFunction( 'get_user_option', array(
 			'times'  => 1,
-			'args'   => array( 5, '_airstory_data' ),
+			'args'   => array( '_airstory_data', 5 ),
 			'return' => array( 'some-key' => 'foo' ),
 		) );
 
@@ -81,7 +81,7 @@ class SettingsTest extends \Airstory\TestCase {
 	public function testSetUserDataCanAddNewKeys() {
 		M::userFunction( 'get_user_option', array(
 			'times'  => 1,
-			'args'   => array( 5, '_airstory_data' ),
+			'args'   => array( '_airstory_data', 5 ),
 			'return' => array( 'some-key' => 'foo' ),
 		) );
 
@@ -113,9 +113,9 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => true,
 		) );
 
-		M::userFunction( 'get_user_option', array(
-			'args'   => array( '_airstory_token', 123 ),
-			'return' => 'my-old-token',
+		M::userFunction( __NAMESPACE__ . '\get_user_data', array(
+			'args'   => array( 123, 'user_token', false ),
+			'return' => array( 'token' => 'my-old-token' ),
 		) );
 
 		M::userFunction( 'Airstory\Credentials\set_token', array(
@@ -179,9 +179,9 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => true,
 		) );
 
-		M::userFunction( 'get_user_option', array(
-			'args'   => array( '_airstory_token', 123 ),
-			'return' => 'my-old-token',
+		M::userFunction( __NAMESPACE__ . '\get_user_data', array(
+			'args'   => array( 123, 'user_token', '*' ),
+			'return' => array( 'token' => 'my-old-token' ),
 		) );
 
 		M::userFunction( 'Airstory\Credentials\clear_token', array(

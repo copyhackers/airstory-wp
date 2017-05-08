@@ -28,6 +28,8 @@ function get_current_draft( $project_id, $document_id ) {
 		'update_term_meta_cache' => false,
 		'fields'                 => 'ids',
 		'posts_per_page'         => 1,
+		'orderby'                => 'date',
+		'order'                  => 'ASC',
 		'meta_query'             => array(
 			array(
 				'key'   => '_airstory_project_id',

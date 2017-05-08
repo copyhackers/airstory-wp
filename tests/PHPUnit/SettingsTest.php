@@ -29,7 +29,7 @@ class SettingsTest extends \Airstory\TestCase {
 		$this->assertEquals( 'foo', get_user_data( 5, 'some-key' ) );
 	}
 
-	public function testGetUserDataUsesDefault() {
+	public function testGetUserDataUsesDefaultForUndefinedValues() {
 		$default = uniqid();
 
 		M::userFunction( 'get_user_option', array(
@@ -41,6 +41,23 @@ class SettingsTest extends \Airstory\TestCase {
 		M::passthruFunction( 'sanitize_title' );
 
 		$this->assertEquals( $default, get_user_data( 5, 'some-different-key', $default ) );
+	}
+
+	public function testGetUserDataUsesDefaultForOnlyNullValues() {
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( 5, '_airstory_data' ),
+			'return' => array(
+				'value_exists'   => 'foo',
+				'value_is_null'  => null,
+				'value_is_false' => false,
+			),
+		) );
+
+		M::passthruFunction( 'sanitize_title' );
+
+		$this->assertEquals( 'foo', get_user_data( 5, 'value_exists', 'bar' ) );
+		$this->assertEquals( 'bar', get_user_data( 5, 'value_is_null', 'bar' ) );
+		$this->assertFalse( get_user_data( 5, 'value_is_false', 'bar' ) );
 	}
 
 	public function testSetUserData() {

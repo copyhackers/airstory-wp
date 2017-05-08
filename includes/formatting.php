@@ -66,6 +66,10 @@ add_filter( 'airstory_before_insert_content', __NAMESPACE__ . '\get_body_content
  * @return int The number of replacements made.
  */
 function sideload_images( $post_id ) {
+	require_once ABSPATH . 'wp-admin/includes/media.php';
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+
 	$post    = get_post( $post_id );
 	$content = $post->post_content;
 	$pattern = '/["\'](https?:\/\/images.airstory.co\/[^"\']+)/i';

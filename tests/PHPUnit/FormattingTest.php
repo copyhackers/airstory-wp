@@ -198,6 +198,35 @@ EOT;
 		$this->assertEquals( 2, sideload_images( 123 ) );
 	}
 
+	/**
+	 * Media sideloading outside of the wp-admin context requires several files be included.
+	 *
+	 * @link https://codex.wordpress.org/Function_Reference/media_sideload_image#Notes
+	 *
+	 * @runInSeparateProcess
+	 */
+	public function testSideloadImagesLoadsMediaDependencies() {
+		$post = new \stdClass;
+		$post->post_content = 'nothing to do here';
+
+		M::userFunction( 'get_post', array(
+			'return' => $post,
+		) );
+
+		sideload_images( 123 );
+
+		$required_files = array(
+			ABSPATH . 'wp-admin/includes/media.php',
+			ABSPATH . 'wp-admin/includes/file.php',
+			ABSPATH . 'wp-admin/includes/image.php',
+		);
+		$included_files = get_included_files();
+
+		foreach ( $required_files as $file ) {
+			$this->assertTrue( in_array( $file, $included_files, true ), 'Missing required dependency for media sideloading: ' . $file );
+		}
+	}
+
 	public function testStripWrappingDiv() {
 		$content = <<<EOT
 <div>

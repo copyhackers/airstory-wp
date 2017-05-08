@@ -31,49 +31,7 @@ Exporting to WordPress will create a new *draft* post, enabling you to set post 
 
 ## Actions and filters
 
-For developers, the Airstory WordPress plugin contains a number of [actions and filters that can be used to modify its default behavior](https://codex.wordpress.org/Plugin_API):
-
-### Actions
-
-
-
-### Filters
-
-#### airstory_before_insert_content
-
-This filter is applied to the Airstory document content before inserting it into the wp_insert_post() array.
-
-<dl>
-	<dt>(string) $document</dt>
-	<dd>The compiled, HTML response from Airstory.</dd>
-</dl>
-
-
-#### airstory_before_insert_post
-
-Filter arguments for new posts from Airstory before they're inserted into the database. For a full list of available parameters, please [see `wp_insert_post()`](https://developer.wordpress.org/reference/functions/wp_insert_post/#parameters).
-
-<dl>
-	<dt>(array) $post</dt>
-	<dd>An array of arguments for wp_insert_post().</dd>
-</dl>
-
-##### Example:
-
-```php
-/**
- * Set the default post status for Airstory posts to "pending".
- *
- * @param array $post An array of arguments for wp_insert_post().
- * @return array The filtered $post array.
- */
-function mytheme_set_airstory_post_status( $post ) {
-	$post['post_status'] = 'pending';
-
-	return $post;
-}
-add_filter( 'airstory_before_insert_post', 'mytheme_set_airstory_post_status' );
-```
+For developers, the Airstory WordPress plugin contains a number of [actions and filters that can be used to modify its default behavior](https://codex.wordpress.org/Plugin_API). For a full list of available filters, please [see the wiki in the plugin's GitHub repository](https://github.com/liquidweb/airstory-wp/wiki/Actions-and-Filters).
 
 
 ## Frequently Asked Questions

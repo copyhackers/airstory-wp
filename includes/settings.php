@@ -49,7 +49,7 @@ function set_user_data( $user_id, $key, $value = null ) {
  * @param WP_User $user The current user object.
  */
 function render_profile_settings( $user ) {
-	$profile = get_user_option( '_airstory_profile', $user->ID );
+	$profile = Settings\get_user_data( $user->ID, 'profile', array() );
 ?>
 
 	<h2><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>

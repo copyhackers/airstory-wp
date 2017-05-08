@@ -70,7 +70,13 @@ function sideload_images( $post_id ) {
 	require_once ABSPATH . 'wp-admin/includes/file.php';
 	require_once ABSPATH . 'wp-admin/includes/image.php';
 
-	$post    = get_post( $post_id );
+	$post = get_post( $post_id );
+
+	// Return early (with "0" replacements) if no matching post was found.
+	if ( ! $post ) {
+		return 0;
+	}
+
 	$content = $post->post_content;
 	$pattern = '/["\'](https?:\/\/images.airstory.co\/[^"\']+)/i';
 	preg_match_all( $pattern, $content, $matches );

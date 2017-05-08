@@ -227,6 +227,14 @@ EOT;
 		}
 	}
 
+	public function testSideloadImagesReturnsEarlyIfInvalidPostID() {
+		M::userFunction( 'get_post', array(
+			'return' => null,
+		) );
+
+		$this->assertEquals( 0, sideload_images( 123 ) );
+	}
+
 	public function testStripWrappingDiv() {
 		$content = <<<EOT
 <div>

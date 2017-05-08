@@ -16,6 +16,25 @@ class SettingsTest extends \Airstory\TestCase {
 		'settings.php',
 	);
 
+	public function testRenderProfileSettings() {
+		$user = new \stdClass;
+		$user->ID = 5;
+
+		M::userFunction( 'get_user_meta', array(
+			'return' => null,
+		) );
+
+		M::userFunction( 'wp_nonce_field', array(
+			'times'  => 1,
+			'args'   => array( 'airstory-profile', '_airstory_nonce' ),
+		) );
+
+		$this->expectOutputRegex( '/\<h2 id="airstory"\>/', 'The section heading should have an explicit #airstory ID attribute.' );
+		$this->expectOutputRegex( '/\<input name="airstory-token"/', 'When get_user_meta returns empty, the user should be shown the airstory-token input.' );
+
+		render_profile_settings( $user );
+	}
+
 	public function testSaveProfileSettings() {
 		$_POST = array(
 			'_airstory_nonce' => 'abc123',

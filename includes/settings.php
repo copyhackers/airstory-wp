@@ -18,7 +18,7 @@ function render_profile_settings( $user ) {
 	$profile = get_user_meta( $user->ID, '_airstory_profile', true );
 ?>
 
-	<h2><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>
+	<h2 id="airstory"><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>
 	<table class="form-table">
 		<tbody>
 			<tr>

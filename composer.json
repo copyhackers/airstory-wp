@@ -9,6 +9,10 @@
             "homepage": "https://www.liquidweb.com"
         }
     ],
+    "support": {
+        "source": "https://github.com/liquidweb/airstory-wp",
+        "issues": "https://github.com/liquidweb/airstory-wp/issues"
+    },
     "license": "MIT",
     "require": {
         "php": ">=5.3",

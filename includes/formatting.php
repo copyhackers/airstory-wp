@@ -165,7 +165,14 @@ function sideload_images( $post_id ) {
 				continue;
 			}
 
-			$local_url        = wp_get_attachment_url( $image_id );
+			$local_url = wp_get_attachment_url( $image_id );
+
+			// The most stressful of stress cases: the image that we just uploaded doesn't exist?
+			if ( ! $local_url ) {
+				continue;
+			}
+
+			// Store the new local URL, in case this image is used again.
 			$replaced[ $src ] = $local_url;
 		}
 

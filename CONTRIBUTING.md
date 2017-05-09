@@ -11,7 +11,7 @@ Begin by cloning the GitHub repo locally and installing the dependencies:
 
 ```bash
 # Clone the repository, ideally into a wp-content/plugins directory:
-$ git clone {REPO_URL} && cd airstory-wp
+$ git clone https://github.com/liquidweb/airstory-wp.git airstory && cd airstory
 
 # Install local dependencies
 $ composer install && npm install
@@ -56,7 +56,7 @@ At any time, you may regenerate the plugin's `languages/airstory.pot` file by ru
 
 ### Running unit tests
 
-The Airstory plugin aims to have a high level of unit test coverage, using [`WP_Mock`](https://github.com/10up/wp_mock) and its dependencies, [Mockery](http://docs.mockery.io/en/latest/) and [Patchwork](https://github.com/antecedent/patchwork). When submitting changes, please add or update unit tests accordingly.
+The Airstory plugin aims to have a high level of unit test coverage, using [WP_Mock](https://github.com/10up/wp_mock) and its dependencies, [Mockery](http://docs.mockery.io/en/latest/), [Patchwork](https://github.com/antecedent/patchwork), and [PHPUnit](https://phpunit.de/). When submitting changes, please be sure to add or update unit tests accordingly.
 
 [![Test Coverage](https://codeclimate.com/github/liquidweb/airstory-wp/badges/coverage.svg)](https://codeclimate.com/github/liquidweb/airstory-wp/coverage)
 
@@ -73,4 +73,6 @@ $ npm test
 
 ## Contributors
 
-The Airstory plugin was built as a joint effort between [Airstory](http://airstory.co/) and [Liquid Web](https://www.liquidweb.com). [See all contributors to the plugin]().
+The Airstory plugin was built as a joint effort between [Airstory](http://airstory.co/) and [Liquid Web](https://www.liquidweb.com).
+
+[See a list of all contributors to the plugin](https://github.com/liquidweb/airstory-wp/graphs/contributors).

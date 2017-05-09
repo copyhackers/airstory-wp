@@ -1,6 +1,6 @@
 <?php
 /**
- * Core functionality for Airstory.
+ * Formatters and other helpers to prepare Airstory content for WordPress.
  *
  * @package Airstory.
  */

@@ -122,6 +122,13 @@ class ConnectionTest extends \Airstory\TestCase {
 		$this->assertEquals( 'wordpress', $response['type'] );
 	}
 
+	public function testUserConnectionError() {
+		$error = Mockery::mock( 'WP_Error' )->makePartial();
+		$error->shouldReceive( 'add' )->once();
+
+		user_connection_error( $error );
+	}
+
 	public function testHasConnection() {
 		M::userFunction( 'get_user_option', array(
 			'args'            => array( '_airstory_target', 5 ),
@@ -137,6 +144,10 @@ class ConnectionTest extends \Airstory\TestCase {
 		Patchwork\replace( 'Airstory\API::post_target', function () {
 			return 'connection-id';
 		} );
+
+		M::userFunction( __NAMESPACE__ . '\has_connection', array(
+			'return' => false,
+		) );
 
 		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
 			'return' => array(
@@ -178,9 +189,15 @@ class ConnectionTest extends \Airstory\TestCase {
 	}
 
 	public function testRegisterConnectionReturnsEarlyIfNoProfileDataFound() {
+		M::userFunction( __NAMESPACE__ . '\has_connection', array(
+			'return' => false,
+		) );
+
 		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
 			'return' => array(),
 		) );
+
+		M::expectActionAdded( 'user_profile_update_errors', __NAMESPACE__ . '\user_connection_error' );
 
 		$this->assertNull( register_connection( 123 ) );
 	}
@@ -191,6 +208,10 @@ class ConnectionTest extends \Airstory\TestCase {
 		Patchwork\replace( 'Airstory\API::post_target', function () use ( $response ) {
 			return $response;
 		} );
+
+		M::userFunction( __NAMESPACE__ . '\has_connection', array(
+			'return' => false,
+		) );
 
 		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
 			'return' => array(
@@ -213,6 +234,18 @@ class ConnectionTest extends \Airstory\TestCase {
 		$this->assertNull( register_connection( 123 ) );
 	}
 
+	public function testRegisterConnectionChecksForExistingConnectionFirst() {
+		M::userFunction( __NAMESPACE__ . '\has_connection', array(
+			'return' => true,
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
+			'times'  => 0,
+		) );
+
+		register_connection( 123 );
+	}
+
 	public function testUpdateConnection() {
 		$phpunit = $this;
 		$target  = uniqid();
@@ -232,8 +265,8 @@ class ConnectionTest extends \Airstory\TestCase {
 			'return' => array( 'email' => 'test@example.com' ),
 		) );
 
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 5, '_airstory_target', true ),
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( '_airstory_target', 5 ),
 			'return' => $target,
 		) );
 
@@ -264,11 +297,6 @@ class ConnectionTest extends \Airstory\TestCase {
 		M::userFunction( 'get_user_option', array(
 			'args'   => array( '_airstory_target', 123 ),
 			'return' => $connection_id,
-		) );
-
-		M::userFunction( 'Airstory\Settings\set_user_data', array(
-			'times'  => 1,
-			'args'   => array( 123, 'profile', null ),
 		) );
 
 		M::userFunction( 'delete_user_option', array(
@@ -315,6 +343,54 @@ class ConnectionTest extends \Airstory\TestCase {
 		) );
 
 		remove_connection( 123 );
+	}
+
+	public function testSetConnectedSites() {
+		M::userFunction( 'is_multisite', array(
+			'return' => true,
+		) );
+
+		M::userFunction( 'Airstory\Settings\get_available_blogs', array(
+			'return' => array(
+				array( 'id' => 1 ),
+				array( 'id' => 2 ),
+				array( 'id' => 3 ),
+				array( 'id' => 4 ),
+				array( 'id' => 5 ),
+			),
+		) );
+
+		M::userFunction( 'switch_to_blog', array(
+			'times' => 5,
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\register_connection', array(
+			'times' => 3,
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\remove_connection', array(
+			'times' => 2,
+		) );
+
+		M::userFunction( 'restore_current_blog', array(
+			'times' => 5,
+		) );
+
+		M::passthruFunction( 'absint' );
+
+		set_connected_blogs( 5, array( 1, 2, 3 ) );
+	}
+
+	public function testSetConnectedSitesReturnsEarlyIfNotMultisite() {
+		M::userFunction( 'is_multisite', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'Airstory\Settings\get_available_blogs', array(
+			'times'  => 0,
+		) );
+
+		set_connected_blogs( 5, array() );
 	}
 }
 

@@ -115,6 +115,20 @@ function sideload_images( $post_id ) {
 				continue;
 			}
 
+			// Retrieve the ID of the image we just sideloaded.
+			$image_id = get_attachment_id_by_url( $local );
+
+			if ( 0 !== $image_id ) {
+				add_post_meta( $image_id, '_airstory_origin', esc_url( $src ) );
+
+				// Extract the alt attribute from the image.
+				$alt = $image->getAttribute( 'alt' );
+
+				if ( ! empty( $alt ) ) {
+					update_post_meta( $image_id, '_wp_attachment_image_alt', sanitize_text_field( $alt ) );
+				}
+			}
+
 			$replaced[ $src ] = $local;
 		}
 

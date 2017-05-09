@@ -85,12 +85,12 @@ EOT;
 	public function testSideloadImages() {
 		$content = <<<EOT
 <h1>Here's an image</h1>
-<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="" /></p>
+<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="my alt text" /></p>
 EOT;
 		// DOMDocument uses HTML5-style <img> elements, without the closing slash.
 		$expected = <<<EOT
 <h1>Here's an image</h1>
-<p><img src="https://example.com/image.jpg" alt=""></p>
+<p><img src="https://example.com/image.jpg" alt="my alt text"></p>
 EOT;
 
 		$post = new \stdClass;
@@ -107,6 +107,22 @@ EOT;
 			'return' => 'https://example.com/image.jpg',
 		) );
 
+		M::userFunction( __NAMESPACE__ . '\get_attachment_id_by_url', array(
+			'times'  => 1,
+			'args'   => array( 'https://example.com/image.jpg' ),
+			'return' => 125,
+		) );
+
+		M::userFunction( 'update_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 125, '_wp_attachment_image_alt', 'my alt text' ),
+		) );
+
+		M::userFunction( 'add_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 125, '_airstory_origin', 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg' ),
+		) );
+
 		M::userFunction( 'wp_update_post', array(
 			'times'  => 1,
 			'return' => function ( $post ) use ( $expected ) {
@@ -120,19 +136,22 @@ EOT;
 			'return' => false,
 		) );
 
+		M::passthruFunction( 'esc_url' );
+		M::passthruFunction( 'sanitize_text_field' );
+
 		$this->assertEquals( 1, sideload_images( 123 ) );
 	}
 
 	public function testSideloadImagesDeduplicatesMatches() {
 		$content = <<<EOT
 <h1>Here's the same image twice</h1>
-<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="" /></p>
-<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="" /></p>
+<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="alt text" /></p>
+<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="alt text" /></p>
 EOT;
 		$expected = <<<EOT
 <h1>Here's the same image twice</h1>
-<p><img src="https://example.com/image.jpg" alt=""></p>
-<p><img src="https://example.com/image.jpg" alt=""></p>
+<p><img src="https://example.com/image.jpg" alt="alt text"></p>
+<p><img src="https://example.com/image.jpg" alt="alt text"></p>
 EOT;
 
 		$post = new \stdClass;
@@ -147,6 +166,20 @@ EOT;
 			'return' => 'https://example.com/image.jpg',
 		) );
 
+		M::userFunction( __NAMESPACE__ . '\get_attachment_id_by_url', array(
+			'return' => 125,
+		) );
+
+		M::userFunction( 'update_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 125, '_wp_attachment_image_alt', 'alt text' ),
+		) );
+
+		M::userFunction( 'add_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 125, '_airstory_origin', 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg' ),
+		) );
+
 		M::userFunction( 'wp_update_post', array(
 			'return' => function ( $post ) use ( $expected ) {
 				if ( $expected !== $post->post_content ) {
@@ -159,19 +192,22 @@ EOT;
 			'return' => false,
 		) );
 
+		M::passthruFunction( 'esc_url' );
+		M::passthruFunction( 'sanitize_text_field' );
+
 		$this->assertEquals( 2, sideload_images( 123 ) );
 	}
 
 	public function testSideloadImagesHandlesMultipleImages() {
 		$content = <<<EOT
 <h1>Here's the same image twice</h1>
-<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="" /></p>
-<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image2.jpg" alt="" /></p>
+<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="alt text" /></p>
+<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image2.jpg" alt="alt-alt text" /></p>
 EOT;
 		$expected = <<<EOT
 <h1>Here's the same image twice</h1>
-<p><img src="https://example.com/image.jpg" alt=""></p>
-<p><img src="https://example.com/image2.jpg" alt=""></p>
+<p><img src="https://example.com/image.jpg" alt="alt text"></p>
+<p><img src="https://example.com/image2.jpg" alt="alt-alt text"></p>
 EOT;
 
 		$post = new \stdClass;
@@ -187,6 +223,31 @@ EOT;
 			},
 		) );
 
+		M::userFunction( __NAMESPACE__ . '\get_attachment_id_by_url', array(
+			'times'           => 2,
+			'return_in_order' => array( 125, 126 ),
+		) );
+
+		M::userFunction( 'update_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 125, '_wp_attachment_image_alt', 'alt text' ),
+		) );
+
+		M::userFunction( 'update_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 126, '_wp_attachment_image_alt', 'alt-alt text' ),
+		) );
+
+		M::userFunction( 'add_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 125, '_airstory_origin', 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg' ),
+		) );
+
+		M::userFunction( 'add_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 126, '_airstory_origin', 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image2.jpg' ),
+		) );
+
 		M::userFunction( 'wp_update_post', array(
 			'return' => function ( $post ) use ( $expected ) {
 				if ( $expected !== $post->post_content ) {
@@ -199,7 +260,48 @@ EOT;
 			'return' => false,
 		) );
 
+		M::passthruFunction( 'esc_url' );
+		M::passthruFunction( 'sanitize_text_field' );
+
 		$this->assertEquals( 2, sideload_images( 123 ) );
+	}
+
+	public function testSideloadImagesDoesntUpdatePostMetaIfNoMatchingAttachmentIdWasFound() {
+		$content = <<<EOT
+<h1>Here's an image</h1>
+<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="my alt text" /></p>
+EOT;
+
+		$post = new \stdClass;
+		$post->post_content = $content;
+
+		M::userFunction( 'get_post', array(
+			'return' => $post,
+		) );
+
+		M::userFunction( 'media_sideload_image', array(
+			'return' => 'https://example.com/image.jpg',
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\get_attachment_id_by_url', array(
+			'return' => 0,
+		) );
+
+		M::userFunction( 'update_post_meta', array(
+			'times'  => 0,
+		) );
+
+		M::userFunction( 'add_post_meta', array(
+			'times'  => 0,
+		) );
+
+		M::userFunction( 'wp_update_post' );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		sideload_images( 123 );
 	}
 
 	/**

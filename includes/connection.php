@@ -205,24 +205,24 @@ function remove_connection( $user_id ) {
 add_action( 'airstory_user_disconnect', __NAMESPACE__ . '\remove_connection' );
 
 /**
- * Given a user ID and an array of site IDs, connect or disconnect users from Airstory.
+ * Given a user ID and an array of blog IDs, connect or disconnect users from Airstory.
  *
  * @param int   $user_id  The user ID to update.
- * @param array $site_ids An array of site IDs where the user should be connected. Any site *not*
+ * @param array $blog_ids An array of blog IDs where the user should be connected. Any blog *not*
  *                        in the array will be disconnected.
  */
-function set_connected_sites( $user_id, $site_ids ) {
+function set_connected_blogs( $user_id, $blog_ids ) {
 	if ( ! is_multisite() ) {
 		return;
 	}
 
 	$available_blogs = Settings\get_available_blogs( $user_id );
-	$site_ids        = array_map( 'absint', (array) $site_ids );
+	$blog_ids        = array_map( 'absint', (array) $blog_ids );
 
 	foreach ( $available_blogs as $blog ) {
 		switch_to_blog( $blog['id'] );
 
-		if ( in_array( $blog['id'], $site_ids, true ) ) {
+		if ( in_array( $blog['id'], $blog_ids, true ) ) {
 			register_connection( $user_id );
 
 		} else {

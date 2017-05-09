@@ -101,7 +101,7 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => true,
 		) );
 
-		M::userFunction( 'Airstory\Connection\set_connected_sites', array(
+		M::userFunction( 'Airstory\Connection\set_connected_blogs', array(
 			'times'  => 1,
 			'args'   => array( 123, array( 1, 2, 3 ) ),
 		) );
@@ -167,7 +167,7 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => 'my-old-token',
 		) );
 
-		M::userFunction( 'Airstory\Connection\set_connected_sites', array(
+		M::userFunction( 'Airstory\Connection\set_connected_blogs', array(
 			'times'  => 1,
 			'args'   => array( 123, array() ),
 		) );

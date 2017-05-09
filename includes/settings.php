@@ -91,7 +91,7 @@ function save_profile_settings( $user_id ) {
 	if ( $token && isset( $_POST['airstory-disconnect'] ) ) {
 
 		// Clear out all connections.
-		Connection\set_connected_sites( $user_id, array() );
+		Connection\set_connected_blogs( $user_id, array() );
 
 		/**
 		 * A user has disconnected their account from Airstory.
@@ -110,7 +110,7 @@ function save_profile_settings( $user_id ) {
 
 	if ( is_multisite() ) {
 		$site_ids = array_map( 'absint', (array) $_POST['airstory-sites'] );
-		Connection\set_connected_sites( $user_id, $site_ids );
+		Connection\set_connected_blogs( $user_id, $site_ids );
 	}
 
 	/**

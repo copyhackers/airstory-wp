@@ -378,7 +378,7 @@ class ConnectionTest extends \Airstory\TestCase {
 
 		M::passthruFunction( 'absint' );
 
-		set_connected_sites( 5, array( 1, 2, 3 ) );
+		set_connected_blogs( 5, array( 1, 2, 3 ) );
 	}
 
 	public function testSetConnectedSitesReturnsEarlyIfNotMultisite() {
@@ -390,7 +390,7 @@ class ConnectionTest extends \Airstory\TestCase {
 			'times'  => 0,
 		) );
 
-		set_connected_sites( 5, array() );
+		set_connected_blogs( 5, array() );
 	}
 }
 

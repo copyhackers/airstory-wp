@@ -18,6 +18,7 @@ class ConnectionTest extends \Airstory\TestCase {
 	protected $testFiles = array(
 		'connection.php',
 		'credentials.php',
+		'settings.php',
 	);
 
 	public function tearDown() {
@@ -267,11 +268,6 @@ class ConnectionTest extends \Airstory\TestCase {
 
 		M::userFunction( 'delete_user_option', array(
 			'times'  => 1,
-			'args'   => array( 123, '_airstory_profile', true ),
-		) );
-
-		M::userFunction( 'delete_user_option', array(
-			'times'  => 1,
 			'args'   => array( 123, '_airstory_target' ),
 		) );
 
@@ -314,6 +310,54 @@ class ConnectionTest extends \Airstory\TestCase {
 		) );
 
 		remove_connection( 123 );
+	}
+
+	public function testSetConnectedSites() {
+		M::userFunction( 'is_multisite', array(
+			'return' => true,
+		) );
+
+		M::userFunction( 'Airstory\Settings\get_available_blogs', array(
+			'return' => array(
+				array( 'id' => 1 ),
+				array( 'id' => 2 ),
+				array( 'id' => 3 ),
+				array( 'id' => 4 ),
+				array( 'id' => 5 ),
+			),
+		) );
+
+		M::userFunction( 'switch_to_blog', array(
+			'times' => 5,
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\register_connection', array(
+			'times' => 3,
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\remove_connection', array(
+			'times' => 2,
+		) );
+
+		M::userFunction( 'restore_current_blog', array(
+			'times' => 5,
+		) );
+
+		M::passthruFunction( 'absint' );
+
+		set_connected_sites( 5, array( 1, 2, 3 ) );
+	}
+
+	public function testSetConnectedSitesReturnsEarlyIfNotMultisite() {
+		M::userFunction( 'is_multisite', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'Airstory\Settings\get_available_blogs', array(
+			'times'  => 0,
+		) );
+
+		set_connected_sites( 5, array() );
 	}
 }
 

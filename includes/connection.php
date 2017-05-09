@@ -15,6 +15,7 @@ namespace Airstory\Connection;
 
 use Airstory;
 use Airstory\Credentials as Credentials;
+use Airstory\Settings as Settings;
 
 /**
  * Retrieve basic information about the user.
@@ -175,8 +176,7 @@ function remove_connection( $user_id ) {
 	$api = new Airstory\API;
 	$api->delete_target( $profile['email'], $connection_id );
 
-	// Clean up the post meta.
-	delete_user_option( $user_id, '_airstory_profile', true );
+	// Clean up the user meta.
 	delete_user_option( $user_id, '_airstory_target' );
 
 	/**
@@ -188,6 +188,35 @@ function remove_connection( $user_id ) {
 	do_action( 'airstory_remove_connection', $user_id, $connection_id );
 }
 add_action( 'airstory_user_disconnect', __NAMESPACE__ . '\remove_connection' );
+
+/**
+ * Given a user ID and an array of site IDs, connect or disconnect users from Airstory.
+ *
+ * @param int   $user_id  The user ID to update.
+ * @param array $site_ids An array of site IDs where the user should be connected. Any site *not*
+ *                        in the array will be disconnected.
+ */
+function set_connected_sites( $user_id, $site_ids ) {
+	if ( ! is_multisite() ) {
+		return;
+	}
+
+	$available_blogs = Settings\get_available_blogs( $user_id );
+	$site_ids        = array_map( 'absint', (array) $site_ids );
+
+	foreach ( $available_blogs as $blog ) {
+		switch_to_blog( $blog['id'] );
+
+		if ( in_array( $blog['id'], $site_ids, true ) ) {
+			register_connection( $user_id );
+
+		} else {
+			remove_connection( $user_id );
+		}
+
+		restore_current_blog();
+	}
+}
 
 /**
  * Triggers an asynchronous regeneration of all connections.

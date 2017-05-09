@@ -86,10 +86,12 @@ function save_profile_settings( $user_id ) {
 	}
 
 	$token  = get_user_option( '_airstory_token', $user_id );
-	$result = false;
 
 	// The user is disconnecting.
 	if ( $token && isset( $_POST['airstory-disconnect'] ) ) {
+
+		// Clear out all connections.
+		Connection\set_connected_sites( $user_id, array() );
 
 		/**
 		 * A user has disconnected their account from Airstory.
@@ -98,50 +100,27 @@ function save_profile_settings( $user_id ) {
 		 */
 		do_action( 'airstory_user_disconnect', $user_id );
 
+		delete_user_option( $user_id, '_airstory_profile', true );
+
 		return Credentials\clear_token( $user_id );
 
 	} elseif ( ! empty( $_POST['airstory-token'] ) ) {
-
-		$new_token = sanitize_text_field( $_POST['airstory-token'] );
-		$result    = Credentials\set_token( $user_id, $new_token );
+		Credentials\set_token( $user_id, sanitize_text_field( $_POST['airstory-token'] ) );
 	}
 
-	// If this isn't multisite, simply fire the airstory_user_connect hook.
-	if ( ! is_multisite() ) {
-		/**
-		 * A user has connected their account to Airstory.
-		 *
-		 * @param int $user_id  The ID of the user that just connected.
-		 */
-		do_action( 'airstory_user_connect', $user_id );
-
-	} else {
-
-		// Determine which sites the user has connected; assume false unless told otherwise.
-		$available_blogs = get_available_blogs( $user_id );
-		$active_site_ids = array_map( 'absint', (array) $_POST['airstory-sites'] );
-
-		foreach ( $available_blogs as $blog ) {
-			switch_to_blog( $blog['id'] );
-
-			// Determine which action we're doing - connecting or disconnecting.
-			if ( in_array( $blog['id'], $active_site_ids, true ) ) {
-				/** This filter is documented in includes/settings.php. */
-				do_action( 'airstory_user_connect', $user_id );
-
-			} else {
-				/** This filter is documented in includes/settings.php. */
-				do_action( 'airstory_user_disconnect', $user_id );
-			}
-
-			restore_current_blog();
-
-			// Ensure the function still recognizes updates were made.
-			$result = true;
-		}
+	if ( is_multisite() ) {
+		$site_ids = array_map( 'absint', (array) $_POST['airstory-sites'] );
+		Connection\set_connected_sites( $user_id, $site_ids );
 	}
 
-	return (bool) $result;
+	/**
+	 * A user has connected their account to Airstory.
+	 *
+	 * @param int $user_id  The ID of the user that just connected.
+	 */
+	do_action( 'airstory_user_connect', $user_id );
+
+	return true;
 }
 add_action( 'personal_options_update', __NAMESPACE__ . '\save_profile_settings' );
 

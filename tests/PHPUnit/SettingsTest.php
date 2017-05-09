@@ -101,26 +101,12 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => true,
 		) );
 
-		M::userFunction( __NAMESPACE__ . '\get_available_blogs', array(
-			'return' => array(
-				array( 'id' => 1 ),
-				array( 'id' => 2 ),
-				array( 'id' => 3 ),
-				array( 'id' => 4 ),
-				array( 'id' => 5 ),
-			),
-		) );
-
-		M::userFunction( 'switch_to_blog', array(
-			'times' => 5,
-		) );
-
-		M::userFunction( 'restore_current_blog', array(
-			'times' => 5,
+		M::userFunction( 'Airstory\Connection\set_connected_sites', array(
+			'times'  => 1,
+			'args'   => array( 123, array( 1, 2, 3 ) ),
 		) );
 
 		M::expectAction( 'airstory_user_connect', 123 );
-		M::expectAction( 'airstory_user_disconnect', 123 );
 
 		M::passthruFunction( 'absint' );
 		M::passthruFunction( 'sanitize_text_field' );
@@ -179,6 +165,16 @@ class SettingsTest extends \Airstory\TestCase {
 		M::userFunction( 'get_user_option', array(
 			'args'   => array( '_airstory_token', 123 ),
 			'return' => 'my-old-token',
+		) );
+
+		M::userFunction( 'Airstory\Connection\set_connected_sites', array(
+			'times'  => 1,
+			'args'   => array( 123, array() ),
+		) );
+
+		M::userFunction( 'delete_user_option', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_profile', true ),
 		) );
 
 		M::userFunction( 'Airstory\Credentials\clear_token', array(

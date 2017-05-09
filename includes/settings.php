@@ -116,7 +116,7 @@ function save_profile_settings( $user_id ) {
 	/**
 	 * A user has connected their account to Airstory.
 	 *
-	 * @param int $user_id  The ID of the user that just connected.
+	 * @param int $user_id The ID of the user that just connected.
 	 */
 	do_action( 'airstory_user_connect', $user_id );
 

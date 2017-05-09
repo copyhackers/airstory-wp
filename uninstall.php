@@ -41,10 +41,6 @@ while ( ! empty( $connected_user_ids ) ) {
 
 // Remove all known user meta keys.
 $query = "
-	DELETE FROM $wpdb->usermeta WHERE meta_key IN (
-		'_airstory_token',  # The encrypted user token.
-		'_airstory_iv',     # The initialization vector used when encrypting the password.
-		'_airstory_profile' # Information about the Airstory user account.
-	);";
+	DELETE FROM $wpdb->usermeta WHERE meta_key = '_airstory_data';";
 
 $wpdb->query( $query ); // WPCS: unprepared SQL ok.

@@ -57,6 +57,60 @@ function get_body_contents( $content ) {
 add_filter( 'airstory_before_insert_content', __NAMESPACE__ . '\get_body_contents', 1 );
 
 /**
+ * Sideload a single image from a remote URL.
+ *
+ * @param string $url      The remote URL for the image.
+ * @param int    $post_id  Optional. The post the newly-uploaded image should be attached to.
+ *                         Default is 0 (unattached).
+ * @param array  $metadata Optional. Additional post meta keys to assign once the attachment post
+ *                         has been created. These keys and values are assumed to be sanitized.
+ *                         Default is an empty array.
+ */
+function sideload_image( $url, $post_id = 0, $metadata = array() ) {
+	require_once ABSPATH . 'wp-admin/includes/media.php';
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+
+	$tmp_file   = download_url( esc_url_raw( $url ) );
+	$file_array = array(
+		'name'     => basename( $url ),
+		'tmp_name' => $tmp_file,
+	);
+
+	// Something went wrong downloading the image.
+	if ( is_wp_error( $tmp_file ) ) {
+		@unlink( $file_array['tmp_name'] ); // @codingStandardsIgnoreLine
+		trigger_error( esc_html( $tmp_file->get_error_message() ), E_USER_WARNING );
+
+		return 0;
+	}
+
+	// Sideload the media.
+	$image_id = media_handle_sideload( $file_array, $post_id );
+
+	if ( is_wp_error( $image_id ) ) {
+		@unlink( $file_array['tmp_name'] ); // @codingStandardsIgnoreLine
+		trigger_error( esc_html( $image_id->get_error_message() ), E_USER_WARNING );
+
+		return 0;
+	}
+
+	/*
+	 * Finally, store post meta. We'll always set _airstory_origin (the original image URL), but any
+	 * non-empty values in $metadata will also be set.
+	 */
+	add_post_meta( $image_id, '_airstory_origin', esc_url( $url ) );
+
+	foreach ( (array) $metadata as $meta_key => $meta_value ) {
+		if ( ! empty( $meta_value ) ) {
+			update_post_meta( $image_id, $meta_key, $meta_value );
+		}
+	}
+
+	return $image_id;
+}
+
+/**
  * Sideload media referenced from within the Airstory content.
  *
  * While this could be a good use for DOMDocument, that extension can get rather finicky. As we're
@@ -72,11 +126,6 @@ function sideload_images( $post_id ) {
 	if ( ! $post ) {
 		return 0;
 	}
-
-	// Load the dependencies for media sideloading.
-	require_once ABSPATH . 'wp-admin/includes/media.php';
-	require_once ABSPATH . 'wp-admin/includes/file.php';
-	require_once ABSPATH . 'wp-admin/includes/image.php';
 
 	/*
 	 * Use DOMDocument to find all images in the post content.
@@ -105,34 +154,22 @@ function sideload_images( $post_id ) {
 
 		// Ensure we only sideload each piece of media once.
 		if ( isset( $replaced[ $src ] ) ) {
-			$local = $replaced[ $src ];
+			$local_url = $replaced[ $src ];
 
 		} else {
-			// Sideload the media.
-			$local = media_sideload_image( esc_url_raw( $src ), $post_id, null, 'src' );
+			$image_id = sideload_image( $src, $post_id, array(
+				'_wp_attachment_image_alt' => sanitize_text_field( $image->getAttribute( 'alt' ) ),
+			) );
 
-			if ( is_wp_error( $local ) ) {
+			if ( ! $image_id ) {
 				continue;
 			}
 
-			// Retrieve the ID of the image we just sideloaded.
-			$image_id = get_attachment_id_by_url( $local );
-
-			if ( 0 !== $image_id ) {
-				add_post_meta( $image_id, '_airstory_origin', esc_url( $src ) );
-
-				// Extract the alt attribute from the image.
-				$alt = $image->getAttribute( 'alt' );
-
-				if ( ! empty( $alt ) ) {
-					update_post_meta( $image_id, '_wp_attachment_image_alt', sanitize_text_field( $alt ) );
-				}
-			}
-
-			$replaced[ $src ] = $local;
+			$local_url        = wp_get_attachment_url( $image_id );
+			$replaced[ $src ] = $local_url;
 		}
 
-		$image->setAttribute( 'src', $local );
+		$image->setAttribute( 'src', $local_url );
 		$replacements++;
 	}
 
@@ -196,26 +233,4 @@ function set_attachment_author( $post ) {
 	$post['post_author'] = (int) $parent_post->post_author;
 
 	return $post;
-}
-
-/**
- * Get the ID of an attachment based on its (post-sideload) URL.
- *
- * This is a bit of a workaround, as WordPress doesn't expose a native method of retrieving an
- * attachment's ID based on its URL. Instead, we'll use a quick database query.
- *
- * @link https://pippinsplugins.com/retrieve-attachment-id-from-image-url/
- *
- * @global $wpdb
- *
- * @param string $attachment_url The attachment URL.
- * @return int Either an attachment ID or 0 if no matching attachment was found.
- */
-function get_attachment_id_by_url( $attachment_url ) {
-	global $wpdb;
-
-	return (int) $wpdb->get_var( $wpdb->prepare(
-		"SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND guid = %s LIMIT 1;",
-		esc_url_raw( $attachment_url )
-	) );
 }

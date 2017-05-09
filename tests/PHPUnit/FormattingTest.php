@@ -82,6 +82,146 @@ EOT;
 		$this->assertEquals( $emoji, get_body_contents( $emoji ), 'Multi-byte characters like emoji appear to be encoded improperly.' );
 	}
 
+	public function testSideloadImage() {
+		$url  = 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
+		$meta = array(
+			'some-key'  => 'some-value',
+			'empty-key' => null,
+		);
+
+		M::userFunction( 'download_url', array(
+			'args'   => array( $url ),
+			'return' => '_tmpfile',
+		) );
+
+		M::userFunction( 'media_handle_sideload', array(
+			'args'   => array( array( 'name' => 'image.jpg', 'tmp_name' => '_tmpfile' ), 123 ),
+			'return' => 42,
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'add_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 42, '_airstory_origin', $url ),
+		) );
+
+		M::userFunction( 'update_post_meta', array(
+			'times'  => 1,
+			'args'   => array( 42, 'some-key', 'some-value' ),
+		) );
+
+		M::userFunction( 'update_post_meta', array(
+			'times'  => 0,
+			'args'   => array( 42, 'empty-key', null ),
+		) );
+
+		M::passthruFunction( 'esc_url' );
+		M::passthruFunction( 'esc_url_raw' );
+
+		sideload_image( $url, 123, $meta );
+	}
+
+	/**
+	 * @expectedException        PHPUnit_Framework_Error_Warning
+	 * @expectedExceptionMessage Error Message
+	 */
+	public function testSideloadImageReturnsEarlyIfSideloadFails() {
+		$url   = 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
+		$error = Mockery::mock( 'WP_Error' )->makePartial();
+		$error->shouldReceive( 'get_error_message' )
+			->once()
+			->andReturn( 'Error Message' );
+
+		M::userFunction( 'download_url', array(
+			'args'   => array( $url ),
+			'return' => '_tmpfile',
+		) );
+
+		M::userFunction( 'media_handle_sideload', array(
+			'return' => $error,
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return_in_order' => array( false, true ),
+		) );
+
+		M::passthruFunction( 'esc_html' );
+		M::passthruFunction( 'esc_url_raw' );
+
+		$this->assertEquals( 0, sideload_image( $url, 123 ) );
+	}
+
+	/**
+	 * @expectedException        PHPUnit_Framework_Error_Warning
+	 * @expectedExceptionMessage Error Message
+	 */
+	public function testSideloadImageReturnsEarlyIfDownloadUrlFails() {
+		$url   = 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
+		$error = Mockery::mock( 'WP_Error' )->makePartial();
+		$error->shouldReceive( 'get_error_message' )
+			->once()
+			->andReturn( 'Error Message' );
+
+		M::userFunction( 'download_url', array(
+			'args'   => array( $url ),
+			'return' => $error,
+		) );
+
+		M::userFunction( 'media_handle_sideload', array(
+			'times'  => 0,
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => true,
+		) );
+
+		M::passthruFunction( 'esc_html' );
+		M::passthruFunction( 'esc_url_raw' );
+
+		$this->assertEquals( 0, sideload_image( $url, 123 ) );
+	}
+
+	/**
+	 * Media sideloading outside of the wp-admin context requires several files be included.
+	 *
+	 * @link https://codex.wordpress.org/Function_Reference/media_sideload_image#Notes
+	 *
+	 * @runInSeparateProcess
+	 * @expectedException PHPUnit_Framework_Error_Warning
+	 */
+	public function testSideloadImageLoadsMediaDependencies() {
+		$error = Mockery::mock( 'WP_Error' )->makePartial();
+		$error->shouldReceive( 'get_error_message' )
+			->once()
+			->andReturn( 'Error Message' );
+
+		M::userFunction( 'download_url', array(
+			'return' => $error,
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => true,
+		) );
+
+		M::passthruFunction( 'esc_url_raw' );
+
+		sideload_image( 123 );
+
+		$required_files = array(
+			ABSPATH . 'wp-admin/includes/media.php',
+			ABSPATH . 'wp-admin/includes/file.php',
+			ABSPATH . 'wp-admin/includes/image.php',
+		);
+		$included_files = get_included_files();
+
+		foreach ( $required_files as $file ) {
+			$this->assertTrue( in_array( $file, $included_files, true ), 'Missing required dependency for media sideloading: ' . $file );
+		}
+	}
+
 	public function testSideloadImages() {
 		$content = <<<EOT
 <h1>Here's an image</h1>
@@ -101,26 +241,12 @@ EOT;
 			'return' => $post,
 		) );
 
-		M::userFunction( 'media_sideload_image', array(
+		M::userFunction( __NAMESPACE__ . '\sideload_image', array(
 			'times'  => 1,
-			'args'   => array( 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg', 123, null, 'src' ),
-			'return' => 'https://example.com/image.jpg',
-		) );
-
-		M::userFunction( __NAMESPACE__ . '\get_attachment_id_by_url', array(
-			'times'  => 1,
-			'args'   => array( 'https://example.com/image.jpg' ),
-			'return' => 125,
-		) );
-
-		M::userFunction( 'update_post_meta', array(
-			'times'  => 1,
-			'args'   => array( 125, '_wp_attachment_image_alt', 'my alt text' ),
-		) );
-
-		M::userFunction( 'add_post_meta', array(
-			'times'  => 1,
-			'args'   => array( 125, '_airstory_origin', 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg' ),
+			'args'   => array( 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg', 123, array(
+				'_wp_attachment_image_alt' => 'my alt text',
+			) ),
+			'return' => 42,
 		) );
 
 		M::userFunction( 'wp_update_post', array(
@@ -132,8 +258,9 @@ EOT;
 			},
 		) );
 
-		M::userFunction( 'is_wp_error', array(
-			'return' => false,
+		M::userFunction( 'wp_get_attachment_url', array(
+			'args'   => array( 42 ),
+			'return' => 'https://example.com/image.jpg',
 		) );
 
 		M::passthruFunction( 'esc_url' );
@@ -161,23 +288,12 @@ EOT;
 			'return' => $post,
 		) );
 
-		M::userFunction( 'media_sideload_image', array(
-			'times'  => 1,
+		M::userFunction( __NAMESPACE__ . '\sideload_image', array(
+			'return' => 42,
+		) );
+
+		M::userFunction( 'wp_get_attachment_url', array(
 			'return' => 'https://example.com/image.jpg',
-		) );
-
-		M::userFunction( __NAMESPACE__ . '\get_attachment_id_by_url', array(
-			'return' => 125,
-		) );
-
-		M::userFunction( 'update_post_meta', array(
-			'times'  => 1,
-			'args'   => array( 125, '_wp_attachment_image_alt', 'alt text' ),
-		) );
-
-		M::userFunction( 'add_post_meta', array(
-			'times'  => 1,
-			'args'   => array( 125, '_airstory_origin', 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg' ),
 		) );
 
 		M::userFunction( 'wp_update_post', array(
@@ -186,10 +302,6 @@ EOT;
 					$this->fail( 'Expected image replacement did not occur!' );
 				}
 			},
-		) );
-
-		M::userFunction( 'is_wp_error', array(
-			'return' => false,
 		) );
 
 		M::passthruFunction( 'esc_url' );
@@ -217,35 +329,9 @@ EOT;
 			'return' => $post,
 		) );
 
-		M::userFunction( 'media_sideload_image', array(
-			'return' => function ( $image_url ) {
-				return 'https://example.com/' . basename( $image_url );
-			},
-		) );
-
-		M::userFunction( __NAMESPACE__ . '\get_attachment_id_by_url', array(
+		M::userFunction( __NAMESPACE__ . '\sideload_image', array(
 			'times'           => 2,
-			'return_in_order' => array( 125, 126 ),
-		) );
-
-		M::userFunction( 'update_post_meta', array(
-			'times'  => 1,
-			'args'   => array( 125, '_wp_attachment_image_alt', 'alt text' ),
-		) );
-
-		M::userFunction( 'update_post_meta', array(
-			'times'  => 1,
-			'args'   => array( 126, '_wp_attachment_image_alt', 'alt-alt text' ),
-		) );
-
-		M::userFunction( 'add_post_meta', array(
-			'times'  => 1,
-			'args'   => array( 125, '_airstory_origin', 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg' ),
-		) );
-
-		M::userFunction( 'add_post_meta', array(
-			'times'  => 1,
-			'args'   => array( 126, '_airstory_origin', 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image2.jpg' ),
+			'return_in_order' => array( 42, 43 ),
 		) );
 
 		M::userFunction( 'wp_update_post', array(
@@ -256,81 +342,16 @@ EOT;
 			},
 		) );
 
-		M::userFunction( 'is_wp_error', array(
-			'return' => false,
+		M::userFunction( 'wp_get_attachment_url', array(
+			'return_in_order' => array(
+				'https://example.com/image.jpg',
+				'https://example.com/image2.jpg',
+			),
 		) );
 
-		M::passthruFunction( 'esc_url' );
 		M::passthruFunction( 'sanitize_text_field' );
 
 		$this->assertEquals( 2, sideload_images( 123 ) );
-	}
-
-	public function testSideloadImagesDoesntUpdatePostMetaIfNoMatchingAttachmentIdWasFound() {
-		$content = <<<EOT
-<h1>Here's an image</h1>
-<p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="my alt text" /></p>
-EOT;
-
-		$post = new \stdClass;
-		$post->post_content = $content;
-
-		M::userFunction( 'get_post', array(
-			'return' => $post,
-		) );
-
-		M::userFunction( 'media_sideload_image', array(
-			'return' => 'https://example.com/image.jpg',
-		) );
-
-		M::userFunction( __NAMESPACE__ . '\get_attachment_id_by_url', array(
-			'return' => 0,
-		) );
-
-		M::userFunction( 'update_post_meta', array(
-			'times'  => 0,
-		) );
-
-		M::userFunction( 'add_post_meta', array(
-			'times'  => 0,
-		) );
-
-		M::userFunction( 'wp_update_post' );
-
-		M::userFunction( 'is_wp_error', array(
-			'return' => false,
-		) );
-
-		sideload_images( 123 );
-	}
-
-	/**
-	 * Media sideloading outside of the wp-admin context requires several files be included.
-	 *
-	 * @link https://codex.wordpress.org/Function_Reference/media_sideload_image#Notes
-	 *
-	 * @runInSeparateProcess
-	 */
-	public function testSideloadImagesLoadsMediaDependencies() {
-		$post = new \stdClass;
-		$post->post_content = 'nothing to do here';
-
-		M::userFunction( 'get_post', array(
-			'return' => $post,
-		) );
-
-		sideload_images( 123 );
-
-		$required_files = array(
-			ABSPATH . 'wp-admin/includes/media.php',
-			ABSPATH . 'wp-admin/includes/file.php',
-			ABSPATH . 'wp-admin/includes/image.php',
-		);
-		$included_files = get_included_files();
-
-		foreach ( $required_files as $file ) {
-			$this->assertTrue( in_array( $file, $included_files, true ), 'Missing required dependency for media sideloading: ' . $file );
-		}
 	}
 
 	public function testSideloadImagesReturnsEarlyIfInvalidPostID() {
@@ -438,29 +459,5 @@ EOT;
 		) );
 
 		$this->assertSame( $post, set_attachment_author( $post ), 'Do not attempt to override the post_author if the post_parent either does not exist or doesn\'t have an author ID' );
-	}
-
-	public function testGetAttachmentIdByUrl() {
-		global $wpdb;
-
-		$wpdb = Mockery::mock( 'WPDB' )->makePartial();
-		$wpdb->posts = 'my_posts_table';
-		$wpdb->shouldReceive( 'get_var' )
-			->once()
-			->with( 'PREPARED SQL' )
-			->andReturn( 42 );
-		$wpdb->shouldReceive( 'prepare' )
-			->once()
-			->andReturnUsing( function ( $query, $url ) {
-				if ( 'http://example.com/image.jpg' !== $url ) {
-					$this->fail( 'The attachment URL should be passed to the database query' );
-				}
-
-				return 'PREPARED SQL';
-			} );
-
-		M::passthruFunction( 'esc_url_raw' );
-
-		$this->assertEquals( 42, get_attachment_id_by_url( 'http://example.com/image.jpg' ) );
 	}
 }

@@ -53,8 +53,8 @@ function set_token( $user_id, $token ) {
 	}
 
 	// Store the encrypted values and the IV.
-	update_user_meta( $user_id, '_airstory_token', $encrypted );
-	update_user_meta( $user_id, '_airstory_iv', $iv );
+	update_user_option( $user_id, '_airstory_token', $encrypted, true );
+	update_user_option( $user_id, '_airstory_iv', $iv, true );
 
 	return $encrypted;
 }
@@ -73,8 +73,8 @@ function get_token( $user_id ) {
 		return '';
 	}
 
-	$encrypted = get_user_meta( $user_id, '_airstory_token', true );
-	$iv        = get_user_meta( $user_id, '_airstory_iv', true );
+	$encrypted = get_user_option( '_airstory_token', $user_id );
+	$iv        = get_user_option( '_airstory_iv', $user_id );
 
 	// Return early if either meta value is empty.
 	if ( empty( $encrypted ) || empty( $iv ) ) {
@@ -98,7 +98,7 @@ function get_token( $user_id ) {
  * @return bool Were the relevant user meta entries deleted?
  */
 function clear_token( $user_id ) {
-	delete_user_meta( $user_id, '_airstory_iv' );
+	delete_user_option( $user_id, '_airstory_iv', true );
 
-	return delete_user_meta( $user_id, '_airstory_token' );
+	return delete_user_option( $user_id, '_airstory_token', true );
 }

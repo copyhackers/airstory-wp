@@ -10,6 +10,9 @@ namespace Airstory\Formatting;
 use WP_Mock as M;
 use Mockery;
 
+/**
+ * @require extension dom
+ */
 class FormattingTest extends \Airstory\TestCase {
 
 	protected $testFiles = array(

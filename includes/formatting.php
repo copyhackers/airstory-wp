@@ -80,7 +80,10 @@ function sideload_images( $post_id ) {
 
 	$content = $post->post_content;
 	$pattern = '/["\'](https?:\/\/images.airstory.co\/[^"\']+)/i';
-	preg_match_all( $pattern, $content, $matches );
+
+	if ( ! preg_match_all( $pattern, $content, $matches ) ) {
+		return 0;
+	}
 
 	foreach ( array_unique( $matches['1'] ) as $remote ) {
 		$local = media_sideload_image( esc_url_raw( $remote ), $post_id, null, 'src' );

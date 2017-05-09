@@ -44,6 +44,39 @@ function set_user_data( $user_id, $key, $value = null ) {
 }
 
 /**
+ * Display a notification to the user following plugin activation, guiding them to the settings page.
+ */
+function show_user_connection_notice() {
+	$user_id = wp_get_current_user()->ID;
+
+	// Ensure we only ever show this to each user once.
+	if ( get_user_data( $user_id, 'welcome_message_seen', false ) ) {
+		return;
+	}
+
+	$message = sprintf(
+		__( 'To get started, please connect WordPress to your Airstory account <a href="%s#airstory">on your profile page</a>.', 'airstory' ),
+		esc_url( get_edit_user_link() )
+	);
+?>
+
+	<div class="notice notice-success is-dismissible">
+		<p><strong><?php esc_html_e( 'Welcome to Airstory!', 'airstory' ); ?></strong></p>
+		<p><?php echo wp_kses_post( $message ); ?></p>
+		<button type="button" class="notice-dismiss">
+			<span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'airstory' ); ?></span>
+		</button>
+	</div>
+
+<?php
+
+	// Indicate that the user has seen the welcome message.
+	set_user_data( $user_id, 'welcome_message_seen', true );
+}
+add_action( 'admin_notices', __NAMESPACE__ . '\show_user_connection_notice' );
+add_action( 'network_admin_notices', __NAMESPACE__ . '\show_user_connection_notice' );
+
+/**
  * Render the "Airstory" settings section on the user profile page.
  *
  * @param WP_User $user The current user object.
@@ -53,7 +86,7 @@ function render_profile_settings( $user ) {
 	$blogs   = get_available_blogs( $user->ID );
 ?>
 
-	<h2><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>
+	<h2 id="airstory"><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>
 	<table class="form-table">
 		<tbody>
 			<tr>

@@ -99,6 +99,71 @@ class SettingsTest extends \Airstory\TestCase {
 		$this->assertTrue( set_user_data( 5, 'some-different-key', 'bar' ) );
 	}
 
+	public function testShowUserConnectionNotice() {
+		$user = new \stdClass;
+		$user->ID = 5;
+
+		M::userFunction( __NAMESPACE__ . '\get_user_data', array(
+			'times'  => 1,
+			'args'   => array( 5, 'welcome_message_seen', false ),
+			'return' => false,
+		) );
+
+		M::userFunction( 'wp_get_current_user', array(
+			'return' => $user,
+		) );
+
+		M::userFunction( 'get_edit_user_link', array(
+			'return' => 'http://example.com/profile.php',
+		) );
+
+		M::passthruFunction( 'esc_url' );
+		M::passthruFunction( 'esc_html_e' );
+		M::passthruFunction( 'wp_kses_post' );
+
+		$this->expectOutputRegex( '@http://example.com/profile.php@' );
+
+		show_user_connection_notice();
+	}
+
+	public function testShowUserConnectionNoticeDisplaysNothingIfTheUserHasAlreadySeenTheMessage() {
+		$user = new \stdClass;
+		$user->ID = 5;
+
+		M::userFunction( __NAMESPACE__ . '\get_user_data', array(
+			'times'  => 1,
+			'args'   => array( 5, 'welcome_message_seen', false ),
+			'return' => true,
+		) );
+
+		M::userFunction( 'wp_get_current_user', array(
+			'return' => $user,
+		) );
+
+		$this->expectOutputString( '' );
+
+		show_user_connection_notice();
+	}
+
+	public function testRenderProfileSettings() {
+		$user = new \stdClass;
+		$user->ID = 5;
+
+		M::userFunction( 'get_user_meta', array(
+			'return' => null,
+		) );
+
+		M::userFunction( 'wp_nonce_field', array(
+			'times'  => 1,
+			'args'   => array( 'airstory-profile', '_airstory_nonce' ),
+		) );
+
+		$this->expectOutputRegex( '/\<h2 id="airstory"\>/', 'The section heading should have an explicit #airstory ID attribute.' );
+		$this->expectOutputRegex( '/\<input name="airstory-token"/', 'When get_user_meta returns empty, the user should be shown the airstory-token input.' );
+
+		render_profile_settings( $user );
+	}
+
 	public function testRenderProfileSettingsOnlyShowsSiteListIfUserIsMemberOfMoreThanOneSite() {
 		$user = new \stdClass;
 		$user->ID = 5;

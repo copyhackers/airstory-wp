@@ -99,6 +99,10 @@ function has_connection( $user_id ) {
  * @param int $user_id The ID of the user who has connected.
  */
 function register_connection( $user_id ) {
+	if ( has_connection( $user_id ) ) {
+		return;
+	}
+
 	$profile = get_user_profile( $user_id );
 
 	if ( empty( $profile ) ) {

@@ -145,6 +145,10 @@ class ConnectionTest extends \Airstory\TestCase {
 			return 'connection-id';
 		} );
 
+		M::userFunction( __NAMESPACE__ . '\has_connection', array(
+			'return' => false,
+		) );
+
 		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
 			'return' => array(
 				'email' => 'test@example.com',
@@ -185,6 +189,10 @@ class ConnectionTest extends \Airstory\TestCase {
 	}
 
 	public function testRegisterConnectionReturnsEarlyIfNoProfileDataFound() {
+		M::userFunction( __NAMESPACE__ . '\has_connection', array(
+			'return' => false,
+		) );
+
 		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
 			'return' => array(),
 		) );
@@ -200,6 +208,10 @@ class ConnectionTest extends \Airstory\TestCase {
 		Patchwork\replace( 'Airstory\API::post_target', function () use ( $response ) {
 			return $response;
 		} );
+
+		M::userFunction( __NAMESPACE__ . '\has_connection', array(
+			'return' => false,
+		) );
 
 		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
 			'return' => array(
@@ -220,6 +232,18 @@ class ConnectionTest extends \Airstory\TestCase {
 		) );
 
 		$this->assertNull( register_connection( 123 ) );
+	}
+
+	public function testRegisterConnectionChecksForExistingConnectionFirst() {
+		M::userFunction( __NAMESPACE__ . '\has_connection', array(
+			'return' => true,
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
+			'times'  => 0,
+		) );
+
+		register_connection( 123 );
 	}
 
 	public function testUpdateConnection() {

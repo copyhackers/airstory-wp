@@ -146,7 +146,7 @@ function update_connection( $user_id ) {
 	}
 
 	// Overwrite the existing target info for $connection_id.
-	$connection_id = get_user_meta( $user_id, '_airstory_target', true );
+	$connection_id = get_user_option( '_airstory_target', $user_id );
 	$target        = get_target( $user_id );
 	$api           = new Airstory\API;
 	$response      = $api->put_target( $profile['email'], $connection_id, $target );

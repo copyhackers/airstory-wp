@@ -241,8 +241,8 @@ class ConnectionTest extends \Airstory\TestCase {
 			'return' => array( 'email' => 'test@example.com' ),
 		) );
 
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 5, '_airstory_target', true ),
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( '_airstory_target', 5 ),
 			'return' => $target,
 		) );
 

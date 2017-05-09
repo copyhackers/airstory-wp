@@ -183,3 +183,25 @@ function set_attachment_author( $post ) {
 
 	return $post;
 }
+
+/**
+ * Get the ID of an attachment based on its (post-sideload) URL.
+ *
+ * This is a bit of a workaround, as WordPress doesn't expose a native method of retrieving an
+ * attachment's ID based on its URL. Instead, we'll use a quick database query.
+ *
+ * @link https://pippinsplugins.com/retrieve-attachment-id-from-image-url/
+ *
+ * @global $wpdb
+ *
+ * @param string $attachment_url The attachment URL.
+ * @return int Either an attachment ID or 0 if no matching attachment was found.
+ */
+function get_attachment_id_by_url( $attachment_url ) {
+	global $wpdb;
+
+	return (int) $wpdb->get_var( $wpdb->prepare(
+		"SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND guid = %s LIMIT 1;",
+		esc_url_raw( $attachment_url )
+	) );
+}

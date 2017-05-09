@@ -337,4 +337,28 @@ EOT;
 
 		$this->assertSame( $post, set_attachment_author( $post ), 'Do not attempt to override the post_author if the post_parent either does not exist or doesn\'t have an author ID' );
 	}
+
+	public function testGetAttachmentIdByUrl() {
+		global $wpdb;
+
+		$wpdb = Mockery::mock( 'WPDB' )->makePartial();
+		$wpdb->posts = 'my_posts_table';
+		$wpdb->shouldReceive( 'get_var' )
+			->once()
+			->with( 'PREPARED SQL' )
+			->andReturn( 42 );
+		$wpdb->shouldReceive( 'prepare' )
+			->once()
+			->andReturnUsing( function ( $query, $url ) {
+				if ( 'http://example.com/image.jpg' !== $url ) {
+					$this->fail( 'The attachment URL should be passed to the database query' );
+				}
+
+				return 'PREPARED SQL';
+			} );
+
+		M::passthruFunction( 'esc_url_raw' );
+
+		$this->assertEquals( 42, get_attachment_id_by_url( 'http://example.com/image.jpg' ) );
+	}
 }

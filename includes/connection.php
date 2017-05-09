@@ -66,6 +66,15 @@ function get_target( $user_id ) {
 }
 
 /**
+ * Display an error if the user was unable to authenticate with Airstory.
+ *
+ * @param WP_Error $errors Current user errors, passed by reference.
+ */
+function user_connection_error( &$errors ) {
+	$errors->add( 'airstory-connection', __( 'WordPress was unable to authenticate with Airstory, please try again.', 'airstory' ) );
+}
+
+/**
  * Does the given user have a connection to Airstory?
  *
  * Note that this function does not check the validity of a connection, only whether or not one
@@ -93,6 +102,8 @@ function register_connection( $user_id ) {
 	$profile = get_user_profile( $user_id );
 
 	if ( empty( $profile ) ) {
+		add_action( 'user_profile_update_errors', __NAMESPACE__ . '\user_connection_error' );
+
 		return;
 	}
 

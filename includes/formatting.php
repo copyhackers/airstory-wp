@@ -1,6 +1,6 @@
 <?php
 /**
- * Core functionality for Airstory.
+ * Formatters and other helpers to prepare Airstory content for WordPress.
  *
  * @package Airstory.
  */
@@ -66,10 +66,24 @@ add_filter( 'airstory_before_insert_content', __NAMESPACE__ . '\get_body_content
  * @return int The number of replacements made.
  */
 function sideload_images( $post_id ) {
-	$post    = get_post( $post_id );
+	$post = get_post( $post_id );
+
+	// Return early (with "0" replacements) if no matching post was found.
+	if ( ! $post ) {
+		return 0;
+	}
+
+	// Load the dependencies for media sideloading.
+	require_once ABSPATH . 'wp-admin/includes/media.php';
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+
 	$content = $post->post_content;
 	$pattern = '/["\'](https?:\/\/images.airstory.co\/[^"\']+)/i';
-	preg_match_all( $pattern, $content, $matches );
+
+	if ( ! preg_match_all( $pattern, $content, $matches ) ) {
+		return 0;
+	}
 
 	foreach ( array_unique( $matches['1'] ) as $remote ) {
 		$local = media_sideload_image( esc_url_raw( $remote ), $post_id, null, 'src' );
@@ -89,7 +103,7 @@ function sideload_images( $post_id ) {
 
 	return count( $matches['1'] );
 }
-add_action( 'wp_async_airstory_import_post', __NAMESPACE__ . '\sideload_images' );
+add_action( 'airstory_import_post', __NAMESPACE__ . '\sideload_images' );
 
 /**
  * Strip the <div> that Airstory wraps around the outer content by default.

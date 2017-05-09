@@ -122,6 +122,13 @@ class ConnectionTest extends \Airstory\TestCase {
 		$this->assertEquals( 'wordpress', $response['type'] );
 	}
 
+	public function testUserConnectionError() {
+		$error = Mockery::mock( 'WP_Error' )->makePartial();
+		$error->shouldReceive( 'add' )->once();
+
+		user_connection_error( $error );
+	}
+
 	public function testHasConnection() {
 		M::userFunction( 'get_user_option', array(
 			'args'            => array( '_airstory_target', 5 ),
@@ -181,6 +188,8 @@ class ConnectionTest extends \Airstory\TestCase {
 		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
 			'return' => array(),
 		) );
+
+		M::expectActionAdded( 'user_profile_update_errors', __NAMESPACE__ . '\user_connection_error' );
 
 		$this->assertNull( register_connection( 123 ) );
 	}

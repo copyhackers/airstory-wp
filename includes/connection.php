@@ -15,6 +15,7 @@ namespace Airstory\Connection;
 
 use Airstory;
 use Airstory\Credentials as Credentials;
+use Airstory\Settings as Settings;
 
 /**
  * Retrieve basic information about the user.
@@ -51,15 +52,39 @@ function get_user_profile( $user_id = null ) {
  * Build a target array for Airstory.
  *
  * @param int $user_id The ID of the WordPress user associated with the target.
- * @return array An array that will serve as a the post body for the target, containing three keys:
- *               identifier (user ID), name (blog name), and url (webhook URL).
+ * @return array An array that will serve as a the post body for the target, containing four keys:
+ *               identifier (user ID), name (blog name), url (webhook URL), and the type of
+ *               connection ("wordpress").
  */
 function get_target( $user_id ) {
 	return array(
 		'identifier' => (string) $user_id, // Airstory expects a string.
 		'name'       => get_bloginfo( 'name' ),
 		'url'        => get_rest_url( null, '/airstory/v1/webhook' ),
+		'type'       => 'wordpress',
 	);
+}
+
+/**
+ * Display an error if the user was unable to authenticate with Airstory.
+ *
+ * @param WP_Error $errors Current user errors, passed by reference.
+ */
+function user_connection_error( &$errors ) {
+	$errors->add( 'airstory-connection', __( 'WordPress was unable to authenticate with Airstory, please try again.', 'airstory' ) );
+}
+
+/**
+ * Does the given user have a connection to Airstory?
+ *
+ * Note that this function does not check the validity of a connection, only whether or not one
+ * exists in the database.
+ *
+ * @param int $user_id The user ID to inspect.
+ * @return bool True if there's an _airstory_target for the given user, false otherwise.
+ */
+function has_connection( $user_id ) {
+	return (bool) get_user_option( '_airstory_target', $user_id );
 }
 
 /**
@@ -74,9 +99,15 @@ function get_target( $user_id ) {
  * @param int $user_id The ID of the user who has connected.
  */
 function register_connection( $user_id ) {
+	if ( has_connection( $user_id ) ) {
+		return;
+	}
+
 	$profile = get_user_profile( $user_id );
 
 	if ( empty( $profile ) ) {
+		add_action( 'user_profile_update_errors', __NAMESPACE__ . '\user_connection_error' );
+
 		return;
 	}
 
@@ -89,8 +120,8 @@ function register_connection( $user_id ) {
 	}
 
 	// Store the profile and connection ID for the user.
-	update_user_meta( $user_id, '_airstory_profile', $profile );
-	update_user_meta( $user_id, '_airstory_target', sanitize_text_field( $connection_id ) );
+	Settings\set_user_data( $user_id, 'profile', $profile );
+	update_user_option( $user_id, '_airstory_target', sanitize_text_field( $connection_id ) );
 
 	/**
 	 * A connection between WordPress and Airstory has been established successfully.
@@ -119,7 +150,7 @@ function update_connection( $user_id ) {
 	}
 
 	// Overwrite the existing target info for $connection_id.
-	$connection_id = get_user_meta( $user_id, '_airstory_target', true );
+	$connection_id = get_user_option( '_airstory_target', $user_id );
 	$target        = get_target( $user_id );
 	$api           = new Airstory\API;
 	$response      = $api->put_target( $profile['email'], $connection_id, $target );
@@ -150,8 +181,8 @@ function update_connection( $user_id ) {
  * @param int $user_id The ID of the user who has disconnected.
  */
 function remove_connection( $user_id ) {
-	$profile       = get_user_meta( $user_id, '_airstory_profile', true );
-	$connection_id = get_user_meta( $user_id, '_airstory_target', true );
+	$profile       = Settings\get_user_data( $user_id, 'profile', array() );
+	$connection_id = get_user_option( '_airstory_target', $user_id );
 
 	if ( empty( $profile['email'] ) || empty( $connection_id ) ) {
 		return;
@@ -160,9 +191,8 @@ function remove_connection( $user_id ) {
 	$api = new Airstory\API;
 	$api->delete_target( $profile['email'], $connection_id );
 
-	// Clean up the post meta.
-	delete_user_meta( $user_id, '_airstory_profile', $profile );
-	delete_user_meta( $user_id, '_airstory_target', $connection_id );
+	// Clean up the user meta.
+	delete_user_option( $user_id, '_airstory_target' );
 
 	/**
 	 * A connection between WordPress and Airstory has been closed successfully.
@@ -173,6 +203,35 @@ function remove_connection( $user_id ) {
 	do_action( 'airstory_remove_connection', $user_id, $connection_id );
 }
 add_action( 'airstory_user_disconnect', __NAMESPACE__ . '\remove_connection' );
+
+/**
+ * Given a user ID and an array of blog IDs, connect or disconnect users from Airstory.
+ *
+ * @param int   $user_id  The user ID to update.
+ * @param array $blog_ids An array of blog IDs where the user should be connected. Any blog *not*
+ *                        in the array will be disconnected.
+ */
+function set_connected_blogs( $user_id, $blog_ids ) {
+	if ( ! is_multisite() ) {
+		return;
+	}
+
+	$available_blogs = Settings\get_available_blogs( $user_id );
+	$blog_ids        = array_map( 'absint', (array) $blog_ids );
+
+	foreach ( $available_blogs as $blog ) {
+		switch_to_blog( $blog['id'] );
+
+		if ( in_array( $blog['id'], $blog_ids, true ) ) {
+			register_connection( $user_id );
+
+		} else {
+			remove_connection( $user_id );
+		}
+
+		restore_current_blog();
+	}
+}
 
 /**
  * Triggers an asynchronous regeneration of all connections.

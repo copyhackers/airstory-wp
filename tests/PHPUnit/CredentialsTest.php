@@ -19,6 +19,7 @@ class CredentialsTest extends \Airstory\TestCase {
 
 	protected $testFiles = array(
 		'credentials.php',
+		'settings.php',
 	);
 
 	public function testGetIv() {
@@ -45,14 +46,10 @@ class CredentialsTest extends \Airstory\TestCase {
 			'return' => $iv,
 		) );
 
-		M::userFunction( 'update_user_meta', array(
+		M::userFunction( 'Airstory\Settings\set_user_data', array(
 			'times'  => 1,
-			'args'   => array( 123, '_airstory_token', $encrypted ),
-		) );
-
-		M::userFunction( 'update_user_meta', array(
-			'times'  => 1,
-			'args'   => array( 123, '_airstory_iv', $iv ),
+			'args'   => array( 123, 'user_token', array( 'token' => $encrypted, 'iv' => $iv ) ),
+			'return' => true,
 		) );
 
 		$this->assertEquals( $encrypted, set_token( 123, $token ), 'The same string, encrypted twice with the same arguments, should produce the same result' );
@@ -71,14 +68,13 @@ class CredentialsTest extends \Airstory\TestCase {
 			'return' => new \stdClass,
 		) );
 
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 123, '_airstory_token', true ),
-			'return' => $encrypted,
-		) );
-
-		M::userFunction( 'get_user_meta', array(
-			'args'   => array( 123, '_airstory_iv', true ),
-			'return' => $iv,
+		M::userFunction( 'Airstory\Settings\get_user_data', array(
+			'times'  => 1,
+			'args'   => array( 123, 'user_token', false ),
+			'return' => array(
+				'token' => $encrypted,
+				'iv'    => $iv,
+			),
 		) );
 
 		M::passthruFunction( 'sanitize_text_field', array(
@@ -89,15 +85,9 @@ class CredentialsTest extends \Airstory\TestCase {
 	}
 
 	public function testClearToken() {
-		M::userFunction( 'delete_user_meta', array(
+		M::userFunction( 'Airstory\Settings\set_user_data', array(
 			'times'  => 1,
-			'args'   => array( 123, '_airstory_iv' ),
-			'return' => true,
-		) );
-
-		M::userFunction( 'delete_user_meta', array(
-			'times'  => 1,
-			'args'   => array( 123, '_airstory_token' ),
+			'args'   => array( 123, 'user_token', null ),
 			'return' => true,
 		) );
 

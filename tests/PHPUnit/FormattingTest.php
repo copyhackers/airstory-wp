@@ -84,9 +84,10 @@ EOT;
 <h1>Here's an image</h1>
 <p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="" /></p>
 EOT;
+		// DOMDocument uses HTML5-style <img> elements, without the closing slash.
 		$expected = <<<EOT
 <h1>Here's an image</h1>
-<p><img src="https://example.com/image.jpg" alt="" /></p>
+<p><img src="https://example.com/image.jpg" alt=""></p>
 EOT;
 
 		$post = new \stdClass;
@@ -127,8 +128,8 @@ EOT;
 EOT;
 		$expected = <<<EOT
 <h1>Here's the same image twice</h1>
-<p><img src="https://example.com/image.jpg" alt="" /></p>
-<p><img src="https://example.com/image.jpg" alt="" /></p>
+<p><img src="https://example.com/image.jpg" alt=""></p>
+<p><img src="https://example.com/image.jpg" alt=""></p>
 EOT;
 
 		$post = new \stdClass;
@@ -166,8 +167,8 @@ EOT;
 EOT;
 		$expected = <<<EOT
 <h1>Here's the same image twice</h1>
-<p><img src="https://example.com/image.jpg" alt="" /></p>
-<p><img src="https://example.com/image2.jpg" alt="" /></p>
+<p><img src="https://example.com/image.jpg" alt=""></p>
+<p><img src="https://example.com/image2.jpg" alt=""></p>
 EOT;
 
 		$post = new \stdClass;

@@ -78,22 +78,58 @@ function sideload_images( $post_id ) {
 	require_once ABSPATH . 'wp-admin/includes/file.php';
 	require_once ABSPATH . 'wp-admin/includes/image.php';
 
-	$content = $post->post_content;
-	$pattern = '/["\'](https?:\/\/images.airstory.co\/[^"\']+)/i';
+	/*
+	 * Use DOMDocument to find all images in the post content.
+	 *
+	 * To avoid DOMDocument::saveHTML() from destroying the inner contents, we'll temporarily inject
+	 * a generic <div>.
+	 */
+	$use_internal = libxml_use_internal_errors( true );
+	$body         = new \DOMDocument;
+	$body->loadHTML( '<div>' . $post->post_content . '</div>', LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED );
+	$images       = $body->getElementsByTagName( 'img' );
+	$pattern      = '/^https?:\/\/images.airstory.co\//i';
+	$replaced     = array();
+	$replacements = 0;
 
-	if ( ! preg_match_all( $pattern, $content, $matches ) ) {
-		return 0;
-	}
+	foreach ( $images as $image ) {
+		$src = $image->getAttribute( 'src' );
 
-	foreach ( array_unique( $matches['1'] ) as $remote ) {
-		$local = media_sideload_image( esc_url_raw( $remote ), $post_id, null, 'src' );
-
-		if ( is_wp_error( $local ) ) {
+		// Skip this image if it isn't Airstory-hosted media.
+		if ( ! preg_match( $pattern, $src ) ) {
 			continue;
 		}
 
-		$content = str_replace( $remote, $local, $content );
+		// Ensure we only sideload each piece of media once.
+		if ( isset( $replaced[ $src ] ) ) {
+			$local = $replaced[ $src ];
+
+		} else {
+			// Sideload the media.
+			$local = media_sideload_image( esc_url_raw( $src ), $post_id, null, 'src' );
+
+			if ( is_wp_error( $local ) ) {
+				continue;
+			}
+
+			$replaced[ $src ] = $local;
+		}
+
+		$image->setAttribute( 'src', $local );
+		$replacements++;
 	}
+
+	// If an error occurred while parsing the data, abort!
+	if ( libxml_get_errors() ) {
+		return 0;
+	}
+
+	// Reset the original error handling approach for libxml.
+	libxml_clear_errors();
+	libxml_use_internal_errors( $use_internal );
+
+	// Save down the replacements.
+	$content = strip_wrapping_div( $body->saveHTML( $body->getElementsByTagName( 'div' )->item( 0 ) ) );
 
 	// If changes have been made, update the post.
 	if ( $content !== $post->post_content ) {
@@ -101,7 +137,7 @@ function sideload_images( $post_id ) {
 		wp_update_post( $post );
 	}
 
-	return count( $matches['1'] );
+	return (int) $replacements;
 }
 add_action( 'airstory_import_post', __NAMESPACE__ . '\sideload_images' );
 

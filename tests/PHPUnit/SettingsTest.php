@@ -17,6 +17,27 @@ class SettingsTest extends \Airstory\TestCase {
 		'settings.php',
 	);
 
+	public function testRenderProfileSettingsOnlyShowsSiteListIfUserIsMemberOfMoreThanOneSite() {
+		$user = new \stdClass;
+		$user->ID = 5;
+
+		M::userFunction( __NAMESPACE__ . '\get_available_blogs', array(
+			'return' => array( 1 ),
+		) );
+
+		M::passthruFunction( 'esc_html' );
+		M::passthruFunction( 'wp_nonce_field' );
+
+		ob_start();
+		render_profile_settings( $user );
+
+		$this->assertFalse(
+			strpos( $this->getActualOutput(), 'name="airstory-sites[]"' ),
+			'The list of sites should only be shown if the user is a member of more than one site'
+		);
+		ob_end_clean();
+	}
+
 	public function testSaveProfileSettings() {
 		$_POST = array(
 			'_airstory_nonce' => 'abc123',
@@ -42,8 +63,66 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => true,
 		) );
 
+		M::userFunction( 'is_multisite', array(
+			'return' => false,
+		) );
+
 		M::expectAction( 'airstory_user_connect', 123 );
 
+		M::passthruFunction( 'sanitize_text_field' );
+
+		$this->assertTrue( save_profile_settings( 123 ) );
+	}
+
+	public function testSaveProfileSettingsWithSiteList() {
+		$_POST = array(
+			'_airstory_nonce' => 'abc123',
+			'airstory-token'  => 'my-secret-token',
+			'airstory-sites'  => array( 1, 2, 3 ),
+		);
+
+		M::userFunction( 'wp_verify_nonce', array(
+			'return' => true,
+		) );
+
+		M::userFunction( 'current_user_can', array(
+			'return' => true,
+		) );
+
+		M::userFunction( 'get_user_option', array(
+			'return' => 'my-old-token',
+		) );
+
+		M::userFunction( 'Airstory\Credentials\set_token', array(
+			'return' => true,
+		) );
+
+		M::userFunction( 'is_multisite', array(
+			'return' => true,
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\get_available_blogs', array(
+			'return' => array(
+				array( 'id' => 1 ),
+				array( 'id' => 2 ),
+				array( 'id' => 3 ),
+				array( 'id' => 4 ),
+				array( 'id' => 5 ),
+			),
+		) );
+
+		M::userFunction( 'switch_to_blog', array(
+			'times' => 5,
+		) );
+
+		M::userFunction( 'restore_current_blog', array(
+			'times' => 5,
+		) );
+
+		M::expectAction( 'airstory_user_connect', 123 );
+		M::expectAction( 'airstory_user_disconnect', 123 );
+
+		M::passthruFunction( 'absint' );
 		M::passthruFunction( 'sanitize_text_field' );
 
 		$this->assertTrue( save_profile_settings( 123 ) );

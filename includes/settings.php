@@ -17,13 +17,14 @@ use Airstory\Credentials as Credentials;
  */
 function render_profile_settings( $user ) {
 	$profile = get_user_option( '_airstory_profile', $user->ID );
+	$blogs   = get_available_blogs( $user->ID );
 ?>
 
 	<h2><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>
 	<table class="form-table">
 		<tbody>
 			<tr>
-				<th><label for="airstory-token"><?php esc_html_e( 'User Token', 'airstory' ); ?></label></th>
+				<th scope="row"><label for="airstory-token"><?php esc_html_e( 'User Token', 'airstory' ); ?></label></th>
 				<td>
 					<?php if ( ! empty( $profile['email'] ) ) : ?>
 
@@ -40,6 +41,28 @@ function render_profile_settings( $user ) {
 					<?php endif; ?>
 				</td>
 			</tr>
+
+			<?php if ( 1 < count( $blogs ) ) : ?>
+
+				<tr>
+					<th scope="row"><?php echo esc_html( _x( 'Connected Sites', 'label for list of WordPress blogs (multisite only)', 'airstory' ) ); ?></label></th>
+					<td>
+						<fieldset>
+							<legend class="screen-reader-text"><?php esc_html_e( 'Sites connected to Airstory', 'airstory' ); ?></legend>
+							<?php foreach ( $blogs as $blog ) : ?>
+
+								<p>
+									<label>
+										<input name="airstory-sites[]" type="checkbox" value="<?php echo esc_attr( $blog['id'] ); ?>" <?php checked( true, $blog['connected'] ); ?> />
+										<?php echo esc_html( $blog['title'] ); ?>
+									</label>
+								</p>
+
+							<?php endforeach; ?>
+					</td>
+				</tr>
+
+			<?php endif; ?>
 		</tbody>
 	</table>
 
@@ -62,7 +85,8 @@ function save_profile_settings( $user_id ) {
 		return false;
 	}
 
-	$token = get_user_option( '_airstory_token', $user_id );
+	$token  = get_user_option( '_airstory_token', $user_id );
+	$result = false;
 
 	// The user is disconnecting.
 	if ( $token && isset( $_POST['airstory-disconnect'] ) ) {
@@ -76,22 +100,46 @@ function save_profile_settings( $user_id ) {
 
 		return Credentials\clear_token( $user_id );
 
-	} elseif ( empty( $_POST['airstory-token'] ) ) {
+	} elseif ( ! empty( $_POST['airstory-token'] ) ) {
 
-		// No disconnection, but no token value, either.
-		return false;
+		$new_token = sanitize_text_field( $_POST['airstory-token'] );
+		$result    = Credentials\set_token( $user_id, $new_token );
 	}
 
-	// Store the user meta.
-	$new_token = sanitize_text_field( $_POST['airstory-token'] );
-	$result    = Credentials\set_token( $user_id, $new_token );
+	// If this isn't multisite, simply fire the airstory_user_connect hook.
+	if ( ! is_multisite() ) {
+		/**
+		 * A user has connected their account to Airstory.
+		 *
+		 * @param int $user_id  The ID of the user that just connected.
+		 */
+		do_action( 'airstory_user_connect', $user_id );
 
-	/**
-	 * A user has connected their account to Airstory.
-	 *
-	 * @param int $user_id The ID of the user that just connected.
-	 */
-	do_action( 'airstory_user_connect', $user_id );
+	} else {
+
+		// Determine which sites the user has connected; assume false unless told otherwise.
+		$available_blogs = get_available_blogs( $user_id );
+		$active_site_ids = array_map( 'absint', (array) $_POST['airstory-sites'] );
+
+		foreach ( $available_blogs as $blog ) {
+			switch_to_blog( $blog['id'] );
+
+			// Determine which action we're doing - connecting or disconnecting.
+			if ( in_array( $blog['id'], $active_site_ids, true ) ) {
+				/** This filter is documented in includes/settings.php. */
+				do_action( 'airstory_user_connect', $user_id );
+
+			} else {
+				/** This filter is documented in includes/settings.php. */
+				do_action( 'airstory_user_disconnect', $user_id );
+			}
+
+			restore_current_blog();
+
+			// Ensure the function still recognizes updates were made.
+			$result = true;
+		}
+	}
 
 	return (bool) $result;
 }

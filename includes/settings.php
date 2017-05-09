@@ -85,7 +85,7 @@ function save_profile_settings( $user_id ) {
 		return false;
 	}
 
-	$token  = get_user_option( '_airstory_token', $user_id );
+	$token = get_user_option( '_airstory_token', $user_id );
 
 	// The user is disconnecting.
 	if ( $token && isset( $_POST['airstory-disconnect'] ) ) {

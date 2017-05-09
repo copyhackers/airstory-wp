@@ -108,7 +108,8 @@ function save_profile_settings( $user_id ) {
 		Credentials\set_token( $user_id, sanitize_text_field( $_POST['airstory-token'] ) );
 	}
 
-	if ( is_multisite() ) {
+	// If the user has access to more than one site, update them accordingly.
+	if ( is_multisite() && ! empty( $_POST['airstory-sites'] ) ) {
 		$site_ids = array_map( 'absint', (array) $_POST['airstory-sites'] );
 		Connection\set_connected_blogs( $user_id, $site_ids );
 	}

@@ -114,6 +114,44 @@ class SettingsTest extends \Airstory\TestCase {
 		$this->assertTrue( save_profile_settings( 123 ) );
 	}
 
+	public function testSaveProfileSettingsDoesntLoopThroughSitesIfUserIsOnlyMemberOfOne() {
+		$_POST = array(
+			'_airstory_nonce' => 'abc123',
+			'airstory-token'  => 'my-secret-token',
+		);
+
+		M::userFunction( 'wp_verify_nonce', array(
+			'return' => true,
+		) );
+
+		M::userFunction( 'current_user_can', array(
+			'return' => true,
+		) );
+
+		M::userFunction( 'get_user_option', array(
+			'return' => 'my-old-token',
+		) );
+
+		M::userFunction( 'Airstory\Credentials\set_token', array(
+			'return' => true,
+		) );
+
+		M::userFunction( 'is_multisite', array(
+			'return' => true,
+		) );
+
+		M::userFunction( 'Airstory\Connection\set_connected_blogs', array(
+			'times'  => 0,
+		) );
+
+		M::expectAction( 'airstory_user_connect', 123 );
+
+		M::passthruFunction( 'absint' );
+		M::passthruFunction( 'sanitize_text_field' );
+
+		$this->assertTrue( save_profile_settings( 123 ) );
+	}
+
 	public function testSaveProfileSettingsChecksForNonce() {
 		$_POST = array();
 

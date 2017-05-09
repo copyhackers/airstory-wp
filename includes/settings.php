@@ -47,6 +47,13 @@ function set_user_data( $user_id, $key, $value = null ) {
  * Display a notification to the user following plugin activation, guiding them to the settings page.
  */
 function show_user_connection_notice() {
+	$user_id = wp_get_current_user()->ID;
+
+	// Ensure we only ever show this to each user once.
+	if ( get_user_data( $user_id, 'welcome_message_seen', false ) ) {
+		return;
+	}
+
 	$message = sprintf(
 		__( 'To get started, please connect WordPress to your Airstory account <a href="%s#airstory">on your profile page</a>.', 'airstory' ),
 		esc_url( get_edit_user_link() )
@@ -62,8 +69,12 @@ function show_user_connection_notice() {
 	</div>
 
 <?php
+
+	// Indicate that the user has seen the welcome message.
+	set_user_data( $user_id, 'welcome_message_seen', true );
 }
-/* add_action( 'admin_notices', __NAMESPACE__ . '\show_user_connection_notice' ); */
+add_action( 'admin_notices', __NAMESPACE__ . '\show_user_connection_notice' );
+add_action( 'network_admin_notices', __NAMESPACE__ . '\show_user_connection_notice' );
 
 /**
  * Render the "Airstory" settings section on the user profile page.

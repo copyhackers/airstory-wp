@@ -302,4 +302,39 @@ EOT;
 
 		$this->assertEquals( '<div><h1>This is content</h1></div>', strip_wrapping_div( $content ) );
 	}
+
+	public function testSetAttachmentAuthor() {
+		$post = array( 'post_parent' => 123, 'post_author' => null );
+		$parent = new \stdClass;
+		$parent->post_author = 5;
+
+		M::userFunction( 'get_post', array(
+			'args'   => array( 123 ),
+			'return' => $parent,
+		) );
+
+		$result = set_attachment_author( $post );
+
+		$this->assertEquals( 5, $result['post_author'], 'If no post_author is set for the attachment, it should inherit from the parent post.' );
+	}
+
+	public function testSetAttachmentAuthorRespectsPopulatedPostAuthors() {
+		$post = array( 'post_parent' => 123, 'post_author' => 2 );
+
+		M::userFunction( 'get_post', array(
+			'times'  => 0,
+		) );
+
+		$this->assertSame( $post, set_attachment_author( $post ), 'We should not override existing authors on attachments' );
+	}
+
+	public function testSetAttachmentAuthorReturnsEarlyIfNoPostParent() {
+		$post = array( 'post_parent' => 123, 'unique' => uniqid() );
+
+		M::userFunction( 'get_post', array(
+			'return' => null,
+		) );
+
+		$this->assertSame( $post, set_attachment_author( $post ), 'Do not attempt to override the post_author if the post_parent either does not exist or doesn\'t have an author ID' );
+	}
 }

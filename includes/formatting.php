@@ -92,6 +92,9 @@ function sideload_images( $post_id ) {
 	$replaced     = array();
 	$replacements = 0;
 
+	// Ensure media that gets sideloaded has the post_author set to the current user.
+	add_filter( 'wp_insert_attachment_data', __NAMESPACE__ . '\set_attachment_author' );
+
 	foreach ( $images as $image ) {
 		$src = $image->getAttribute( 'src' );
 
@@ -158,3 +161,25 @@ function strip_wrapping_div( $content ) {
 	return trim( preg_replace( $regex, '$1', trim( $content ) ) );
 }
 add_filter( 'airstory_before_insert_content', __NAMESPACE__ . '\strip_wrapping_div' );
+
+/**
+ * When inserting new attachments, set the post_author to match the current user.
+ *
+ * @param array $post The attachment's post object.
+ * @return The $post array, with post_author set to match the author of the attachment's parent.
+ */
+function set_attachment_author( $post ) {
+	if ( ! empty( $post['post_author'] ) ) {
+		return $post;
+	}
+
+	$parent_post = get_post( $post['post_parent'] );
+
+	if ( ! $parent_post ) {
+		return $post;
+	}
+
+	$post['post_author'] = (int) $parent_post->post_author;
+
+	return $post;
+}

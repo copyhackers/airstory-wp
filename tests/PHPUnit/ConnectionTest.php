@@ -119,6 +119,7 @@ class ConnectionTest extends \Airstory\TestCase {
 		$this->assertEquals( '5', $response['identifier'] );
 		$this->assertEquals( 'Example Blog', $response['name'] );
 		$this->assertEquals( 'http://example.com/airstory/v1/webhook', $response['url'] );
+		$this->assertEquals( 'wordpress', $response['type'] );
 	}
 
 	public function testHasConnection() {
@@ -143,12 +144,12 @@ class ConnectionTest extends \Airstory\TestCase {
 			),
 		) );
 
-		M::userFunction( 'get_bloginfo', array(
-			'return' => 'My site',
-		) );
-
-		M::userFunction( 'get_rest_url', array(
-			'return' => 'https://example.com/webhook',
+		M::userFunction( __NAMESPACE__ . '\get_target', array(
+			'return' => array(
+				'identifier' => '123',
+				'name'       => 'My site',
+				'url'        => 'https://example.com/webhook',
+			),
 		) );
 
 		M::userFunction( 'is_wp_error', array(

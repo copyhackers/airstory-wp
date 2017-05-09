@@ -30,7 +30,7 @@ add_action( 'rest_api_init', __NAMESPACE__ . '\register_webhook_endpoint' );
  * The payload should be delivered via an HTTP POST request, with the following structure:
  *
  * {
- *   id: XXX,
+ *   identifier: XXX,
  *   project: 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX',
  *   document: 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'
  * }
@@ -38,7 +38,7 @@ add_action( 'rest_api_init', __NAMESPACE__ . '\register_webhook_endpoint' );
  * @param WP_REST_Request $request The WP REST API request object.
  */
 function handle_webhook( WP_REST_Request $request ) {
-	$user_id  = $request->get_param( 'id' );
+	$user_id  = $request->get_param( 'identifier' );
 	$project  = $request->get_param( 'project' );
 	$document = $request->get_param( 'document' );
 

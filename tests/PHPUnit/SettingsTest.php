@@ -198,6 +198,10 @@ class SettingsTest extends \Airstory\TestCase {
 		$site2 = new \stdClass;
 		$site2->blogname = 'Second site';
 
+		M::userFunction( 'is_multisite', array(
+			'return' => true,
+		) );
+
 		M::userFunction( 'get_blogs_of_user', array(
 			'args'   => array( 5 ),
 			'return' => array( '1' => $site1, '2' => $site2 ),
@@ -241,6 +245,10 @@ class SettingsTest extends \Airstory\TestCase {
 		$site2 = new \stdClass;
 		$site2->blogname = 'Second site';
 
+		M::userFunction( 'is_multisite', array(
+			'return' => true,
+		) );
+
 		M::userFunction( 'get_blogs_of_user', array(
 			'return' => array( '1' => $site1, '2' => $site2 ),
 		) );
@@ -253,5 +261,17 @@ class SettingsTest extends \Airstory\TestCase {
 		) );
 
 		$this->assertCount( 1, get_available_blogs( 5 ) );
+	}
+
+	public function testGetAvailableBlogsReturnsEarlyIfNotMultisite() {
+		M::userFunction( 'is_multisite', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'get_blogs_of_user', array(
+			'times'  => 0,
+		) );
+
+		$this->assertEquals( array(), get_available_blogs( 5 ) );
 	}
 }

@@ -161,6 +161,10 @@ add_action( 'personal_options_update', __NAMESPACE__ . '\save_profile_settings' 
  * }
  */
 function get_available_blogs( $user_id ) {
+	if ( ! is_multisite() ) {
+		return array();
+	}
+
 	$all_blogs = get_blogs_of_user( $user_id );
 	$blogs     = array();
 

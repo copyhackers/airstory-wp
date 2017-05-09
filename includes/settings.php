@@ -9,6 +9,39 @@ namespace Airstory\Settings;
 
 use Airstory\Connection as Connection;
 use Airstory\Credentials as Credentials;
+use Airstory\Settings as Settings;
+
+/**
+ * Retrieve a value from the _airstory_data user meta key.
+ *
+ * @param int    $user_id The user ID to update.
+ * @param string $key     The key within the _airstory_data array.
+ * @param mixed  $default Optional. The value to return if no value is found in the array. Default
+ *                        is null.
+ * @return mixed The value assigned to $key, or $default if a corresponding value wasn't found.
+ */
+function get_user_data( $user_id, $key, $default = null ) {
+	$key  = sanitize_title( $key );
+	$data = (array) get_user_option( '_airstory_data', $user_id );
+
+	return isset( $data[ $key ] ) ? $data[ $key ] : $default;
+}
+
+/**
+ * Set a value for a key in the _airstory_data user meta key.
+ *
+ * @param int    $user_id The user ID to update.
+ * @param string $key     The key within the _airstory_data array.
+ * @param mixed  $value   Optional. The value to assign to $key. Default is null.
+ * @return bool True if the _airstory_data user meta was updated, false otherwise.
+ */
+function set_user_data( $user_id, $key, $value = null ) {
+	$key  = sanitize_title( $key );
+	$data = (array) get_user_option( '_airstory_data', $user_id );
+	$data[ $key ] = $value;
+
+	return update_user_option( $user_id, '_airstory_data', $data, true );
+}
 
 /**
  * Render the "Airstory" settings section on the user profile page.
@@ -16,7 +49,7 @@ use Airstory\Credentials as Credentials;
  * @param WP_User $user The current user object.
  */
 function render_profile_settings( $user ) {
-	$profile = get_user_option( '_airstory_profile', $user->ID );
+	$profile = Settings\get_user_data( $user->ID, 'profile', array() );
 	$blogs   = get_available_blogs( $user->ID );
 ?>
 
@@ -85,7 +118,7 @@ function save_profile_settings( $user_id ) {
 		return false;
 	}
 
-	$token = get_user_option( '_airstory_token', $user_id );
+	$token = get_user_data( $user_id, 'user_token', false );
 
 	// The user is disconnecting.
 	if ( $token && isset( $_POST['airstory-disconnect'] ) ) {
@@ -100,9 +133,9 @@ function save_profile_settings( $user_id ) {
 		 */
 		do_action( 'airstory_user_disconnect', $user_id );
 
-		delete_user_option( $user_id, '_airstory_profile', true );
+		Credentials\clear_token( $user_id );
 
-		return Credentials\clear_token( $user_id );
+		return delete_user_option( $user_id, '_airstory_data', true );
 
 	} elseif ( ! empty( $_POST['airstory-token'] ) ) {
 		Credentials\set_token( $user_id, sanitize_text_field( $_POST['airstory-token'] ) );

@@ -17,6 +17,88 @@ class SettingsTest extends \Airstory\TestCase {
 		'settings.php',
 	);
 
+	public function testGetUserData() {
+		M::userFunction( 'get_user_option', array(
+			'times'  => 1,
+			'args'   => array( '_airstory_data', 5 ),
+			'return' => array( 'some-key' => 'foo' ),
+		) );
+
+		M::passthruFunction( 'sanitize_title' );
+
+		$this->assertEquals( 'foo', get_user_data( 5, 'some-key' ) );
+	}
+
+	public function testGetUserDataUsesDefaultForUndefinedValues() {
+		$default = uniqid();
+
+		M::userFunction( 'get_user_option', array(
+			'times'  => 1,
+			'args'   => array( '_airstory_data', 5 ),
+			'return' => array( 'some-key' => 'foo' ),
+		) );
+
+		M::passthruFunction( 'sanitize_title' );
+
+		$this->assertEquals( $default, get_user_data( 5, 'some-different-key', $default ) );
+	}
+
+	public function testGetUserDataUsesDefaultForOnlyNullValues() {
+		M::userFunction( 'get_user_option', array(
+			'args'   => array( '_airstory_data', 5 ),
+			'return' => array(
+				'value_exists'   => 'foo',
+				'value_is_null'  => null,
+				'value_is_false' => false,
+			),
+		) );
+
+		M::passthruFunction( 'sanitize_title' );
+
+		$this->assertEquals( 'foo', get_user_data( 5, 'value_exists', 'bar' ) );
+		$this->assertEquals( 'bar', get_user_data( 5, 'value_is_null', 'bar' ) );
+		$this->assertFalse( get_user_data( 5, 'value_is_false', 'bar' ) );
+	}
+
+	public function testSetUserData() {
+		M::userFunction( 'get_user_option', array(
+			'times'  => 1,
+			'args'   => array( '_airstory_data', 5 ),
+			'return' => array( 'some-key' => 'foo' ),
+		) );
+
+		M::userFunction( 'update_user_option', array(
+			'times'  => 1,
+			'args'   => array( 5, '_airstory_data', array( 'some-key' => 'bar' ), true ),
+			'return' => true,
+		) );
+
+		M::passthruFunction( 'sanitize_title' );
+
+		$this->assertTrue( set_user_data( 5, 'some-key', 'bar' ) );
+	}
+
+	public function testSetUserDataCanAddNewKeys() {
+		M::userFunction( 'get_user_option', array(
+			'times'  => 1,
+			'args'   => array( '_airstory_data', 5 ),
+			'return' => array( 'some-key' => 'foo' ),
+		) );
+
+		M::userFunction( 'update_user_option', array(
+			'times'  => 1,
+			'args'   => array( 5, '_airstory_data', array(
+				'some-key'           => 'foo',
+				'some-different-key' => 'bar',
+			), true ),
+			'return' => true,
+		) );
+
+		M::passthruFunction( 'sanitize_title' );
+
+		$this->assertTrue( set_user_data( 5, 'some-different-key', 'bar' ) );
+	}
+
 	public function testRenderProfileSettingsOnlyShowsSiteListIfUserIsMemberOfMoreThanOneSite() {
 		$user = new \stdClass;
 		$user->ID = 5;
@@ -52,9 +134,9 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => true,
 		) );
 
-		M::userFunction( 'get_user_option', array(
-			'args'   => array( '_airstory_token', 123 ),
-			'return' => 'my-old-token',
+		M::userFunction( __NAMESPACE__ . '\get_user_data', array(
+			'args'   => array( 123, 'user_token', false ),
+			'return' => array( 'token' => 'my-old-token' ),
 		) );
 
 		M::userFunction( 'Airstory\Credentials\set_token', array(
@@ -200,9 +282,9 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => true,
 		) );
 
-		M::userFunction( 'get_user_option', array(
-			'args'   => array( '_airstory_token', 123 ),
-			'return' => 'my-old-token',
+		M::userFunction( __NAMESPACE__ . '\get_user_data', array(
+			'args'   => array( 123, 'user_token', '*' ),
+			'return' => array( 'token' => 'my-old-token' ),
 		) );
 
 		M::userFunction( 'Airstory\Connection\set_connected_blogs', array(
@@ -210,14 +292,14 @@ class SettingsTest extends \Airstory\TestCase {
 			'args'   => array( 123, array() ),
 		) );
 
-		M::userFunction( 'delete_user_option', array(
-			'times'  => 1,
-			'args'   => array( 123, '_airstory_profile', true ),
-		) );
-
 		M::userFunction( 'Airstory\Credentials\clear_token', array(
 			'times'  => 1,
 			'args'   => array( 123 ),
+		) );
+
+		M::userFunction( 'delete_user_option', array(
+			'times'  => 1,
+			'args'   => array( 123, '_airstory_data', true ),
 			'return' => true,
 		) );
 

@@ -7,7 +7,41 @@
 
 namespace Airstory\Settings;
 
+use Airstory\Connection as Connection;
 use Airstory\Credentials as Credentials;
+use Airstory\Settings as Settings;
+
+/**
+ * Retrieve a value from the _airstory_data user meta key.
+ *
+ * @param int    $user_id The user ID to update.
+ * @param string $key     The key within the _airstory_data array.
+ * @param mixed  $default Optional. The value to return if no value is found in the array. Default
+ *                        is null.
+ * @return mixed The value assigned to $key, or $default if a corresponding value wasn't found.
+ */
+function get_user_data( $user_id, $key, $default = null ) {
+	$key  = sanitize_title( $key );
+	$data = (array) get_user_option( '_airstory_data', $user_id );
+
+	return isset( $data[ $key ] ) ? $data[ $key ] : $default;
+}
+
+/**
+ * Set a value for a key in the _airstory_data user meta key.
+ *
+ * @param int    $user_id The user ID to update.
+ * @param string $key     The key within the _airstory_data array.
+ * @param mixed  $value   Optional. The value to assign to $key. Default is null.
+ * @return bool True if the _airstory_data user meta was updated, false otherwise.
+ */
+function set_user_data( $user_id, $key, $value = null ) {
+	$key  = sanitize_title( $key );
+	$data = (array) get_user_option( '_airstory_data', $user_id );
+	$data[ $key ] = $value;
+
+	return update_user_option( $user_id, '_airstory_data', $data, true );
+}
 
 /**
  * Display a notification to the user following plugin activation, guiding them to the settings page.
@@ -37,7 +71,7 @@ function show_user_connection_notice() {
  * @param WP_User $user The current user object.
  */
 function render_profile_settings( $user ) {
-	$profile = get_user_meta( $user->ID, '_airstory_profile', true );
+	$profile = Settings\get_user_data( $user->ID, 'profile', array() );
 ?>
 
 	<h2 id="airstory"><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>
@@ -83,7 +117,7 @@ function save_profile_settings( $user_id ) {
 		return false;
 	}
 
-	$token = get_user_meta( $user_id, '_airstory_token', true );
+	$token = get_user_data( $user_id, 'user_token', false );
 
 	// The user is disconnecting.
 	if ( $token && isset( $_POST['airstory-disconnect'] ) ) {
@@ -103,7 +137,7 @@ function save_profile_settings( $user_id ) {
 		return false;
 	}
 
-	// Store the user meta. Casting, since update_user_meta() can return an int or boolean.
+	// Store the user meta.
 	$new_token = sanitize_text_field( $_POST['airstory-token'] );
 	$result    = Credentials\set_token( $user_id, $new_token );
 
@@ -117,3 +151,49 @@ function save_profile_settings( $user_id ) {
 	return (bool) $result;
 }
 add_action( 'personal_options_update', __NAMESPACE__ . '\save_profile_settings' );
+
+/**
+ * Generate a list of blogs that $user_id is a member of *and* can publish to.
+ *
+ * This is only used in WordPress Multisite, but will allow users to manage their connections with
+ * each site in a network from their profile page.
+ *
+ * @param int $user_id The WordPress user ID.
+ * @return array {
+ *   An array of blogs the user is able to publish to. This will be an array of arrays.
+ *
+ *   @var int    $id    The WordPress blog ID.
+ *   @var string $title The WordPress blog name.
+ *   @var bool   $connected Whether or not there's an active connection with the blog.
+ * }
+ */
+function get_available_blogs( $user_id ) {
+	$all_blogs = get_blogs_of_user( $user_id );
+	$blogs     = array();
+
+	/*
+	 * Go through each blog this user is a member of and determine if the user:
+	 * - Can at least create (if not publish) new posts, making them at least a Contributor.
+	 * - Already has an active Airstory connection for the blog.
+	 *
+	 * This is a rather intensive process, and may take a while for users that are members of many
+	 * blogs in the network.
+	 */
+	foreach ( $all_blogs as $blog_id => $blog ) {
+		switch_to_blog( $blog_id );
+
+		// Don't bother checking tokens if the user can't publish.
+		if ( user_can( $user_id, 'edit_posts' ) ) {
+
+			$blogs[] = array(
+				'id'        => (int) $blog_id,
+				'title'     => $blog->blogname,
+				'connected' => Connection\has_connection( $user_id ),
+			);
+		}
+
+		restore_current_blog();
+	}
+
+	return $blogs;
+}

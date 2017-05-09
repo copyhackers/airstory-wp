@@ -13,6 +13,8 @@
 
 namespace Airstory\Credentials;
 
+use Airstory\Settings as Settings;
+
 /**
  * Defines the cipher algorithm used by set_token().
  *
@@ -53,8 +55,10 @@ function set_token( $user_id, $token ) {
 	}
 
 	// Store the encrypted values and the IV.
-	update_user_meta( $user_id, '_airstory_token', $encrypted );
-	update_user_meta( $user_id, '_airstory_iv', $iv );
+	Settings\set_user_data( $user_id, 'user_token', array(
+		'token' => $encrypted,
+		'iv'    => $iv,
+	) );
 
 	return $encrypted;
 }
@@ -73,15 +77,14 @@ function get_token( $user_id ) {
 		return '';
 	}
 
-	$encrypted = get_user_meta( $user_id, '_airstory_token', true );
-	$iv        = get_user_meta( $user_id, '_airstory_iv', true );
+	$encrypted = Settings\get_user_data( $user_id, 'user_token', false );
 
 	// Return early if either meta value is empty.
-	if ( empty( $encrypted ) || empty( $iv ) ) {
+	if ( ! isset( $encrypted['token'], $encrypted['iv'] ) ) {
 		return '';
 	}
 
-	$token = openssl_decrypt( $encrypted, AIRSTORY_ENCRYPTION_ALGORITHM, AUTH_KEY, null, $iv );
+	$token = openssl_decrypt( $encrypted['token'], AIRSTORY_ENCRYPTION_ALGORITHM, AUTH_KEY, null, $encrypted['iv'] );
 
 	if ( false === $token ) {
 		return new WP_Error( 'airstory-decryption', __( 'Unable to decrypt Airstory token', 'airstory' ) );
@@ -98,7 +101,5 @@ function get_token( $user_id ) {
  * @return bool Were the relevant user meta entries deleted?
  */
 function clear_token( $user_id ) {
-	delete_user_meta( $user_id, '_airstory_iv' );
-
-	return delete_user_meta( $user_id, '_airstory_token' );
+	return Settings\set_user_data( $user_id, 'user_token', null );
 }

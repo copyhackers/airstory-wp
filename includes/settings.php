@@ -9,6 +9,72 @@ namespace Airstory\Settings;
 
 use Airstory\Connection as Connection;
 use Airstory\Credentials as Credentials;
+use Airstory\Settings as Settings;
+
+/**
+ * Retrieve a value from the _airstory_data user meta key.
+ *
+ * @param int    $user_id The user ID to update.
+ * @param string $key     The key within the _airstory_data array.
+ * @param mixed  $default Optional. The value to return if no value is found in the array. Default
+ *                        is null.
+ * @return mixed The value assigned to $key, or $default if a corresponding value wasn't found.
+ */
+function get_user_data( $user_id, $key, $default = null ) {
+	$key  = sanitize_title( $key );
+	$data = (array) get_user_option( '_airstory_data', $user_id );
+
+	return isset( $data[ $key ] ) ? $data[ $key ] : $default;
+}
+
+/**
+ * Set a value for a key in the _airstory_data user meta key.
+ *
+ * @param int    $user_id The user ID to update.
+ * @param string $key     The key within the _airstory_data array.
+ * @param mixed  $value   Optional. The value to assign to $key. Default is null.
+ * @return bool True if the _airstory_data user meta was updated, false otherwise.
+ */
+function set_user_data( $user_id, $key, $value = null ) {
+	$key  = sanitize_title( $key );
+	$data = (array) get_user_option( '_airstory_data', $user_id );
+	$data[ $key ] = $value;
+
+	return update_user_option( $user_id, '_airstory_data', $data, true );
+}
+
+/**
+ * Display a notification to the user following plugin activation, guiding them to the settings page.
+ */
+function show_user_connection_notice() {
+	$user_id = wp_get_current_user()->ID;
+
+	// Ensure we only ever show this to each user once.
+	if ( get_user_data( $user_id, 'welcome_message_seen', false ) ) {
+		return;
+	}
+
+	$message = sprintf(
+		__( 'To get started, please connect WordPress to your Airstory account <a href="%s#airstory">on your profile page</a>.', 'airstory' ),
+		esc_url( get_edit_user_link() )
+	);
+?>
+
+	<div class="notice notice-success is-dismissible">
+		<p><strong><?php esc_html_e( 'Welcome to Airstory!', 'airstory' ); ?></strong></p>
+		<p><?php echo wp_kses_post( $message ); ?></p>
+		<button type="button" class="notice-dismiss">
+			<span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice', 'airstory' ); ?></span>
+		</button>
+	</div>
+
+<?php
+
+	// Indicate that the user has seen the welcome message.
+	set_user_data( $user_id, 'welcome_message_seen', true );
+}
+add_action( 'admin_notices', __NAMESPACE__ . '\show_user_connection_notice' );
+add_action( 'network_admin_notices', __NAMESPACE__ . '\show_user_connection_notice' );
 
 /**
  * Render the "Airstory" settings section on the user profile page.
@@ -16,11 +82,11 @@ use Airstory\Credentials as Credentials;
  * @param WP_User $user The current user object.
  */
 function render_profile_settings( $user ) {
-	$profile = get_user_option( '_airstory_profile', $user->ID );
+	$profile = Settings\get_user_data( $user->ID, 'profile', array() );
 	$blogs   = get_available_blogs( $user->ID );
 ?>
 
-	<h2><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>
+	<h2 id="airstory"><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>
 	<table class="form-table">
 		<tbody>
 			<tr>
@@ -85,7 +151,7 @@ function save_profile_settings( $user_id ) {
 		return false;
 	}
 
-	$token = get_user_option( '_airstory_token', $user_id );
+	$token = get_user_data( $user_id, 'user_token', false );
 
 	// The user is disconnecting.
 	if ( $token && isset( $_POST['airstory-disconnect'] ) ) {
@@ -100,9 +166,9 @@ function save_profile_settings( $user_id ) {
 		 */
 		do_action( 'airstory_user_disconnect', $user_id );
 
-		delete_user_option( $user_id, '_airstory_profile', true );
+		Credentials\clear_token( $user_id );
 
-		return Credentials\clear_token( $user_id );
+		return delete_user_option( $user_id, '_airstory_data', true );
 
 	} elseif ( ! empty( $_POST['airstory-token'] ) ) {
 		Credentials\set_token( $user_id, sanitize_text_field( $_POST['airstory-token'] ) );

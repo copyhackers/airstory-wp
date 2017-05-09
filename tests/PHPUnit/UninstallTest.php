@@ -33,14 +33,8 @@ class UninstallTest extends \Airstory\TestCase {
 
 				if ( false === strpos( $query, 'DELETE FROM my_table WHERE' ) ) {
 					$this->fail( 'Uninstall query does not seem to target $wpdb->usermeta' );
-				}
-
-				$known_keys = array( '_airstory_token', '_airstory_iv', '_airstory_profile' );
-
-				foreach ( $known_keys as $key ) {
-					if ( false === strpos( $query, "'$key'" ) ) {
-						$this->fail( 'Uninstall query is not removing meta_key: ' . $key );
-					}
+				} elseif ( false === strpos( $query, 'meta_key = \'_airstory_data\'' ) ) {
+					$this->fail( 'Uninstall query is not removing _airstory_data' );
 				}
 			} );
 

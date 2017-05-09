@@ -120,7 +120,7 @@ function register_connection( $user_id ) {
 	}
 
 	// Store the profile and connection ID for the user.
-	update_user_option( $user_id, '_airstory_profile', $profile, true );
+	Settings\set_user_data( $user_id, 'profile', $profile );
 	update_user_option( $user_id, '_airstory_target', sanitize_text_field( $connection_id ) );
 
 	/**
@@ -181,7 +181,7 @@ function update_connection( $user_id ) {
  * @param int $user_id The ID of the user who has disconnected.
  */
 function remove_connection( $user_id ) {
-	$profile       = get_user_option( '_airstory_profile', $user_id );
+	$profile       = Settings\get_user_data( $user_id, 'profile', array() );
 	$connection_id = get_user_option( '_airstory_target', $user_id );
 
 	if ( empty( $profile['email'] ) || empty( $connection_id ) ) {

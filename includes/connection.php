@@ -51,14 +51,16 @@ function get_user_profile( $user_id = null ) {
  * Build a target array for Airstory.
  *
  * @param int $user_id The ID of the WordPress user associated with the target.
- * @return array An array that will serve as a the post body for the target, containing three keys:
- *               identifier (user ID), name (blog name), and url (webhook URL).
+ * @return array An array that will serve as a the post body for the target, containing four keys:
+ *               identifier (user ID), name (blog name), url (webhook URL), and the type of
+ *               connection ("wordpress").
  */
 function get_target( $user_id ) {
 	return array(
 		'identifier' => (string) $user_id, // Airstory expects a string.
 		'name'       => get_bloginfo( 'name' ),
 		'url'        => get_rest_url( null, '/airstory/v1/webhook' ),
+		'type'       => 'wordpress',
 	);
 }
 

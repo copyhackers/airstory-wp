@@ -105,9 +105,11 @@ function sideload_single_image( $url, $post_id = 0, $metadata = array() ) {
 	 */
 	add_post_meta( $image_id, '_airstory_origin', esc_url( $url ) );
 
-	foreach ( (array) $metadata as $meta_key => $meta_value ) {
-		if ( ! empty( $meta_value ) ) {
-			update_post_meta( $image_id, $meta_key, $meta_value );
+	if ( ! empty( $metadata ) ) {
+		foreach ( (array) $metadata as $meta_key => $meta_value ) {
+			if ( ! empty( $meta_value ) ) {
+				update_post_meta( $image_id, $meta_key, $meta_value );
+			}
 		}
 	}
 

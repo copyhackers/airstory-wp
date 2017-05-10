@@ -63,9 +63,10 @@ function get_active_site_ids() {
  */
 function disconnect_all_users() {
 	$user_args       = array(
-		'fields'     => 'ID',
-		'number'     => 100,
-		'meta_query' => array(
+		'fields'      => 'ID',
+		'number'      => 100,
+		'count_total' => false,
+		'meta_query'  => array(
 			array(
 				'key'     => '_airstory_target',
 				'compare' => 'EXISTS',
@@ -80,7 +81,7 @@ function disconnect_all_users() {
 
 		Connection\remove_connection( $user_id );
 
-		// If we've reached the end, get the next page.
+		// If we've reached the end, get the next batch.
 		if ( empty( $user_ids ) ) {
 			$connected_users = new \WP_User_Query( $user_args );
 			$user_ids        = $connected_users->results;

@@ -67,6 +67,10 @@ add_filter( 'airstory_before_insert_content', __NAMESPACE__ . '\get_body_content
  *                         Default is an empty array.
  */
 function sideload_single_image( $url, $post_id = 0, $metadata = array() ) {
+	if ( ! filter_var( $url, FILTER_VALIDATE_URL ) ) {
+		return 0;
+	}
+
 	require_once ABSPATH . 'wp-admin/includes/media.php';
 	require_once ABSPATH . 'wp-admin/includes/file.php';
 	require_once ABSPATH . 'wp-admin/includes/image.php';

@@ -124,6 +124,12 @@ EOT;
 		sideload_single_image( $url, 123, $meta );
 	}
 
+	public function testSideloadSingleImageReturnsEarlyIfNotUrl() {
+		$url = 'this is not a url, are you crazy?';
+
+		$this->assertEquals( 0, sideload_single_image( $url ), 'Without a URL, we have no reason to sideload' );
+	}
+
 	/**
 	 * @expectedException        PHPUnit_Framework_Error_Warning
 	 * @expectedExceptionMessage Error Message
@@ -208,7 +214,7 @@ EOT;
 
 		M::passthruFunction( 'esc_url_raw' );
 
-		sideload_single_image( 123 );
+		sideload_single_image( 'http://example.com/image.jpg' );
 
 		$required_files = array(
 			ABSPATH . 'wp-admin/includes/media.php',

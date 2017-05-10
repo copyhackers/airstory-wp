@@ -8,41 +8,134 @@
  * @package Airstory
  */
 
-namespace Airstory;
+namespace Airstory\Uninstall;
+
+use Airstory\Connection as Connection;
 
 require_once __DIR__ . '/includes/class-api.php';
 require_once __DIR__ . '/includes/connection.php';
 require_once __DIR__ . '/includes/settings.php';
 
-global $wpdb;
+/**
+ * Retrieve the IDs of any sites with active Airstory connections.
+ *
+ * @global $wpdb
+ *
+ * @return array An array of WordPress site IDs that have one or more active Airstory connections.
+ */
+function get_active_site_ids() {
+	global $wpdb;
 
-// Prevent this file from being executed outside of the plugin uninstallation.
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-	return;
+	/*
+	 * The SQL query attempts to parse a site ID out of the key name within wp_usermeta.
+	 *
+	 * Assuming the default WordPress $table_prefix (as set in wp-config.php) of "wp_", keys will
+	 * look like:
+	 *
+	 * - wp__airstory_target
+	 * - wp_2__airstory_target
+	 * - wp_3__airstory_target
+	 *
+	 * The SUBSTRING() function within MySQL accepts three arguments: the string, the starting point
+	 * (starting at 0), and the length of the string to return.
+	 *
+	 * The meta_key will be our string, and the length of $table_prefix (available via the
+	 * $wpdb->base_prefix property) + 1 gives us a starting point (e.g. everything before the first
+	 * digit of the site ID).
+	 *
+	 * The third argument is where things get more complicated: we need the length of the meta_key,
+	 * less the length of the static portion ("_airstory_target"), the length of the table prefix,
+	 * and one more (for the extra underscore immediately following the site ID).
+	 */
+	$site_ids = $wpdb->get_col( $wpdb->prepare( "
+		SELECT DISTINCT SUBSTRING(
+			meta_key,
+			LENGTH(%s) + 1,
+			LENGTH(meta_key) - LENGTH('_airstory_target') - LENGTH(%s) - 1
+		) AS site_id
+		FROM $wpdb->usermeta WHERE meta_key LIKE '%_airstory_target'
+		ORDER BY site_id;", $wpdb->base_prefix, $wpdb->base_prefix ) );
+	$site_ids = array_map( 'intval', $site_ids );
+
+	return array_values( array_filter( $site_ids ) );
 }
 
 /**
  * Collect any users that are connected to Airstory and close their connections.
- *
- * To avoid possible cache collisions, this is being written as a direct SQL query.
  */
-$connected_user_query = "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '_airstory_target' LIMIT 100";
-$connected_user_ids   = $wpdb->get_col( $connected_user_query ); // WPCS: unprepared SQL ok.
+function disconnect_all_users() {
+	$user_args       = array(
+		'fields'     => 'ID',
+		'number'     => 100,
+		'meta_query' => array(
+			array(
+				'key'     => '_airstory_target',
+				'compare' => 'EXISTS',
+			),
+		),
+	);
+	$connected_users = new \WP_User_Query( $user_args );
+	$user_ids        = $connected_users->results;
 
-while ( ! empty( $connected_user_ids ) ) {
-	$user_id = array_shift( $connected_user_ids );
+	while ( ! empty( $user_ids ) ) {
+		$user_id = array_shift( $user_ids );
 
-	// Remove the user's connection within Airstory.
-	Connection\remove_connection( $user_id );
+		Connection\remove_connection( $user_id );
 
-	// When we get down to 0 entries in the array, run the query again and see if we have more.
-	if ( 0 === count( $connected_user_ids ) ) {
-		$connected_user_ids = $wpdb->get_col( $connected_user_query ); // WPCS: unprepared SQL ok.
+		// If we've reached the end, get the next page.
+		if ( empty( $user_ids ) ) {
+			$connected_users = new \WP_User_Query( $user_args );
+			$user_ids        = $connected_users->results;
+		}
 	}
 }
 
-// Remove all known user meta keys.
-$query = "
-	DELETE FROM $wpdb->usermeta WHERE meta_key = '_airstory_data';";
+/**
+ * Delete all _airstory_data usermeta keys from the database.
+ *
+ * @global $wpdb
+ */
+function delete_airstory_data() {
+	global $wpdb;
 
-$wpdb->query( $query ); // WPCS: unprepared SQL ok.
+	$wpdb->query( "DELETE FROM $wpdb->usermeta WHERE meta_key = '_airstory_data';" ); // WPCS: unprepared SQL ok.
+}
+
+// Prevent this file from being executed outside of the plugin uninstallation.
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) || ! WP_UNINSTALL_PLUGIN ) {
+	return;
+}
+
+/**
+ * If we're in multisite, ensure we're working on the main site.
+ *
+ * Note that is_main_site() will always return true if we're not in a multisite environment.
+ */
+$is_switched = false;
+
+if ( ! is_main_site() ) {
+	switch_to_blog( get_network()->site_id );
+	$is_switched = true;
+}
+
+// Clear out users on the main site.
+disconnect_all_users();
+
+// Switch back if we weren't on the main site before.
+if ( $is_switched ) {
+	restore_current_blog();
+}
+
+// Determine if there are other sites that need clearing.
+$active_blogs = get_active_site_ids();
+
+if ( ! empty( $active_blogs ) ) {
+	foreach ( $active_blogs as $blog_id ) {
+		switch_to_blog( $blog_id );
+		disconnect_all_users();
+		restore_current_blog();
+	}
+}
+
+// Finally, clear out profile data.
+delete_airstory_data();

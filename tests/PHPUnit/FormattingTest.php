@@ -82,7 +82,7 @@ EOT;
 		$this->assertEquals( $emoji, get_body_contents( $emoji ), 'Multi-byte characters like emoji appear to be encoded improperly.' );
 	}
 
-	public function testSideloadImage() {
+	public function testSideloadSingleImage() {
 		$url  = 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
 		$meta = array(
 			'some-key'  => 'some-value',
@@ -121,14 +121,14 @@ EOT;
 		M::passthruFunction( 'esc_url' );
 		M::passthruFunction( 'esc_url_raw' );
 
-		sideload_image( $url, 123, $meta );
+		sideload_single_image( $url, 123, $meta );
 	}
 
 	/**
 	 * @expectedException        PHPUnit_Framework_Error_Warning
 	 * @expectedExceptionMessage Error Message
 	 */
-	public function testSideloadImageReturnsEarlyIfSideloadFails() {
+	public function testSideloadSingleImageReturnsEarlyIfSideloadFails() {
 		$url   = 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
 		$error = Mockery::mock( 'WP_Error' )->makePartial();
 		$error->shouldReceive( 'get_error_message' )
@@ -151,14 +151,14 @@ EOT;
 		M::passthruFunction( 'esc_html' );
 		M::passthruFunction( 'esc_url_raw' );
 
-		$this->assertEquals( 0, sideload_image( $url, 123 ) );
+		$this->assertEquals( 0, sideload_single_image( $url, 123 ) );
 	}
 
 	/**
 	 * @expectedException        PHPUnit_Framework_Error_Warning
 	 * @expectedExceptionMessage Error Message
 	 */
-	public function testSideloadImageReturnsEarlyIfDownloadUrlFails() {
+	public function testSideloadSingleImageReturnsEarlyIfDownloadUrlFails() {
 		$url   = 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
 		$error = Mockery::mock( 'WP_Error' )->makePartial();
 		$error->shouldReceive( 'get_error_message' )
@@ -181,7 +181,7 @@ EOT;
 		M::passthruFunction( 'esc_html' );
 		M::passthruFunction( 'esc_url_raw' );
 
-		$this->assertEquals( 0, sideload_image( $url, 123 ) );
+		$this->assertEquals( 0, sideload_single_image( $url, 123 ) );
 	}
 
 	/**
@@ -192,7 +192,7 @@ EOT;
 	 * @runInSeparateProcess
 	 * @expectedException PHPUnit_Framework_Error_Warning
 	 */
-	public function testSideloadImageLoadsMediaDependencies() {
+	public function testSideloadSingleImageLoadsMediaDependencies() {
 		$error = Mockery::mock( 'WP_Error' )->makePartial();
 		$error->shouldReceive( 'get_error_message' )
 			->once()
@@ -208,7 +208,7 @@ EOT;
 
 		M::passthruFunction( 'esc_url_raw' );
 
-		sideload_image( 123 );
+		sideload_single_image( 123 );
 
 		$required_files = array(
 			ABSPATH . 'wp-admin/includes/media.php',
@@ -222,7 +222,7 @@ EOT;
 		}
 	}
 
-	public function testSideloadImages() {
+	public function testSideloadAllImages() {
 		$content = <<<EOT
 <h1>Here's an image</h1>
 <p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="my alt text" /></p>
@@ -241,7 +241,7 @@ EOT;
 			'return' => $post,
 		) );
 
-		M::userFunction( __NAMESPACE__ . '\sideload_image', array(
+		M::userFunction( __NAMESPACE__ . '\sideload_single_image', array(
 			'times'  => 1,
 			'args'   => array( 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg', 123, array(
 				'_wp_attachment_image_alt' => 'my alt text',
@@ -266,10 +266,10 @@ EOT;
 		M::passthruFunction( 'esc_url' );
 		M::passthruFunction( 'sanitize_text_field' );
 
-		$this->assertEquals( 1, sideload_images( 123 ) );
+		$this->assertEquals( 1, sideload_all_images( 123 ) );
 	}
 
-	public function testSideloadImagesDeduplicatesMatches() {
+	public function testSideloadAllImagesDeduplicatesMatches() {
 		$content = <<<EOT
 <h1>Here's the same image twice</h1>
 <p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="alt text" /></p>
@@ -288,7 +288,7 @@ EOT;
 			'return' => $post,
 		) );
 
-		M::userFunction( __NAMESPACE__ . '\sideload_image', array(
+		M::userFunction( __NAMESPACE__ . '\sideload_single_image', array(
 			'return' => 42,
 		) );
 
@@ -307,10 +307,10 @@ EOT;
 		M::passthruFunction( 'esc_url' );
 		M::passthruFunction( 'sanitize_text_field' );
 
-		$this->assertEquals( 2, sideload_images( 123 ) );
+		$this->assertEquals( 2, sideload_all_images( 123 ) );
 	}
 
-	public function testSideloadImagesHandlesMultipleImages() {
+	public function testSideloadAllImagesHandlesMultipleImages() {
 		$content = <<<EOT
 <h1>Here's the same image twice</h1>
 <p><img src="https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="alt text" /></p>
@@ -329,7 +329,7 @@ EOT;
 			'return' => $post,
 		) );
 
-		M::userFunction( __NAMESPACE__ . '\sideload_image', array(
+		M::userFunction( __NAMESPACE__ . '\sideload_single_image', array(
 			'times'           => 2,
 			'return_in_order' => array( 42, 43 ),
 		) );
@@ -351,15 +351,15 @@ EOT;
 
 		M::passthruFunction( 'sanitize_text_field' );
 
-		$this->assertEquals( 2, sideload_images( 123 ) );
+		$this->assertEquals( 2, sideload_all_images( 123 ) );
 	}
 
-	public function testSideloadImagesReturnsEarlyIfInvalidPostID() {
+	public function testSideloadAllImagesReturnsEarlyIfInvalidPostID() {
 		M::userFunction( 'get_post', array(
 			'return' => null,
 		) );
 
-		$this->assertEquals( 0, sideload_images( 123 ) );
+		$this->assertEquals( 0, sideload_all_images( 123 ) );
 	}
 
 	public function testStripWrappingDiv() {

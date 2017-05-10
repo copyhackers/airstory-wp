@@ -66,7 +66,7 @@ add_filter( 'airstory_before_insert_content', __NAMESPACE__ . '\get_body_content
  *                         has been created. These keys and values are assumed to be sanitized.
  *                         Default is an empty array.
  */
-function sideload_image( $url, $post_id = 0, $metadata = array() ) {
+function sideload_single_image( $url, $post_id = 0, $metadata = array() ) {
 	require_once ABSPATH . 'wp-admin/includes/media.php';
 	require_once ABSPATH . 'wp-admin/includes/file.php';
 	require_once ABSPATH . 'wp-admin/includes/image.php';
@@ -119,7 +119,7 @@ function sideload_image( $url, $post_id = 0, $metadata = array() ) {
  * @param int $post_id The ID of the post to scan for media to sideload.
  * @return int The number of replacements made.
  */
-function sideload_images( $post_id ) {
+function sideload_all_images( $post_id ) {
 	$post = get_post( $post_id );
 
 	// Return early (with "0" replacements) if no matching post was found.
@@ -157,7 +157,7 @@ function sideload_images( $post_id ) {
 			$local_url = $replaced[ $src ];
 
 		} else {
-			$image_id = sideload_image( $src, $post_id, array(
+			$image_id = sideload_single_image( $src, $post_id, array(
 				'_wp_attachment_image_alt' => sanitize_text_field( $image->getAttribute( 'alt' ) ),
 			) );
 
@@ -200,7 +200,7 @@ function sideload_images( $post_id ) {
 
 	return (int) $replacements;
 }
-add_action( 'airstory_import_post', __NAMESPACE__ . '\sideload_images' );
+add_action( 'airstory_import_post', __NAMESPACE__ . '\sideload_all_images' );
 
 /**
  * Strip the <div> that Airstory wraps around the outer content by default.

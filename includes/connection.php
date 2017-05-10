@@ -160,7 +160,7 @@ function update_connection( $user_id ) {
 	}
 
 	/**
-	 * A connection between WordPress and Airstory has been established successfully.
+	 * A connection between WordPress and Airstory has been updated successfully.
 	 *
 	 * @param int    $user_id       The ID of the user that has connected.
 	 * @param string $connection_id The UUID of the connection within Airstory.

@@ -539,4 +539,71 @@ EOT;
 
 		$this->assertSame( $post, set_attachment_author( $post ), 'Do not attempt to override the post_author if the post_parent either does not exist or doesn\'t have an author ID' );
 	}
+
+	/**
+	 * @link https://github.com/liquidweb/airstory-wp/issues/27
+	 */
+	public function testRetrieveOriginalMedia() {
+		$url = 'https://images.airstory.co/c_scale,w_0.1/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
+
+		M::userFunction( __NAMESPACE__ . '\sideload_single_image', array(
+			'times'  => 1,
+			'args'   => array( 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg', 1, array() ),
+		) );
+
+		retrieve_original_media( $url, 1, array() );
+	}
+
+	/**
+	 * @link https://github.com/liquidweb/airstory-wp/issues/27
+	 */
+	public function testRetrieveOriginalMediaCloudinary() {
+		$url = 'https://res.cloudinary.com/airstory/image/upload/c_scale,w_0.1/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
+
+		M::userFunction( __NAMESPACE__ . '\sideload_single_image', array(
+			'times'  => 1,
+			'args'   => array( 'https://res.cloudinary.com/airstory/image/upload/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg', 1, array() ),
+		) );
+
+		retrieve_original_media( $url, 1, array() );
+	}
+
+	/**
+	 * @link https://github.com/liquidweb/airstory-wp/issues/27
+	 */
+	public function testRetrieveOriginalMediaReturnsEarlyIfNotCloudinaryMedia() {
+		$url = 'https://example.com/airstory/image/upload/c_scale,w_0.1/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
+
+		M::userFunction( __NAMESPACE__ . '\sideload_single_image', array(
+			'times'  => 0,
+		) );
+
+		retrieve_original_media( $url, 1, array() );
+	}
+
+	/**
+	 * @link https://github.com/liquidweb/airstory-wp/issues/27
+	 */
+	public function testRetrieveOriginalMediaReturnsEarlyIfAlreadyOriginalImage() {
+		$url = 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
+
+		M::userFunction( __NAMESPACE__ . '\sideload_single_image', array(
+			'times'  => 0,
+		) );
+
+		retrieve_original_media( $url, 1, array() );
+	}
+
+	/**
+	 * @link https://github.com/liquidweb/airstory-wp/issues/27
+	 */
+	public function testRetrieveOriginalMediaReturnsEarlyIfAlreadyOriginalImageCloudinary() {
+		$url = 'https://res.cloudinary.com/airstory/image/upload/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
+
+		M::userFunction( __NAMESPACE__ . '\sideload_single_image', array(
+			'times'  => 0,
+		) );
+
+		retrieve_original_media( $url, 1, array() );
+	}
 }

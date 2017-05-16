@@ -269,3 +269,62 @@ function set_attachment_author( $post ) {
 
 	return $post;
 }
+
+/**
+ * When importing manipulated images, also side-load the original version of the media.
+ *
+ * Airstory currently uses Cloudinary to host images and allow users to manipulate (scale, rotate,
+ * etc.) using a series of modifiers in the URL path.
+ *
+ * An example URL with modifiers would be:
+ *
+ *   https://cloudinary.com/airstory/image/upload/c_scale,w_0.1/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg
+ *
+ * The "/c_scale,w_0.1/" portion of the path tells Cloudinary to scale the image to 10% of the
+ * original width.
+ *
+ * The equivalent transformed image with the images.airstory.co domain would be:
+ *
+ *   https://images.airstory.co/c_scale,w_0.1/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg
+ *
+ * @see http://cloudinary.com/documentation/image_transformations for a full list of available
+ *      Cloudinary modifier arguments.
+ *
+ * While we want to respect the version originally exported from Airstory, there's value in
+ * also capturing the original media, in case the user wants to re-generate thumbnails later.
+ *
+ * @param string $url The URL for the image, as hosted on Cloudinary.com.
+ * @param int    $post_id  The post the newly-uploaded image should be attached to.
+ * @param array  $metadata Additional post meta keys to assign once the attachment post bas been
+ *                         created. These keys and values are assumed to be sanitized.
+ */
+function retrieve_original_media( $url, $post_id, $metadata ) {
+	$url_components = array_merge( array( 'host' => '', 'path' => '' ), (array) parse_url( $url ) );
+	$url_components = array_map( 'strtolower', $url_components );
+
+	// Only operate on Cloudinary-hosted images.
+	if ( ! in_array( $url_components['host'], array( 'res.cloudinary.com', 'images.airstory.co' ), true ) ) {
+		return;
+	}
+
+	// Images hosted on images.airstory.co.
+	if ( 'images.airstory.co' === $url_components['host'] ) {
+		$original_media_check = '/v1/prod';
+		$replacement_pattern  = '/(images\.airstory\.co\/)([^\/]+\/)(v1\/prod\/)/i';
+
+	} else {
+		$original_media_check = '/airstory/image/upload/v1/prod/';
+		$replacement_pattern  = '/(res\.cloudinary\.com\/airstory\/image\/upload\/)([^\/]+\/)(v1\/prod\/)/i';
+	}
+
+	// The path already excludes the modifier portion of the path, and thus is presumably the original.
+	if ( 0 === strpos( $url_components['path'], $original_media_check ) ) {
+		return;
+	}
+
+	// Using the appropriate URL pattern, remove the modifiers portion of the path.
+	$original_media_url = preg_replace( $replacement_pattern, '$1$3', $url );
+
+	sideload_single_image( $original_media_url, $post_id, $metadata );
+}
+add_action( 'airstory_sideload_single_image', __NAMESPACE__ . '\retrieve_original_media', 10, 3 );

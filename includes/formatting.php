@@ -113,6 +113,16 @@ function sideload_single_image( $url, $post_id = 0, $metadata = array() ) {
 		}
 	}
 
+	/**
+	 * Fires after an image has been side-loaded into WordPress.
+	 *
+	 * @param string $url      The remote URL for the image.
+	 * @param int    $post_id  The post the newly-uploaded image should be attached to.
+	 * @param array  $metadata Additional post meta keys to assign once the attachment post bas been
+	 *                         created. These keys and values are assumed to be sanitized.
+	 */
+	do_action( 'airstory_sideload_single_image', $url, $post_id, $metadata );
+
 	return $image_id;
 }
 

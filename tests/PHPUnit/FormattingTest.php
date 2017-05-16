@@ -121,6 +121,8 @@ EOT;
 		M::passthruFunction( 'esc_url' );
 		M::passthruFunction( 'esc_url_raw' );
 
+		M::expectAction( 'airstory_sideload_single_image', $url, 123, $meta );
+
 		sideload_single_image( $url, 123, $meta );
 	}
 

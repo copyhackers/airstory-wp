@@ -135,6 +135,17 @@ EOT;
 		$this->assertEquals( $response, get_body_contents( $response ) );
 	}
 
+	/**
+	 * Since we're not only encoding &nbsp;, check other common HTML entities as well.
+	 *
+	 * @link https://github.com/liquidweb/airstory-wp/issues/28
+	 */
+	public function testEncodingOfAdditionalEntities() {
+		$response = '<p>&quot;&#34;&amp;&#38;&apos;&#39;&lt;&#60;&gt;&#62;&copy;&#169;&laquo;&#171;&reg;&#174;&raquo;&#187;&trade;&#8482;</p>';
+
+		$this->assertEquals( $response, get_body_contents( $response ) );
+	}
+
 	public function testSideloadSingleImage() {
 		$url  = 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
 		$meta = array(

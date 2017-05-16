@@ -1,6 +1,6 @@
 {
     "name": "airstory/airstory-wp",
-    "description": "Publish content from Airstory to WordPress.",
+    "description": "Send your blog posts from Airstory writing software to WordPress for publication.",
     "type": "wordpress-plugin",
     "homepage": "http://www.airstory.co/integrations/",
     "authors": [

@@ -1,0 +1,120 @@
+# Copyright (C) 2017 Liquid Web
+# This file is distributed under the MIT.
+msgid ""
+msgstr ""
+"Project-Id-Version: Airstory 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/airstory\n"
+"POT-Creation-Date: 2017-05-16 18:33:04+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2017-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: grunt-wp-i18n1.0.0\n"
+
+#: dist/includes/class-api.php:117 includes/class-api.php:117
+msgid "Invalid response from Airstory when connecting account"
+msgstr ""
+
+#: dist/includes/class-api.php:143 includes/class-api.php:143
+msgid "Invalid response from Airstory when updating account"
+msgstr ""
+
+#: dist/includes/class-api.php:229 includes/class-api.php:229
+msgid "An Airstory token is required to make this request"
+msgstr ""
+
+#: dist/includes/class-api.php:262 includes/class-api.php:262
+msgid "The request did not return valid JSON"
+msgstr ""
+
+#: dist/includes/connection.php:74 includes/connection.php:74
+msgid "WordPress was unable to authenticate with Airstory, please try again."
+msgstr ""
+
+#: dist/includes/core.php:114 includes/core.php:114
+msgid ""
+"The Airstory plugin is missing one or more of its dependencies, so it's "
+"automatically been deactivated."
+msgstr ""
+
+#: dist/includes/core.php:115 includes/core.php:115
+msgid ""
+"For more information, <a href=\"#\" target=\"_blank\">please see the "
+"plugin's <abbr title=\"Frequently Asked Questions\">FAQ</abbr></a>."
+msgstr ""
+
+#: dist/includes/credentials.php:54 includes/credentials.php:54
+msgid "Unable to encrypt Airstory token"
+msgstr ""
+
+#: dist/includes/credentials.php:90 includes/credentials.php:90
+msgid "Unable to decrypt Airstory token"
+msgstr ""
+
+#: dist/includes/settings.php:58 includes/settings.php:58
+msgid ""
+"To get started, please connect WordPress to your Airstory account <a "
+"href=\"%s#airstory\">on your profile page</a>."
+msgstr ""
+
+#: dist/includes/settings.php:64 includes/settings.php:64
+msgid "Welcome to Airstory!"
+msgstr ""
+
+#: dist/includes/settings.php:67 includes/settings.php:67
+msgid "Dismiss this notice"
+msgstr ""
+
+#: dist/includes/settings.php:89 includes/settings.php:89
+msgid "Airstory Configuration"
+msgstr ""
+
+#: dist/includes/settings.php:93 includes/settings.php:93
+msgid "User Token"
+msgstr ""
+
+#: dist/includes/settings.php:97 includes/settings.php:97
+msgid "Disconnect from Airstory"
+msgstr ""
+
+#: dist/includes/settings.php:99 includes/settings.php:99
+msgid "Currently authenticated as <strong>%s</strong>"
+msgstr ""
+
+#: dist/includes/settings.php:105 includes/settings.php:105
+msgid ""
+"You can retrieve your user token from <a "
+"href=\"https://app.airstory.co/projects?overlay=account\" "
+"target=\"_blank\">your Airstory account settings</a>."
+msgstr ""
+
+#: dist/includes/settings.php:117 includes/settings.php:117
+msgid "Sites connected to Airstory"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Airstory"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://www.airstory.co/integrations/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Publish content from Airstory to WordPress."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Liquid Web"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://www.liquidweb.com"
+msgstr ""
+
+#: dist/includes/settings.php:114 includes/settings.php:114
+msgctxt "label for list of WordPress blogs (multisite only)"
+msgid "Connected Sites"
+msgstr ""

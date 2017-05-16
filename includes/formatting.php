@@ -22,8 +22,11 @@ use Airstory;
 function get_body_contents( $content ) {
 	$use_internal = libxml_use_internal_errors( true );
 
+	// Ensure Emoji are properly encoded.
+	$content = wp_encode_emoji( $content );
+
 	$doc = new \DOMDocument( '1.0', 'UTF-8' );
-	$doc->loadHTML( mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' ), LIBXML_HTML_NODEFDTD );
+	$doc->loadHTML( $content, LIBXML_HTML_NODEFDTD );
 
 	// Will retrieve the entire <body> node.
 	$body_node = $doc->getElementsByTagName( 'body' );

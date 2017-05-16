@@ -143,24 +143,36 @@ function sideload_all_images( $post_id ) {
 	$body         = new \DOMDocument;
 	$body->loadHTML( '<div>' . $post->post_content . '</div>', LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED );
 	$images       = $body->getElementsByTagName( 'img' );
-	$pattern      = '/^https?:\/\/images.airstory.co\//i';
+	$domains      = array( 'images.airstory.co', 'res.cloudinary.com' );
 	$replaced     = array();
 	$replacements = 0;
+
+	/**
+	 * Filter the list of image domains that should be side-loaded into WordPress.
+	 *
+	 * Domains will only be compared based on the domain name itself, so it's not necessary to
+	 * include a protocol or path.
+	 *
+	 * @param array $domains An array of image domain names for which media should be side-loaded
+	 *                       into WordPress.
+	 */
+	$domains = apply_filters( 'airstory_sideload_image_domains', $domains );
 
 	// Ensure media that gets sideloaded has the post_author set to the current user.
 	add_filter( 'wp_insert_attachment_data', __NAMESPACE__ . '\set_attachment_author' );
 
 	foreach ( $images as $image ) {
-		$src = $image->getAttribute( 'src' );
+		$src           = $image->getAttribute( 'src' );
+		$sanitized_src = strtolower( filter_var( $src, FILTER_SANITIZE_URL ) ); // Used for comparisons only.
 
 		// Skip this image if it isn't Airstory-hosted media.
-		if ( ! preg_match( $pattern, $src ) ) {
+		if ( ! in_array( parse_url( $sanitized_src, PHP_URL_HOST ), $domains, true ) ) {
 			continue;
 		}
 
 		// Ensure we only sideload each piece of media once.
-		if ( isset( $replaced[ $src ] ) ) {
-			$local_url = $replaced[ $src ];
+		if ( isset( $replaced[ $sanitized_src ] ) ) {
+			$local_url = $replaced[ $sanitized_src ];
 
 		} else {
 			$image_id = sideload_single_image( $src, $post_id, array(
@@ -179,7 +191,7 @@ function sideload_all_images( $post_id ) {
 			}
 
 			// Store the new local URL, in case this image is used again.
-			$replaced[ $src ] = $local_url;
+			$replaced[ $sanitized_src ] = $local_url;
 		}
 
 		$image->setAttribute( 'src', $local_url );

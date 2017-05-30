@@ -135,11 +135,10 @@ All modern hosts (Liquid Web, WP Engine, SiteGround, etc.) should support these 
 
 *Screenshots pending*
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+1. The Airstory Configuration section of a user's profile, as seen when the plugin is first activated.
+2. The Account Settings screen within Airstory, where the user retrieves their User Token.
+3. The Airstory Configuration section of a user's profile after providing their User Token to connect to Airstory.
+4. The user's WordPress site listed as an export target within Airstory.
 
 
 == Changelog ==

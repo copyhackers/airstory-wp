@@ -15,6 +15,7 @@ class CoreTest extends \Airstory\TestCase {
 
 	protected $testFiles = array(
 		'core.php',
+		'tools.php',
 	);
 
 	public function testGetCurrentDraft() {
@@ -73,8 +74,8 @@ class CoreTest extends \Airstory\TestCase {
 			define( 'AIRSTORY_DIR', '/path/to' );
 		}
 
-		M::userFunction( __NAMESPACE__ . '\check_requirements', array(
-			'return' => false,
+		M::userFunction( 'Airstory\Tools\check_compatibility', array(
+			'return' => array( 'compatible' => false ),
 		) );
 
 		M::userFunction( 'deactivate_plugins', array(
@@ -93,7 +94,7 @@ class CoreTest extends \Airstory\TestCase {
 
 		$pagenow = 'not-plugins.php';
 
-		M::userFunction( __NAMESPACE__ . '\check_requirements', array(
+		M::userFunction( 'Airstory\Tools\check_compatibility', array(
 			'times' => 0,
 		) );
 

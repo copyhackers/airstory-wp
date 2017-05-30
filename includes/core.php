@@ -8,6 +8,7 @@
 namespace Airstory\Core;
 
 use Airstory;
+use Airstory\Tools as Tools;
 use WP_Query;
 
 /**
@@ -57,31 +58,6 @@ function get_current_draft( $project_id, $document_id ) {
 }
 
 /**
- * Verify whether or not the current environment meets plugin requirements.
- *
- * The requirements for the plugin should be documented in the plugin README, but include:
- *
- * - PHP >= 5.3        - Namespace support, though the plugin will fail before reaching this check
- *                       if namespaces are unsupported.
- * - dom extension     - Used by DOMDocument in formatters.php.
- * - mcrypt extension  - Used as a backup for older systems that don't support PHP 7's random_bytes().
- * - openssl extension - Used to securely encrypt Airstory credentials.
- *
- * @return bool True if all requirements are met, false otherwise.
- */
-function check_requirements() {
-	$requirements_met = true;
-
-	// Find any missing extensions; $missing_exts will contain any that fail extension_loaded().
-	$extensions = array( 'dom', 'mcrypt', 'openssl' );
-	if ( array_filter( $extensions, 'extension_loaded' ) !== $extensions ) {
-		$requirements_met = false;
-	}
-
-	return $requirements_met;
-}
-
-/**
  * Deactivate the plugin and notify the user if the plugin doesn't meet requirements.
  *
  * @global $pagenow
@@ -89,7 +65,15 @@ function check_requirements() {
 function deactivate_if_missing_requirements() {
 	global $pagenow;
 
-	if ( 'plugins.php' !== $pagenow || check_requirements() ) {
+	// Only show this warning on the plugin page.
+	if ( 'plugins.php' !== $pagenow ) {
+		return;
+	}
+
+	// No worries if everything checks out.
+	$compatibility = Tools\check_compatibility();
+
+	if ( $compatibility['compatible'] ) {
 		return;
 	}
 

@@ -56,7 +56,8 @@ function show_user_connection_notice() {
 	}
 
 	$message = sprintf(
-		__( 'To get started, please connect WordPress to your Airstory account <a href="%s#airstory">on your profile page</a>.', 'airstory' ),
+		/* Translators: %1s$ is the WordPress user edit link. */
+		__( 'To get started, please connect WordPress to your Airstory account <a href="%1$s#airstory">on your profile page</a>.', 'airstory' ),
 		esc_url( get_edit_user_link() )
 	);
 ?>
@@ -103,7 +104,11 @@ function render_profile_settings( $user ) {
 
 						<input name="airstory-disconnect" type="submit" class="button" value="<?php esc_attr_e( 'Disconnect from Airstory', '' ); ?>" />
 						<p class="description">
-							<?php echo wp_kses_post( sprintf( __( 'Currently authenticated as <strong>%s</strong>', 'airstory' ), $profile['email'] ) ); ?>
+							<?php echo wp_kses_post( sprintf(
+								/* Translators: %1$s is the user's Airstory email address. */
+								__( 'Currently authenticated as <strong>%1$s</strong>', 'airstory' ),
+								$profile['email']
+							) ); ?>
 						</p>
 
 					<?php else : ?>

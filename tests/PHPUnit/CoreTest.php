@@ -78,12 +78,6 @@ class CoreTest extends \Airstory\TestCase {
 			'return' => array( 'compatible' => false ),
 		) );
 
-		M::userFunction( 'deactivate_plugins', array(
-			'times' => 1,
-		) );
-
-		M::passthruFunction( 'plugin_basename' );
-
 		M::expectActionAdded( 'admin_notices', __NAMESPACE__ . '\notify_user_of_missing_requirements' );
 
 		deactivate_if_missing_requirements();

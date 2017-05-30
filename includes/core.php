@@ -77,10 +77,6 @@ function deactivate_if_missing_requirements() {
 		return;
 	}
 
-	// Deactivate the plugin.
-	deactivate_plugins( plugin_basename( AIRSTORY_DIR . '/airstory.php' ) );
-	unset( $_GET['activate'] );
-
 	// Display a notice, informing the user why the plugin was deactivated.
 	add_action( 'admin_notices', __NAMESPACE__ . '\notify_user_of_missing_requirements' );
 }

@@ -65,6 +65,13 @@ function check_compatibility() {
 		'details'    => array(),
 	);
 
+	// PHP Version.
+	$compatibility['details']['php'] = version_compare( PHP_VERSION, '5.3.0', '>=' );
+
+	if ( ! $compatibility['details']['php'] ) {
+		$compatibility['compatible'] = false;
+	}
+
 	// Check required PHP extensions.
 	$extensions = array( 'dom', 'mcrypt', 'openssl' );
 

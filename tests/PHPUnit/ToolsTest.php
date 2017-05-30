@@ -48,6 +48,20 @@ class ToolsTest extends \Airstory\TestCase {
 	/**
 	 * @runInSeparateProcess
 	 */
+	public function testCheckCompatibilityWithPHPVersion() {
+		M::userFunction( __NAMESPACE__ . '\version_compare', array(
+			'return' => false,
+		) );
+
+		$compatibility = check_compatibility();
+
+		$this->assertFalse( $compatibility['compatible'] );
+		$this->assertFalse( $compatibility['details']['php'] );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function testCheckCompatibilityWithDom() {
 		M::userFunction( __NAMESPACE__ . '\extension_loaded', array(
 			'return' => false,

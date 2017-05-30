@@ -134,6 +134,16 @@ function sideload_single_image( $url, $post_id = 0, $metadata = array() ) {
 		}
 	}
 
+	/**
+	 * Fires after an image has been side-loaded into WordPress.
+	 *
+	 * @param string $url      The remote URL for the image.
+	 * @param int    $post_id  The post the newly-uploaded image should be attached to.
+	 * @param array  $metadata Additional post meta keys to assign once the attachment post bas been
+	 *                         created. These keys and values are assumed to be sanitized.
+	 */
+	do_action( 'airstory_sideload_single_image', $url, $post_id, $metadata );
+
 	return $image_id;
 }
 
@@ -164,24 +174,36 @@ function sideload_all_images( $post_id ) {
 	$body         = new \DOMDocument;
 	$body->loadHTML( '<div>' . $post->post_content . '</div>', LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED );
 	$images       = $body->getElementsByTagName( 'img' );
-	$pattern      = '/^https?:\/\/images.airstory.co\//i';
+	$domains      = array( 'images.airstory.co', 'res.cloudinary.com' );
 	$replaced     = array();
 	$replacements = 0;
+
+	/**
+	 * Filter the list of image domains that should be side-loaded into WordPress.
+	 *
+	 * Domains will only be compared based on the domain name itself, so it's not necessary to
+	 * include a protocol or path.
+	 *
+	 * @param array $domains An array of image domain names for which media should be side-loaded
+	 *                       into WordPress.
+	 */
+	$domains = apply_filters( 'airstory_sideload_image_domains', $domains );
 
 	// Ensure media that gets sideloaded has the post_author set to the current user.
 	add_filter( 'wp_insert_attachment_data', __NAMESPACE__ . '\set_attachment_author' );
 
 	foreach ( $images as $image ) {
-		$src = $image->getAttribute( 'src' );
+		$src           = $image->getAttribute( 'src' );
+		$sanitized_src = strtolower( filter_var( $src, FILTER_SANITIZE_URL ) ); // Used for comparisons only.
 
 		// Skip this image if it isn't Airstory-hosted media.
-		if ( ! preg_match( $pattern, $src ) ) {
+		if ( ! in_array( parse_url( $sanitized_src, PHP_URL_HOST ), $domains, true ) ) {
 			continue;
 		}
 
 		// Ensure we only sideload each piece of media once.
-		if ( isset( $replaced[ $src ] ) ) {
-			$local_url = $replaced[ $src ];
+		if ( isset( $replaced[ $sanitized_src ] ) ) {
+			$local_url = $replaced[ $sanitized_src ];
 
 		} else {
 			$image_id = sideload_single_image( $src, $post_id, array(
@@ -200,7 +222,7 @@ function sideload_all_images( $post_id ) {
 			}
 
 			// Store the new local URL, in case this image is used again.
-			$replaced[ $src ] = $local_url;
+			$replaced[ $sanitized_src ] = $local_url;
 		}
 
 		$image->setAttribute( 'src', $local_url );
@@ -268,3 +290,62 @@ function set_attachment_author( $post ) {
 
 	return $post;
 }
+
+/**
+ * When importing manipulated images, also side-load the original version of the media.
+ *
+ * Airstory currently uses Cloudinary to host images and allow users to manipulate (scale, rotate,
+ * etc.) using a series of modifiers in the URL path.
+ *
+ * An example URL with modifiers would be:
+ *
+ *   https://cloudinary.com/airstory/image/upload/c_scale,w_0.1/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg
+ *
+ * The "/c_scale,w_0.1/" portion of the path tells Cloudinary to scale the image to 10% of the
+ * original width.
+ *
+ * The equivalent transformed image with the images.airstory.co domain would be:
+ *
+ *   https://images.airstory.co/c_scale,w_0.1/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg
+ *
+ * @see http://cloudinary.com/documentation/image_transformations for a full list of available
+ *      Cloudinary modifier arguments.
+ *
+ * While we want to respect the version originally exported from Airstory, there's value in
+ * also capturing the original media, in case the user wants to re-generate thumbnails later.
+ *
+ * @param string $url The URL for the image, as hosted on Cloudinary.com.
+ * @param int    $post_id  The post the newly-uploaded image should be attached to.
+ * @param array  $metadata Additional post meta keys to assign once the attachment post bas been
+ *                         created. These keys and values are assumed to be sanitized.
+ */
+function retrieve_original_media( $url, $post_id, $metadata ) {
+	$url_components = array_merge( array( 'host' => '', 'path' => '' ), (array) parse_url( $url ) );
+	$url_components = array_map( 'strtolower', $url_components );
+
+	// Only operate on Cloudinary-hosted images.
+	if ( ! in_array( $url_components['host'], array( 'res.cloudinary.com', 'images.airstory.co' ), true ) ) {
+		return;
+	}
+
+	// Images hosted on images.airstory.co.
+	if ( 'images.airstory.co' === $url_components['host'] ) {
+		$original_media_check = '/v1/prod';
+		$replacement_pattern  = '/(images\.airstory\.co\/)([^\/]+\/)(v1\/prod\/)/i';
+
+	} else {
+		$original_media_check = '/airstory/image/upload/v1/prod/';
+		$replacement_pattern  = '/(res\.cloudinary\.com\/airstory\/image\/upload\/)([^\/]+\/)(v1\/prod\/)/i';
+	}
+
+	// The path already excludes the modifier portion of the path, and thus is presumably the original.
+	if ( 0 === strpos( $url_components['path'], $original_media_check ) ) {
+		return;
+	}
+
+	// Using the appropriate URL pattern, remove the modifiers portion of the path.
+	$original_media_url = preg_replace( $replacement_pattern, '$1$3', $url );
+
+	sideload_single_image( $original_media_url, $post_id, $metadata );
+}
+add_action( 'airstory_sideload_single_image', __NAMESPACE__ . '\retrieve_original_media', 10, 3 );

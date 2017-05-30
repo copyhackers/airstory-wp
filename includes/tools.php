@@ -64,6 +64,19 @@ function render_tools_page() {
 				</tr>
 				<?php unset( $compatibility['details']['php'] ); ?>
 
+				<tr class="dependency-<?php echo esc_attr( $compatibility['details']['https'] ? 'met' : 'unmet' ); ?>">
+					<td><?php esc_html_e( 'HTTPS Support' ); ?></td>
+					<td>
+						<?php if ( $compatibility['details']['https'] ) : ?>
+							<?php esc_html_e( 'This site supports HTTPS', 'airstory' ); ?>
+						<?php else : ?>
+							<strong><?php esc_html_e( 'Airstory is unable to talk to your site over HTTPS', 'airstory' ); ?></strong>
+						<?php endif; ?>
+					</td>
+					<td><?php render_status_icon( $compatibility['details']['https'] ); ?></td>
+				</tr>
+				<?php unset( $compatibility['details']['https'] ); ?>
+
 				<?php foreach ( array_keys( $compatibility['details'] ) as $ext ) : // Everything left is an extension. ?>
 
 					<tr class="dependency-<?php echo esc_attr( $compatibility['details'][ $ext ] ? 'met' : 'unmet' ); ?>">

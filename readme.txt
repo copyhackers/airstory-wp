@@ -19,7 +19,8 @@ This plugin enables [Airstory](http://www.airstory.co/) users to connect their W
 
 * This plugin requires an [Airstory](http://www.airstory.co/) active Airstory subscription.
 	* Not already an Airstory user? [Get one project free for life, just by signing up!](http://www.airstory.co/pricing/)
-* PHP version 5.3 or higher, with the "dom", "mcrypt", and "openssl" extensions active.
+* PHP version 5.3 or higher, with the DOM, Mcrypt, and OpenSSL extensions active.
+* The WordPress site must have a valid SSL certificate in order for Airstory to publish content.
 
 
 === Usage ===

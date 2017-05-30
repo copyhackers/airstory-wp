@@ -10,6 +10,7 @@ namespace Airstory\Settings;
 use Airstory\Connection as Connection;
 use Airstory\Credentials as Credentials;
 use Airstory\Settings as Settings;
+use Airstory\Tools as Tools;
 
 /**
  * Retrieve a value from the _airstory_data user meta key.
@@ -82,6 +83,12 @@ add_action( 'network_admin_notices', __NAMESPACE__ . '\show_user_connection_noti
  * @param WP_User $user The current user object.
  */
 function render_profile_settings( $user ) {
+	$compatibility = Tools\check_compatibility();
+
+	if ( ! $compatibility['compatible'] ) {
+		return;
+	}
+
 	$profile = Settings\get_user_data( $user->ID, 'profile', array() );
 	$blogs   = get_available_blogs( $user->ID );
 ?>

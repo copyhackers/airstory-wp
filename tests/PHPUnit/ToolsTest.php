@@ -56,7 +56,7 @@ class ToolsTest extends \Airstory\TestCase {
 		$compatibility = check_compatibility();
 
 		$this->assertFalse( $compatibility['compatible'] );
-		$this->assertFalse( $compatibility['details']['dom']['compatible'] );
+		$this->assertFalse( $compatibility['details']['dom'] );
 	}
 
 	/**
@@ -70,7 +70,7 @@ class ToolsTest extends \Airstory\TestCase {
 		$compatibility = check_compatibility();
 
 		$this->assertFalse( $compatibility['compatible'] );
-		$this->assertFalse( $compatibility['details']['mcrypt']['compatible'] );
+		$this->assertFalse( $compatibility['details']['mcrypt'] );
 	}
 
 	/**
@@ -84,7 +84,7 @@ class ToolsTest extends \Airstory\TestCase {
 		$compatibility = check_compatibility();
 
 		$this->assertFalse( $compatibility['compatible'] );
-		$this->assertFalse( $compatibility['details']['openssl']['compatible'] );
+		$this->assertFalse( $compatibility['details']['openssl'] );
 	}
 }
 

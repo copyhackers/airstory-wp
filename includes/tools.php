@@ -69,20 +69,10 @@ function check_compatibility() {
 	$extensions = array( 'dom', 'mcrypt', 'openssl' );
 
 	foreach ( $extensions as $extension ) {
-		$is_loaded = extension_loaded( $extension );
+		$compatibility['details'][ $extension ] = extension_loaded( $extension );
 
-		if ( ! $is_loaded ) {
-			$compatibility['details'][ $extension ] = array(
-				'compatible'  => false,
-				'explanation' => sprintf( __( 'The %s PHP extension is not loaded.', 'airstory' ), $extension ),
-			);
+		if ( ! $compatibility['details'][ $extension ] ) {
 			$compatibility['compatible'] = false;
-
-		} else {
-			$compatibility['details'][ $extension ] = array(
-				'compatible'  => true,
-				'explanation' => sprintf( __( 'The %s PHP extension is loaded.', 'airstory' ), $extension ),
-			);
 		}
 	}
 

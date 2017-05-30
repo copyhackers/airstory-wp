@@ -25,14 +25,6 @@ class ToolsTest extends \Airstory\TestCase {
 		register_menu_page();
 	}
 
-	public function testRenderToolsPage() {
-		$this->markTestIncomplete();
-
-		M::passthruFunction( 'esc_html' );
-
-		render_tools_page();
-	}
-
 	/**
  	 * @requires extension dom
  	 * @requires extension mcrypt

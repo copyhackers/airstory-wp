@@ -29,14 +29,26 @@ function render_tools_page() {
 	$compatibility = check_compatibility();
 ?>
 
+	<style type="text/css">
+		#airstory-dependencies-list .dashicons-yes {
+			color: #46b450;
+		}
+		#airstory-dependencies-list .dashicons-no {
+			color: #d54e21;
+		}
+		#airstory-dependencies-list .dependency-unmet td {
+			background-color: #fef7f1;
+		}
+	</style>
+
 	<div class="wrap">
 		<h1><?php echo esc_html( _x( 'Airstory', 'tools page heading', 'airstory' ) ); ?></h1>
 		<p><?php esc_html_e( 'This page contains useful information for integrating Airstory into WordPress.', 'airstory' ); ?></p>
 
 		<h2><?php echo esc_html( _x( 'Compatibility', 'tools page heading', 'airstory' ) ); ?></h2>
 		<p class="description"><?php esc_html_e( 'Ensure your WordPress installation has everything it needs to work with Airstory.', 'airstory' ); ?></p>
-
-		<table class="widefat">
+		<br />
+		<table id="airstory-dependencies-list" class="widefat">
 			<thead>
 				<tr>
 					<th scope="col"><?php echo esc_html( _x( 'Dependency', 'compatibility table heading', 'airstory' ) ); ?></th>
@@ -45,7 +57,7 @@ function render_tools_page() {
 			</thead>
 			<tbody>
 
-				<tr>
+				<tr class="dependency-<?php echo esc_attr( $compatibility['details']['php'] ? 'met' : 'unmet' ); ?>">
 					<td><?php esc_html_e( 'PHP Version >= 5.3', 'airstory' ); ?></td>
 					<td><?php echo esc_html( sprintf( __( 'Version %s', 'airstory' ), PHP_VERSION ) ); ?></td>
 					<td><?php render_status_icon( $compatibility['details']['php'] ); ?></td>
@@ -54,7 +66,7 @@ function render_tools_page() {
 
 				<?php foreach ( array_keys( $compatibility['details'] ) as $ext ) : // Everything left is an extension. ?>
 
-					<tr>
+					<tr class="dependency-<?php echo esc_attr( $compatibility['details'][ $ext ] ? 'met' : 'unmet' ); ?>">
 						<td><?php echo esc_html( sprintf( __( 'PHP Extension: %s', 'airstory' ), $ext ) ); ?></td>
 						<td>
 							<?php if ( $compatibility['details'][ $ext ] ) : ?>

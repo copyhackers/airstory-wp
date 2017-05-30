@@ -65,7 +65,7 @@ class CoreTest extends \Airstory\TestCase {
 		WP_Query::tearDown();
 	}
 
-	public function testDeactivateIfMissingRequirements() {
+	public function testCheckForMissingRequirements() {
 		global $pagenow;
 
 		$pagenow = 'plugins.php';
@@ -80,10 +80,10 @@ class CoreTest extends \Airstory\TestCase {
 
 		M::expectActionAdded( 'admin_notices', __NAMESPACE__ . '\notify_user_of_missing_requirements' );
 
-		deactivate_if_missing_requirements();
+		check_for_missing_requirements();
 	}
 
-	public function testDeactivateIfMissingRequirementsOnlyFiresOnPluginPage() {
+	public function testCheckForMissingRequirementsRequirementsOnlyFiresOnPluginPage() {
 		global $pagenow;
 
 		$pagenow = 'not-plugins.php';
@@ -92,11 +92,7 @@ class CoreTest extends \Airstory\TestCase {
 			'times' => 0,
 		) );
 
-		M::userFunction( 'deactivate_plugins', array(
-			'times' => 0,
-		) );
-
-		deactivate_if_missing_requirements();
+		check_for_missing_requirements();
 	}
 
 	public function testCreateDocument() {

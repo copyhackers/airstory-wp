@@ -62,7 +62,7 @@ function get_current_draft( $project_id, $document_id ) {
  *
  * @global $pagenow
  */
-function deactivate_if_missing_requirements() {
+function check_for_missing_requirements() {
 	global $pagenow;
 
 	// Only show this warning on the plugin page.
@@ -80,7 +80,7 @@ function deactivate_if_missing_requirements() {
 	// Display a notice, informing the user why the plugin was deactivated.
 	add_action( 'admin_notices', __NAMESPACE__ . '\notify_user_of_missing_requirements' );
 }
-add_action( 'admin_init', __NAMESPACE__ . '\deactivate_if_missing_requirements' );
+add_action( 'admin_init', __NAMESPACE__ . '\check_for_missing_requirements' );
 
 /**
  * Notify the user of missing plugin requirements and direct them to more detailed information.

@@ -354,7 +354,7 @@ function get_support_details() {
 	$report .= PHP_EOL . '-- Server Configuration' . PHP_EOL . PHP_EOL;
 	$report .= 'PHP Version:         ' . PHP_VERSION . PHP_EOL;
 	$report .= 'MySQL Version:       ' . $wpdb->db_version() . PHP_EOL;
-	$report .= 'Webserver Info:      ' . $_SERVER['SERVER_SOFTWARE'] . PHP_EOL;
+	$report .= 'Web Server:          ' . $_SERVER['SERVER_SOFTWARE'] . PHP_EOL;
 
 	// PHP Configuration.
 	$report .= PHP_EOL . '-- PHP Configuration' . PHP_EOL . PHP_EOL;

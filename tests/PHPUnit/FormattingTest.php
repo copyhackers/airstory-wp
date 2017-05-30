@@ -11,7 +11,7 @@ use WP_Mock as M;
 use Mockery;
 
 /**
- * @require extension dom
+ * @requires extension dom
  */
 class FormattingTest extends \Airstory\TestCase {
 

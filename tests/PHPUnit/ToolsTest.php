@@ -101,13 +101,3 @@ class ToolsTest extends \Airstory\TestCase {
 		$this->assertFalse( $compatibility['details']['openssl'] );
 	}
 }
-
-/**
- * Test double for extension_loaded() within the Airstory\Tools namespace.
- *
- * @param string $ext The extension to check whether or not it's loaded.
- * @return bool True if the extension is loaded, false otherwise.
- */
-function extension_loaded( $ext ) {
-	return \extension_loaded( $ext );
-}

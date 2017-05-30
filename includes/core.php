@@ -91,8 +91,11 @@ function notify_user_of_missing_requirements() {
 ?>
 
 	<div class="notice notice-warning">
-		<p><?php esc_html_e( 'The Airstory plugin is missing one or more of its dependencies, so it\'s automatically been deactivated.', 'airstory' ); ?></p>
-		<p><?php echo wp_kses_post( __( 'For more information, <a href="#" target="_blank">please see the plugin\'s <abbr title="Frequently Asked Questions">FAQ</abbr></a>.', 'airstory' ) );?></p>
+		<p><?php esc_html_e( 'The Airstory plugin is missing one or more of its dependencies, so it\'s not yet available to users on this site.', 'airstory' ); ?></p>
+		<p><?php echo wp_kses_post( sprintf(
+			__( 'For more information, <a href="%s" target="_blank">please see the Airstory Tools page</a>.', 'airstory' ),
+			esc_url( admin_url( 'tools.php?page=airstory' ) )
+		) );?></p>
 	</div>
 
 <?php

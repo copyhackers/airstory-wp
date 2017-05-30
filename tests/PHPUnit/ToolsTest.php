@@ -31,6 +31,10 @@ class ToolsTest extends \Airstory\TestCase {
  	 * @requires extension openssl
  	 */
 	public function testCheckCompatibility() {
+		M::userFunction( __NAMESPACE__ . '\verify_https_support', array(
+			'return' => true,
+		) );
+
 		$compatibility = check_compatibility();
 
 		$this->assertTrue( $compatibility['compatible'], 'The compatibility array should include a single go/no-go for compatibility' );
@@ -45,6 +49,10 @@ class ToolsTest extends \Airstory\TestCase {
 			'return' => false,
 		) );
 
+		M::userFunction( __NAMESPACE__ . '\verify_https_support', array(
+			'return' => true,
+		) );
+
 		$compatibility = check_compatibility();
 
 		$this->assertFalse( $compatibility['compatible'] );
@@ -54,9 +62,27 @@ class ToolsTest extends \Airstory\TestCase {
 	/**
 	 * @runInSeparateProcess
 	 */
+	public function testCheckCompatibilityWithHttps() {
+		M::userFunction( __NAMESPACE__ . '\verify_https_support', array(
+			'return' => false,
+		) );
+
+		$compatibility = check_compatibility();
+
+		$this->assertFalse( $compatibility['compatible'] );
+		$this->assertFalse( $compatibility['details']['https'] );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function testCheckCompatibilityWithDom() {
 		M::userFunction( __NAMESPACE__ . '\extension_loaded', array(
 			'return' => false,
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\verify_https_support', array(
+			'return' => true,
 		) );
 
 		$compatibility = check_compatibility();
@@ -73,6 +99,10 @@ class ToolsTest extends \Airstory\TestCase {
 			'return' => false,
 		) );
 
+		M::userFunction( __NAMESPACE__ . '\verify_https_support', array(
+			'return' => true,
+		) );
+
 		$compatibility = check_compatibility();
 
 		$this->assertFalse( $compatibility['compatible'] );
@@ -85,6 +115,10 @@ class ToolsTest extends \Airstory\TestCase {
 	public function testCheckCompatibilityWithOpenSSL() {
 		M::userFunction( __NAMESPACE__ . '\extension_loaded', array(
 			'return' => false,
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\verify_https_support', array(
+			'return' => true,
 		) );
 
 		$compatibility = check_compatibility();

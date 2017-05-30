@@ -149,6 +149,13 @@ function check_compatibility() {
 		$compatibility['compatible'] = false;
 	}
 
+	// HTTPS support.
+	$compatibility['details']['https'] = verify_https_support();
+
+	if ( ! $compatibility['details']['https'] ) {
+		$compatibility['compatible'] = false;
+	}
+
 	// Check required PHP extensions.
 	$extensions = array( 'dom', 'mcrypt', 'openssl' );
 

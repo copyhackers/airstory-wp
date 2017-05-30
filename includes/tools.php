@@ -162,3 +162,41 @@ function check_compatibility() {
 
 	return $compatibility;
 }
+
+/**
+ * Verify whether or not the current site *supports* HTTPS.
+ *
+ * The is_ssl() WordPress function checks if the current request was made over HTTPS, but does not
+ * take into account whether or not the request was made over HTTP but the site also supports SSL.
+ *
+ * For example, consider a site, example.com, that is running on both HTTP and HTTPS:
+ * - Running is_ssl() on https://example.com will return TRUE.
+ * - Running is_ssl() on http://example.com will return FALSE.
+ *
+ * If the site isn't already running on HTTPS, this function will attempt to ping the HTTPS version
+ * and return whether or not it was reachable.
+ *
+ * @return bool True if the site is either already being served (or is at least accessible) over
+ *              HTTPS, false otherwise.
+ */
+function verify_https_support() {
+	if ( is_ssl() ) {
+		return true;
+	}
+
+	$response = wp_remote_request( get_rest_url( null, '/airstory/v1', 'https' ), array(
+		'method' => 'HEAD',
+		'sslverify' => false,
+	) );
+
+	if ( is_wp_error( $response ) ) {
+		return false;
+	}
+
+	/*
+	 * 200 is the only status code we're looking for here — redirecting to the HTTP version will
+	 * produced mixed-content warnings within Airstory, and WP's default behavior is to not redirect
+	 * REST API URIs to use the canonical domain/protocol.
+	 */
+	return 200 === wp_remote_retrieve_response_code( $response );
+}

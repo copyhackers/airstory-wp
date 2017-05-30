@@ -92,4 +92,61 @@ class ToolsTest extends \Airstory\TestCase {
 		$this->assertFalse( $compatibility['compatible'] );
 		$this->assertFalse( $compatibility['details']['openssl'] );
 	}
+
+	public function testVerifyHttpsSupport() {
+		$response = new \stdClass;
+
+		M::userFunction( 'is_ssl', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'get_rest_url', array(
+			'args'   => array( null, '/airstory/v1', 'https' ),
+			'return' => 'https://example.com/airstory/v1',
+		) );
+
+		M::userFunction( 'wp_remote_request', array(
+			'args'   => array( 'https://example.com/airstory/v1', array(
+				'method'    => 'HEAD',
+				'sslverify' => false,
+			) ),
+			'return' => $response,
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'wp_remote_retrieve_response_code', array(
+			'args'   => array( $response ),
+			'return' => 200,
+		) );
+
+		$this->assertTrue( verify_https_support() );
+	}
+
+	public function testVerifyHttpsSupportReturnsEarlyIfAlreadyOnSSL() {
+		M::userFunction( 'is_ssl', array(
+			'return' => true,
+		) );
+
+		$this->assertTrue( verify_https_support() );
+	}
+
+	public function testVerifyHttpsSupportReturnsFalseIfWPError() {
+		$response = new \stdClass;
+
+		M::userFunction( 'is_ssl', array(
+			'return' => false,
+		) );
+
+		M::userFunction( 'get_rest_url' );
+		M::userFunction( 'wp_remote_request' );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => true,
+		) );
+
+		$this->assertFalse( verify_https_support() );
+	}
 }

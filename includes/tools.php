@@ -79,7 +79,15 @@ function render_tools_page() {
 					</tr>
 
 				<?php endforeach; ?>
+			</tbody>
 		</table>
+
+		<?php if ( ! $compatibility['compatible'] ) : ?>
+
+			<h3><?php esc_html_e( 'It appears you\'re missing one or more dependencies!', 'airstory' ); ?></h3>
+			<p><?php echo wp_kses_post( __( 'PHP, the programming language behind WordPress, <a href="https://en.wikipedia.org/wiki/List_of_PHP_extensions">has a number of extensions available</a> to enable new or improve existing functionality.', 'airstory' ) ); ?></p>
+			<p><?php esc_html_e( 'The Airstory WordPress plugin leverages several common PHP extensions, all of which are typically enabled by default (or at least available) across most web hosts. If one of the extensions above is listed as being missing and you\'re unsure how to activate it yourself, please contact your host for support.', 'airstory' ); ?></p>
+		<?php endif; ?>
 	</div>
 
 <?php

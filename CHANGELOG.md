@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file, according t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [Unreleased]
+
+* Fixed a small typo in the plugin's README file.
+
+
 ## [1.0.0]
 
 * Initial public release.

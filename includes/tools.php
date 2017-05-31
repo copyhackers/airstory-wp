@@ -59,7 +59,11 @@ function render_tools_page() {
 
 				<tr class="dependency-<?php echo esc_attr( $compatibility['details']['php'] ? 'met' : 'unmet' ); ?>">
 					<td><?php esc_html_e( 'PHP Version >= 5.3', 'airstory' ); ?></td>
-					<td><?php echo esc_html( sprintf( __( 'Version %s', 'airstory' ), PHP_VERSION ) ); ?></td>
+					<td><?php echo esc_html( sprintf(
+						/* Translators: %1$s is the current PHP version. */
+						__( 'Version %1$s', 'airstory' ),
+						PHP_VERSION
+					) ); ?></td>
 					<td><?php render_status_icon( $compatibility['details']['php'] ); ?></td>
 				</tr>
 				<?php unset( $compatibility['details']['php'] ); ?>
@@ -80,12 +84,20 @@ function render_tools_page() {
 				<?php foreach ( array_keys( $compatibility['details'] ) as $ext ) : // Everything left is an extension. ?>
 
 					<tr class="dependency-<?php echo esc_attr( $compatibility['details'][ $ext ] ? 'met' : 'unmet' ); ?>">
-						<td><?php echo esc_html( sprintf( __( 'PHP Extension: %s', 'airstory' ), $ext ) ); ?></td>
+						<td><?php echo esc_html( sprintf(
+							/* Translators: %1$s represents the PHP extension name. */
+							__( 'PHP Extension: %1$s', 'airstory' ),
+							$ext
+						) ); ?></td>
 						<td>
 							<?php if ( $compatibility['details'][ $ext ] ) : ?>
 								<?php esc_html_e( 'Extension loaded', 'airstory' ); ?>
 							<?php else : ?>
-								<strong><?php echo esc_html( sprintf( __( 'The %s extension is missing!', 'airstory' ), $ext ) ); ?></strong>
+								<strong><?php echo esc_html( sprintf(
+									/* Translators: %1$s is the name of the missing PHP extension. */
+									__( 'The %1$s extension is missing!', 'airstory' ),
+									$ext
+								) ); ?></strong>
 							<?php endif; ?>
 						</td>
 						<td><?php render_status_icon( $compatibility['details'][ $ext ] ); ?></td>

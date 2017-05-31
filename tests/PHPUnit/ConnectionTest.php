@@ -110,7 +110,7 @@ class ConnectionTest extends \Airstory\TestCase {
 		) );
 
 		M::userFunction( 'get_rest_url', array(
-			'args'   => array( null, '/airstory/v1/webhook' ),
+			'args'   => array( null, '/airstory/v1/webhook', 'https' ),
 			'return' => 'http://example.com/airstory/v1/webhook'
 		) );
 

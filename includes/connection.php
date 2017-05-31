@@ -60,7 +60,7 @@ function get_target( $user_id ) {
 	return array(
 		'identifier' => (string) $user_id, // Airstory expects a string.
 		'name'       => get_bloginfo( 'name' ),
-		'url'        => get_rest_url( null, '/airstory/v1/webhook' ),
+		'url'        => get_rest_url( null, '/airstory/v1/webhook', 'https' ),
 		'type'       => 'wordpress',
 	);
 }

@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 * Refactor the `grunt build` task to include the readme.txt file and skip the `dist/` directory when building the plugin's language files.
+* Fixed a small typo in the plugin's README file.
 
 
 ## [1.0.0]

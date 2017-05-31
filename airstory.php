@@ -17,7 +17,7 @@
 namespace Airstory;
 
 // Declare the canonical plugin version.
-define( 'AIRSTORY_VERSION', '0.1.0' );
+define( 'AIRSTORY_VERSION', '1.0.0' );
 
 if ( ! defined( 'AIRSTORY_DIR' ) ) {
 	define( 'AIRSTORY_DIR', __DIR__ );

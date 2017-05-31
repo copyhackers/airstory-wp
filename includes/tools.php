@@ -116,7 +116,7 @@ function render_tools_page() {
 		<?php endif; ?>
 
 		<h2><?php esc_html_e( 'Get Support', 'airstory' ); ?></h2>
-		<p><?php echo wp_kses_post( 'The Airstory WordPress plugin is backed by <a href="https://www.liquidweb.com/support/heroic-promise.html">Liquid Web\'s Heroic Support</a>; if you run into any issues when working with the Airstory plugin, please <a href="https://wordpress.org/support/plugin/airstory" target="_blank">feel free to open an issue in the WordPress.org plugin repo</a>.', 'airstory' ); ?></p>
+		<p><?php echo wp_kses_post( __( 'The Airstory WordPress plugin is backed by <a href="https://www.liquidweb.com/support/heroic-promise.html">Liquid Web\'s Heroic Support</a>; if you run into any issues when working with the Airstory plugin, please <a href="https://wordpress.org/support/plugin/airstory" target="_blank">feel free to open an issue in the WordPress.org plugin repo</a>.', 'airstory' ) ); ?></p>
 		<p><?php esc_html_e( 'To help troubleshoot any issues, please include the following report in your support request:', 'airstory' ); ?></p>
 		<textarea class="large-text code" rows="15" cols="50" readonly="readonly" onclick="this.focus(); this.select()"><?php echo esc_html( get_support_details() ); ?></textarea>
 	</div>

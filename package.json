@@ -1,6 +1,6 @@
 {
   "name": "airstory-wp",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Publish content from Airstory to WordPress.",
   "homepage": "http://www.airstory.co/integrations/",
   "author": {

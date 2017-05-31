@@ -2,8 +2,8 @@
 Contributors: liquidweb, airstory, stevegrunwell
 Tags: airstory, editorial, collaboration, writing
 Requires at least: 4.7
-Tested up to: 4.7.4
-Stable tag: 0.1.0
+Tested up to: 4.7.5
+Stable tag: 1.0.0
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -81,5 +81,5 @@ directory take precedence. For example, `/assets/screenshot-1.png` would win ove
 
 For a full list of changes, please [view the change log on GitHub](https://github.com/liquidweb/airstory-wp/blob/develop/CHANGELOG.md).
 
-= 0.1.0 =
+= 1.0.0 =
 * Initial public release.

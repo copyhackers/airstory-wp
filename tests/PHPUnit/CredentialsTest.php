@@ -12,8 +12,8 @@ use Mockery;
 use WP_Error;
 
 /**
- * @require extension openssl
- * @require extension mcrypt
+ * @requires extension openssl
+ * @requires extension mcrypt
  */
 class CredentialsTest extends \Airstory\TestCase {
 

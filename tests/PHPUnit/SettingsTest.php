@@ -15,6 +15,7 @@ class SettingsTest extends \Airstory\TestCase {
 	protected $testFiles = array(
 		'connection.php',
 		'settings.php',
+		'tools.php',
 	);
 
 	public function testGetUserData() {
@@ -149,6 +150,10 @@ class SettingsTest extends \Airstory\TestCase {
 		$user = new \stdClass;
 		$user->ID = 5;
 
+		M::userFunction( 'Airstory\Tools\check_compatibility', array(
+			'return' => array( 'compatible' => true ),
+		) );
+
 		M::userFunction( 'get_user_meta', array(
 			'return' => null,
 		) );
@@ -164,9 +169,26 @@ class SettingsTest extends \Airstory\TestCase {
 		render_profile_settings( $user );
 	}
 
+	public function testRenderProfileSettingsReturnsEarlyIfDependenciesNotMet() {
+		$user = new \stdClass;
+		$user->ID = 5;
+
+		M::userFunction( 'Airstory\Tools\check_compatibility', array(
+			'return' => array( 'compatible' => false ),
+		) );
+
+		$this->expectOutputString( '' );
+
+		render_profile_settings( $user );
+	}
+
 	public function testRenderProfileSettingsOnlyShowsSiteListIfUserIsMemberOfMoreThanOneSite() {
 		$user = new \stdClass;
 		$user->ID = 5;
+
+		M::userFunction( 'Airstory\Tools\check_compatibility', array(
+			'return' => array( 'compatible' => true ),
+		) );
 
 		M::userFunction( __NAMESPACE__ . '\get_available_blogs', array(
 			'return' => array( 1 ),

@@ -3,7 +3,7 @@
  * Plugin Name: Airstory
  * Plugin URI:  http://www.airstory.co/integrations/
  * Description: Send your blog posts from Airstory writing software to WordPress for publication.
- * Version:     0.1.0
+ * Version:     1.0.0
  * Author:      Liquid Web
  * Author URI:  https://www.liquidweb.com
  * Text Domain: airstory
@@ -17,7 +17,7 @@
 namespace Airstory;
 
 // Declare the canonical plugin version.
-define( 'AIRSTORY_VERSION', '0.1.0' );
+define( 'AIRSTORY_VERSION', '1.0.0' );
 
 if ( ! defined( 'AIRSTORY_DIR' ) ) {
 	define( 'AIRSTORY_DIR', __DIR__ );

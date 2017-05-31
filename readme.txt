@@ -134,8 +134,6 @@ All modern hosts (Liquid Web, WP Engine, SiteGround, etc.) should support these 
 
 == Screenshots ==
 
-*Screenshots pending*
-
 1. The Airstory Configuration section of a user's profile, as seen when the plugin is first activated.
 2. The Account Settings screen within Airstory, where the user retrieves their User Token.
 3. The Airstory Configuration section of a user's profile after providing their User Token to connect to Airstory.

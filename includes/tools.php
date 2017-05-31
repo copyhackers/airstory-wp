@@ -243,9 +243,11 @@ function verify_https_support() {
  * Build a system environment report for submission along with any bug reports.
  *
  * This is largely based on (a simplified version) of Easy Digital Downloads' edd_tools_sysinfo_get()
- * reporting function.
+ * reporting function. Available for use in this plugin under the MIT license with permission from
+ * copyright holder Pippin Williamson.
  *
  * @link https://github.com/easydigitaldownloads/easy-digital-downloads
+ * @link https://github.com/liquidweb/airstory-wp/pull/35#discussion_r119388840
  *
  * @global $wpdb
  *

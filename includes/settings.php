@@ -163,6 +163,11 @@ function save_profile_settings( $user_id ) {
 		return false;
 	}
 
+	// No token is set, but we aren't disconnecting.
+	if ( empty( $_POST['airstory-token'] ) && ! isset( $_POST['airstory-disconnect'] ) ) {
+		return false;
+	}
+
 	$token = get_user_data( $user_id, 'user_token', false );
 
 	// The user is disconnecting.

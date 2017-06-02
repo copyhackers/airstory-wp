@@ -4,7 +4,7 @@ Donate link: http://airstory.co
 Tags: blogging, writing, import, airstory, content, publishing
 Requires at least: 4.7
 Tested up to: 4.7.5
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -49,7 +49,7 @@ Airstory is a paid solution, which includes support and integrations, like this 
 
 === Requirements ===
 
-* This plugin requires an [Airstory](http://www.airstory.co/) active Airstory subscription.
+* This plugin requires an active [Airstory](http://www.airstory.co/) subscription.
 	* Not already an Airstory user? [Get one project free for life, just by signing up!](http://www.airstory.co/pricing/)
 * PHP version 5.3 or higher, with the DOM, Mcrypt, and OpenSSL extensions active.
 * The WordPress site must have a valid SSL certificate in order for Airstory to publish content.
@@ -144,5 +144,15 @@ All modern hosts (Liquid Web, WP Engine, SiteGround, etc.) should support these 
 
 For a full list of changes, please [view the change log on GitHub](https://github.com/liquidweb/airstory-wp/blob/develop/CHANGELOG.md).
 
+= 1.0.1 =
+* Fixed bug where saving a user profile could fail without an Airstory user token.
+* Fixed a small typo in the plugin's README file.
+
 = 1.0.0 =
 * Initial public release.
+
+
+== Upgrade Notice ==
+
+= 1.0.1 =
+Fixes bug where users could have problems saving their profiles.

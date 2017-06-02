@@ -7,6 +7,7 @@ module.exports = function(grunt) {
 					'includes/**',
 					'languages/**',
 					'airstory.php',
+					'readme.txt',
 					'uninstall.php',
 					'composer.json',
 					'CHANGELOG.md',
@@ -21,9 +22,10 @@ module.exports = function(grunt) {
 				options: {
 					domainPath: 'languages/',
 					exclude: [
+						'dist',
 						'node_modules',
 						'tests',
-						'vendor'
+						'vendor',
 					],
 					mainFile: 'airstory.php',
 					type: 'wp-plugin',

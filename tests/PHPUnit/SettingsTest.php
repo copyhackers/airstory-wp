@@ -355,6 +355,23 @@ class SettingsTest extends \Airstory\TestCase {
 		$this->assertFalse( save_profile_settings( 123 ) );
 	}
 
+	public function testSaveProfileSettingsReturnsEarlyIfTokenIsEmptyAndNotDisconnect() {
+		$_POST = array(
+			'_airstory_nonce' => 'abc123',
+			'airstory-token'  => '',
+		);
+
+		M::userFunction( 'wp_verify_nonce', array(
+			'return' => true,
+		) );
+
+		M::userFunction( 'current_user_can', array(
+			'return' => false,
+		) );
+
+		$this->assertFalse( save_profile_settings( 123 ), 'The function should return early if there is no token to save and we\'re not disconnecting' );
+	}
+
 	public function testSaveProfileSettingsCanDelete() {
 		$_POST = array(
 			'_airstory_nonce'     => 'abc123',

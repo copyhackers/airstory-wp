@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Refactor the `grunt build` task to include the readme.txt file and skip the `dist/` directory when building the plugin's language files.
 * Fixed a small typo in the plugin's README file.
 * Fix issue with missing gradient background in the SVG version of the Airstory icon.
+* Fixed bug where saving a user profile could fail without an Airstory user token.
 
 
 ## [1.0.0]

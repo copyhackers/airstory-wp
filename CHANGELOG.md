@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file, according t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [Unreleased]
+
+* Improve error messaging around the webhook, making it easier to troubleshoot connection issues.
+
+
 ## [1.0.1]
 
 * Refactor the `grunt build` task to include the readme.txt file and skip the `dist/` directory when building the plugin's language files.

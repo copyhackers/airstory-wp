@@ -134,8 +134,12 @@ function render_tools_page() {
  *
  * @param mixed $status The state of the option — TRUE will create a check mark, FALSE will produce
  *                      an "X". Non-Boolean values will be cast as Booleans.
+ * @param bool  $echo   Optional. Output the icon directly to the browser, or return it? Default
+ *                      is true.
+ * @return void|string  Depending on $echo, either the function will return nothing or return a
+ *                      string containing the status icon.
  */
-function render_status_icon( $status ) {
+function render_status_icon( $status, $echo = true ) {
 
 	if ( (bool) $status ) {
 		$icon = 'yes';
@@ -146,11 +150,17 @@ function render_status_icon( $status ) {
 		$msg  = _x( 'Failed', 'dependency check status', 'airstory' );
 	}
 
-	echo wp_kses_post( sprintf(
+	$output = sprintf(
 		'<span class="dashicons dashicons-%s"></span><span class="screen-reader-text">%s</span>',
 		esc_attr( $icon ),
 		esc_html( $msg )
-	) );
+	);
+
+	if ( ! $echo ) {
+		return $output;
+	}
+
+	echo wp_kses_post( $output );
 }
 
 /**

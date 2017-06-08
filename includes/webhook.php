@@ -61,9 +61,16 @@ function handle_webhook( WP_REST_Request $request ) {
 		return $error;
 	}
 
+	// Retrieve the decrypted user token.
+	$user_token = Credentials\get_token( $identifier );
+
+	if ( is_wp_error( $user_token ) ) {
+		return $user_token;
+	}
+
 	// Establish an API connection, using the Airstory token of the connection owner.
 	$api = new Airstory\API;
-	$api->set_token( Credentials\get_token( $identifier ) );
+	$api->set_token( $user_token );
 
 	// Determine if there's a current post that matches.
 	$post_id = Core\get_current_draft( $project, $document );

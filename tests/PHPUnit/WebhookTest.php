@@ -9,10 +9,12 @@ namespace Airstory\Webhook;
 
 use WP_Mock as M;
 use Mockery;
+use WP_Error;
 
 class WebhookTest extends \Airstory\TestCase {
 
 	protected $testFiles = array(
+		'class-api.php',
 		'webhook.php',
 	);
 
@@ -52,7 +54,7 @@ class WebhookTest extends \Airstory\TestCase {
 			->with( 'document' )
 			->andReturn( $document );
 
-		M::userFunction( 'Credentials\Connection\get_token', array(
+		M::userFunction( 'Airstory\Credentials\get_token', array(
 			'args'   => array( 5 ),
 			'return' => uniqid(),
 		) );
@@ -114,22 +116,34 @@ class WebhookTest extends \Airstory\TestCase {
 		$this->assertInstanceOf( 'WP_Error', handle_webhook( $request ) );
 	}
 
+	public function testHandleWebhookCatchesWPErrorsWhenRetrievingUserToken() {
+		$error   = new WP_Error;
+
+		$request = Mockery::mock( 'WP_REST_Request' )->makePartial();
+		$request->shouldReceive( 'get_param' )->with( 'identifier' )->andReturn( 5 );
+		$request->shouldReceive( 'get_param' )->with( 'project' )->andReturn( 'project' );
+		$request->shouldReceive( 'get_param' )->with( 'document' )->andReturn( 'doc' );
+
+		M::userFunction( 'Airstory\Credentials\get_token', array(
+			'return' => $error,
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'args'   => array( $error ),
+			'return' => true,
+		) );
+
+
+		$this->assertEquals( $error, handle_webhook( $request ) );
+	}
+
 	public function testHandleWebhookUpdatesExistingDocs() {
 		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$request = Mockery::mock( 'WP_REST_Request' )->makePartial();
-		$request->shouldReceive( 'get_param' )
-			->once()
-			->with( 'identifier' )
-			->andReturn( 5 );
-		$request->shouldReceive( 'get_param' )
-			->once()
-			->with( 'project' )
-			->andReturn( $project );
-		$request->shouldReceive( 'get_param' )
-			->once()
-			->with( 'document' )
-			->andReturn( $document );
+		$request->shouldReceive( 'get_param' )->with( 'identifier' )->andReturn( 5 );
+		$request->shouldReceive( 'get_param' )->with( 'project' )->andReturn( $project );
+		$request->shouldReceive( 'get_param' )->with( 'document' )->andReturn( $document );
 
 		M::userFunction( 'Airstory\Core\get_current_draft', array(
 			'return' => 123,
@@ -157,7 +171,11 @@ class WebhookTest extends \Airstory\TestCase {
 		$request->shouldReceive( 'get_param' )->with( 'identifier' )->andReturn( 5 );
 		$request->shouldReceive( 'get_param' )->with( 'project' )->andReturn( $project );
 		$request->shouldReceive( 'get_param' )->with( 'document' )->andReturn( $document );
-		$wp_error = Mockery::mock( 'WP_Error' );
+		$wp_error = new WP_Error;
+
+		M::userFunction( 'Airstory\Credentials\get_token', array(
+			'return' => 'user-token',
+		) );
 
 		M::userFunction( 'Airstory\Core\get_current_draft', array(
 			'return' => 0,
@@ -168,6 +186,12 @@ class WebhookTest extends \Airstory\TestCase {
 		) );
 
 		M::userFunction( 'is_wp_error', array(
+			'args'   => array( 'user-token' ),
+			'return' => false,
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'args'   => array( $wp_error ),
 			'return' => true,
 		) );
 

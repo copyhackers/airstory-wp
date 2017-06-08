@@ -43,6 +43,11 @@ function render_tools_page() {
 
 	<div class="wrap">
 		<h1><?php echo esc_html( _x( 'Airstory', 'tools page heading', 'airstory' ) ); ?></h1>
+		<p class="description"><?php echo esc_html( sprintf(
+			/* Translators: %1$s is the current plugin version. */
+			__( 'Version %1$s', 'airstory' ),
+			AIRSTORY_VERSION
+		) ); ?></p>
 		<p><?php esc_html_e( 'This page contains useful information for integrating Airstory into WordPress.', 'airstory' ); ?></p>
 
 		<h2><?php echo esc_html( _x( 'Compatibility', 'tools page heading', 'airstory' ) ); ?></h2>

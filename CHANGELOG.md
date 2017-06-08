@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file, according t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [Unreleased]
+
+* Add the plugin version to the header of the Tools > Airstory page.
+
+
 ## [1.0.1]
 
 * Refactor the `grunt build` task to include the readme.txt file and skip the `dist/` directory when building the plugin's language files.

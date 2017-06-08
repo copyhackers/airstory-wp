@@ -66,6 +66,11 @@ function handle_webhook( WP_REST_Request $request ) {
 
 	if ( is_wp_error( $user_token ) ) {
 		return $user_token;
+	} elseif ( empty( $user_token ) ) {
+		return new WP_Error(
+			'airstory-missing-token',
+			__( 'The current user has not provided an Airstory user token', 'airstory' )
+		);
 	}
 
 	// Establish an API connection, using the Airstory token of the connection owner.

@@ -117,7 +117,7 @@ class WebhookTest extends \Airstory\TestCase {
 	}
 
 	public function testHandleWebhookCatchesWPErrorsWhenRetrievingUserToken() {
-		$error   = new WP_Error;
+		$error = new WP_Error;
 
 		$request = Mockery::mock( 'WP_REST_Request' )->makePartial();
 		$request->shouldReceive( 'get_param' )->with( 'identifier' )->andReturn( 5 );
@@ -133,8 +133,27 @@ class WebhookTest extends \Airstory\TestCase {
 			'return' => true,
 		) );
 
-
 		$this->assertEquals( $error, handle_webhook( $request ) );
+	}
+
+	public function testHandleWebhookReturnsWPErrorWhenUserTokenIsEmpty() {
+		$request = Mockery::mock( 'WP_REST_Request' )->makePartial();
+		$request->shouldReceive( 'get_param' )->with( 'identifier' )->andReturn( 5 );
+		$request->shouldReceive( 'get_param' )->with( 'project' )->andReturn( 'project' );
+		$request->shouldReceive( 'get_param' )->with( 'document' )->andReturn( 'doc' );
+
+		M::userFunction( 'Airstory\Credentials\get_token', array(
+			'return' => '',
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		$response = handle_webhook( $request );
+
+		$this->assertInstanceOf( 'WP_Error', $response );
+		$this->assertEquals( 'airstory-missing-token', $response->get_error_code() );
 	}
 
 	public function testHandleWebhookUpdatesExistingDocs() {

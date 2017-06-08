@@ -12,6 +12,7 @@ use Airstory\Connection as Connection;
 use Airstory\Core as Core;
 use Airstory\Credentials as Credentials;
 use WP_REST_Request;
+use WP_Error;
 
 /**
  * Register the /airstory/v1/webhook endpoint within the WP REST API.
@@ -36,15 +37,33 @@ add_action( 'rest_api_init', __NAMESPACE__ . '\register_webhook_endpoint' );
  * }
  *
  * @param WP_REST_Request $request The WP REST API request object.
+ * @return array|WP_Error An array containing the project ID, document ID, the WordPress post ID,
+ *                        and the WordPress post's edit URL if the post was imported successfully,
+ *                        or a WP_Error object if anything went wrong.
  */
 function handle_webhook( WP_REST_Request $request ) {
-	$user_id  = $request->get_param( 'identifier' );
-	$project  = $request->get_param( 'project' );
-	$document = $request->get_param( 'document' );
+	$identifier = $request->get_param( 'identifier' );
+	$project    = $request->get_param( 'project' );
+	$document   = $request->get_param( 'document' );
+
+	if ( empty( $identifier ) || empty( $project ) || empty( $document ) ) {
+		$error = new WP_Error;
+
+		foreach ( array( 'identifier', 'project', 'document' ) as $arg ) {
+			if ( empty( $$arg ) ) {
+				$error->add( 'airstory-missing-argument', sprintf(
+					/* Translators: %1$s is the request argument that is missing. */
+					__( 'The "%1$s" argument is required', 'airstory' ),
+					$arg
+				) );
+			}
+		}
+		return $error;
+	}
 
 	// Establish an API connection, using the Airstory token of the connection owner.
 	$api = new Airstory\API;
-	$api->set_token( Credentials\get_token( $user_id ) );
+	$api->set_token( Credentials\get_token( $identifier ) );
 
 	// Determine if there's a current post that matches.
 	$post_id = Core\get_current_draft( $project, $document );
@@ -52,7 +71,7 @@ function handle_webhook( WP_REST_Request $request ) {
 	if ( $post_id ) {
 		$post_id = Core\update_document( $api, $project, $document, $post_id );
 	} else {
-		$post_id = Core\create_document( $api, $project, $document, $user_id );
+		$post_id = Core\create_document( $api, $project, $document, $identifier );
 	}
 
 	// Return early if create_document() gave us a WP_Error object.

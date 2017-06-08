@@ -87,6 +87,33 @@ class WebhookTest extends \Airstory\TestCase {
 		$this->assertEquals( 'http://example.com/edit?id=123', $response['edit_url'], 'The post edit URL should be returned' );
 	}
 
+	public function testHandleWebhookChecksThatIdentifierIsSet() {
+		$request = Mockery::mock( 'WP_REST_Request' )->makePartial();
+		$request->shouldReceive( 'get_param' )->with( 'identifier' )->andReturn( null );
+		$request->shouldReceive( 'get_param' )->with( 'project' )->andReturn( 'project' );
+		$request->shouldReceive( 'get_param' )->with( 'document' )->andReturn( 'doc' );
+
+		$this->assertInstanceOf( 'WP_Error', handle_webhook( $request ) );
+	}
+
+	public function testHandleWebhookChecksThatProjectIsSet() {
+		$request = Mockery::mock( 'WP_REST_Request' )->makePartial();
+		$request->shouldReceive( 'get_param' )->with( 'identifier' )->andReturn( 5 );
+		$request->shouldReceive( 'get_param' )->with( 'project' )->andReturn( null );
+		$request->shouldReceive( 'get_param' )->with( 'document' )->andReturn( 'doc' );
+
+		$this->assertInstanceOf( 'WP_Error', handle_webhook( $request ) );
+	}
+
+	public function testHandleWebhookChecksThatDocumentIsSet() {
+		$request = Mockery::mock( 'WP_REST_Request' )->makePartial();
+		$request->shouldReceive( 'get_param' )->with( 'identifier' )->andReturn( 5 );
+		$request->shouldReceive( 'get_param' )->with( 'project' )->andReturn( 'project' );
+		$request->shouldReceive( 'get_param' )->with( 'document' )->andReturn( null );
+
+		$this->assertInstanceOf( 'WP_Error', handle_webhook( $request ) );
+	}
+
 	public function testHandleWebhookUpdatesExistingDocs() {
 		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';

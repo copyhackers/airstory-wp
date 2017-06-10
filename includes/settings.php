@@ -168,11 +168,8 @@ function save_profile_settings( $user_id ) {
 		return false;
 	}
 
-	$token = get_user_data( $user_id, 'user_token', false );
-
-	// The user is disconnecting.
-	if ( $token && isset( $_POST['airstory-disconnect'] ) ) {
-
+	// The user is attempting to disconnect.
+	if ( isset( $_POST['airstory-disconnect'] ) ) {
 		// Clear out all connections.
 		Connection\set_connected_blogs( $user_id, array() );
 
@@ -186,8 +183,10 @@ function save_profile_settings( $user_id ) {
 		Credentials\clear_token( $user_id );
 
 		return delete_user_option( $user_id, '_airstory_data', true );
+	}
 
-	} elseif ( ! empty( $_POST['airstory-token'] ) ) {
+	// The user is setting their token.
+	if ( ! empty( $_POST['airstory-token'] ) ) {
 		Credentials\set_token( $user_id, sanitize_text_field( $_POST['airstory-token'] ) );
 	}
 

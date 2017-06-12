@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Improve error messaging around the webhook, making it easier to troubleshoot connection issues.
 * Add the plugin version to the header of the Tools > Airstory page.
 
 

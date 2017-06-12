@@ -102,7 +102,7 @@ function render_profile_settings( $user ) {
 				<td>
 					<?php if ( ! empty( $profile['email'] ) ) : ?>
 
-						<input name="airstory-disconnect" type="submit" class="button" value="<?php esc_attr_e( 'Disconnect from Airstory', '' ); ?>" />
+						<input name="airstory-disconnect" type="submit" class="button" value="<?php esc_attr_e( 'Disconnect from Airstory', 'airstory' ); ?>" />
 						<p class="description">
 							<?php echo wp_kses_post( sprintf(
 								/* Translators: %1$s is the user's Airstory email address. */

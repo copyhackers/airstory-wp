@@ -3,8 +3,8 @@ Contributors: liquidweb, airstory, stevegrunwell
 Donate link: http://airstory.co
 Tags: blogging, writing, import, airstory, content, publishing
 Requires at least: 4.7
-Tested up to: 4.7.5
-Stable tag: 1.0.1
+Tested up to: 4.8
+Stable tag: 1.1.0
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 

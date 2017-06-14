@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Introduce two connectivity checks in the "Compatibility" table to help identify issues accessing either the Airstory API or the WP REST API.
 * Add the plugin version to the header of the Tools > Airstory page.
 
 

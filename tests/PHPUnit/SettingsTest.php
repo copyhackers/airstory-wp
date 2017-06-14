@@ -221,11 +221,6 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => true,
 		) );
 
-		M::userFunction( __NAMESPACE__ . '\get_user_data', array(
-			'args'   => array( 123, 'user_token', false ),
-			'return' => array( 'token' => 'my-old-token' ),
-		) );
-
 		M::userFunction( 'Airstory\Credentials\set_token', array(
 			'times'  => 1,
 			'args'   => array( 123, 'my-secret-token' ),
@@ -384,11 +379,6 @@ class SettingsTest extends \Airstory\TestCase {
 
 		M::userFunction( 'current_user_can', array(
 			'return' => true,
-		) );
-
-		M::userFunction( __NAMESPACE__ . '\get_user_data', array(
-			'args'   => array( 123, 'user_token', '*' ),
-			'return' => array( 'token' => 'my-old-token' ),
 		) );
 
 		M::userFunction( 'Airstory\Connection\set_connected_blogs', array(

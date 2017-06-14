@@ -3,8 +3,8 @@ Contributors: liquidweb, airstory, stevegrunwell
 Donate link: http://airstory.co
 Tags: blogging, writing, import, airstory, content, publishing
 Requires at least: 4.7
-Tested up to: 4.7.5
-Stable tag: 1.0.1
+Tested up to: 4.8
+Stable tag: 1.1.0
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -144,6 +144,12 @@ All modern hosts (Liquid Web, WP Engine, SiteGround, etc.) should support these 
 
 For a full list of changes, please [view the change log on GitHub](https://github.com/liquidweb/airstory-wp/blob/develop/CHANGELOG.md).
 
+= 1.1.0 =
+* Introduce two connectivity checks in the "Compatibility" table to help identify issues accessing either the Airstory API or the WP REST API.
+* Improve error messaging around the webhook, making it easier to troubleshoot connection issues.
+* Add the plugin version to the header of the Tools > Airstory page.
+* Refactor the logic when saving user settings.
+
 = 1.0.1 =
 * Fixed bug where saving a user profile could fail without an Airstory user token.
 * Fixed a small typo in the plugin's README file.
@@ -153,6 +159,9 @@ For a full list of changes, please [view the change log on GitHub](https://githu
 
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Introduces connectivity checks and better error reporting, ensuring the best possible publishing experience.
 
 = 1.0.1 =
 Fixes bug where users could have problems saving their profiles.

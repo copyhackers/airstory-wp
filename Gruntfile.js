@@ -4,6 +4,7 @@ module.exports = function(grunt) {
 		copy: {
 			main: {
 				src: [
+					'assets/**',
 					'includes/**',
 					'languages/**',
 					'airstory.php',

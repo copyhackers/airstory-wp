@@ -23,9 +23,33 @@ function register_menu_page() {
 add_action( 'admin_menu', __NAMESPACE__ . '\register_menu_page' );
 
 /**
+ * Register the tools scripting.
+ */
+function register_tools_script() {
+	wp_register_script(
+		'airstory-tools',
+		plugins_url( 'assets/js/tools.js', __DIR__ ),
+		null,
+		AIRSTORY_VERSION,
+		true
+	);
+
+	wp_localize_script( 'airstory-tools', 'airstoryTools', array(
+		'restApiUrl'  => get_rest_url( null, '/airstory/v1', 'https' ),
+		'statusIcons' => array(
+			'loading' => '',
+			'success' => render_status_icon( true, false ),
+			'failure' => render_status_icon( false, false ),
+		),
+	) );
+}
+add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\register_tools_script' );
+
+/**
  * Render the content for the "Airstory" tools page.
  */
 function render_tools_page() {
+	wp_enqueue_script( 'airstory-tools' );
 	$compatibility = check_compatibility();
 ?>
 
@@ -43,6 +67,11 @@ function render_tools_page() {
 
 	<div class="wrap">
 		<h1><?php echo esc_html( _x( 'Airstory', 'tools page heading', 'airstory' ) ); ?></h1>
+		<p class="description"><?php echo esc_html( sprintf(
+			/* Translators: %1$s is the current plugin version. */
+			__( 'Version %1$s', 'airstory' ),
+			AIRSTORY_VERSION
+		) ); ?></p>
 		<p><?php esc_html_e( 'This page contains useful information for integrating Airstory into WordPress.', 'airstory' ); ?></p>
 
 		<h2><?php echo esc_html( _x( 'Compatibility', 'tools page heading', 'airstory' ) ); ?></h2>
@@ -104,6 +133,22 @@ function render_tools_page() {
 					</tr>
 
 				<?php endforeach; ?>
+
+				<tr>
+					<td><?php esc_html_e( 'WordPress REST API', 'airstory' ); ?></td>
+					<td><?php esc_html_e( 'Is this site\'s REST API accessible via HTTPS?', 'airstory' ); ?></td>
+					<td id="airstory-restapi-check">
+						<img src="<?php echo esc_url( admin_url( 'images/spinner-2x.gif' ) ); ?>" alt="<?php esc_attr_e( 'Loading', 'airstory' ); ?>" width="20" />
+					</td>
+				</tr>
+
+				<tr>
+					<td><?php esc_html_e( 'Airstory connection', 'airstory' ); ?></td>
+					<td><?php esc_html_e( 'Can this site communicate with Airstory?', 'airstory' ); ?></td>
+					<td id="airstory-connection-check">
+						<img src="<?php echo esc_url( admin_url( 'images/spinner-2x.gif' ) ); ?>" alt="<?php esc_attr_e( 'Loading', 'airstory' ); ?>" width="20" />
+					</td>
+				</tr>
 			</tbody>
 		</table>
 
@@ -129,8 +174,12 @@ function render_tools_page() {
  *
  * @param mixed $status The state of the option — TRUE will create a check mark, FALSE will produce
  *                      an "X". Non-Boolean values will be cast as Booleans.
+ * @param bool  $echo   Optional. Output the icon directly to the browser, or return it? Default
+ *                      is true.
+ * @return void|string  Depending on $echo, either the function will return nothing or return a
+ *                      string containing the status icon.
  */
-function render_status_icon( $status ) {
+function render_status_icon( $status, $echo = true ) {
 
 	if ( (bool) $status ) {
 		$icon = 'yes';
@@ -141,11 +190,17 @@ function render_status_icon( $status ) {
 		$msg  = _x( 'Failed', 'dependency check status', 'airstory' );
 	}
 
-	echo wp_kses_post( sprintf(
+	$output = sprintf(
 		'<span class="dashicons dashicons-%s"></span><span class="screen-reader-text">%s</span>',
 		esc_attr( $icon ),
 		esc_html( $msg )
-	) );
+	);
+
+	if ( ! $echo ) {
+		return $output;
+	}
+
+	echo wp_kses_post( $output );
 }
 
 /**

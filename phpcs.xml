@@ -33,6 +33,11 @@
 		<exclude-pattern>includes/tools.php</exclude-pattern>
 	</rule>
 
+	<!-- This is not a WordPress-specific rule. -->
+	<rule ref="Squiz.Commenting.LongConditionClosingComment.Missing">
+		<exclude-pattern>includes/*</exclude-pattern>
+	</rule>
+
 	<rule ref="WordPress-Extra" />
 	<rule ref="WordPress-Docs" />
 </ruleset>

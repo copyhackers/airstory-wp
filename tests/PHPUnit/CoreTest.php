@@ -83,6 +83,26 @@ class CoreTest extends \Airstory\TestCase {
 		check_for_missing_requirements();
 	}
 
+	public function testCheckForMissingRequirementsDoesNotFireActionIfRequirementsAreMet() {
+		global $pagenow;
+
+		$pagenow = 'plugins.php';
+
+		if ( ! defined( 'AIRSTORY_DIR' ) ) {
+			define( 'AIRSTORY_DIR', '/path/to' );
+		}
+
+		M::userFunction( 'Airstory\Tools\check_compatibility', array(
+			'return' => array( 'compatible' => true ),
+		) );
+
+		M::userFunction( 'add_action', array(
+			'times' => 0,
+		) );
+
+		$this->assertNull( check_for_missing_requirements() );
+	}
+
 	public function testCheckForMissingRequirementsRequirementsOnlyFiresOnPluginPage() {
 		global $pagenow;
 
@@ -93,6 +113,20 @@ class CoreTest extends \Airstory\TestCase {
 		) );
 
 		check_for_missing_requirements();
+	}
+
+	public function testNotifyUserOfMissingRequirements() {
+		M::userFunction( 'admin_url', array(
+			'return' => 'https://example.com',
+		) );
+
+		M::passthruFunction( 'wp_kses_post' );
+
+		$this->setOutputCallback( function ( $output ) {
+			$this->assertContains( '<div class="notice notice-warning">', $output );
+		} );
+
+		notify_user_of_missing_requirements();
 	}
 
 	public function testCreateDocument() {

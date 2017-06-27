@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Improve support for accented and non-Latin characters when importing into WordPress.
 * Clean up coding standards.
 
 

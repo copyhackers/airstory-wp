@@ -16,6 +16,7 @@ use WP_User_Query;
 class ConnectionTest extends \Airstory\TestCase {
 
 	protected $testFiles = array(
+		'class-api.php',
 		'connection.php',
 		'credentials.php',
 		'settings.php',
@@ -433,6 +434,28 @@ class ConnectionTest extends \Airstory\TestCase {
 		) );
 
 		trigger_connection_refresh( $value, $value );
+	}
+
+	public function testUpdateAllConnections() {
+		WP_User_Query::$__results = array( 1, 2, 3 );
+		WP_User_Query::$__filter = function ( $results, $query ) {
+			switch ( $query['paged'] ) {
+				case 1:
+					return $results;
+
+				case 2:
+					return array( 4 );
+
+				default:
+					return array();
+			}
+		};
+
+		M::userFunction( __NAMESPACE__ . '\update_connection', array(
+			'times' => 4,
+		) );
+
+		update_all_connections();
 	}
 }
 

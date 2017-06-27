@@ -32,7 +32,7 @@ function get_body_contents( $content ) {
 	 *
 	 * Regex for these replacements taken from the HTML5DOMDocument parser.
 	 *
-	 * @link
+	 * @link https://github.com/ivopetkov/html5-dom-document-php
 	 */
 	$content = preg_replace( '/&([a-zA-Z]*);/', '<!-- airstory-entity1-$1 -->', $content );
 	$content = preg_replace( '/&#([0-9]*);/', '<!-- airstory-entity2-$1 -->', $content );

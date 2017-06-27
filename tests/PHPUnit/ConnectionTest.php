@@ -371,7 +371,7 @@ class ConnectionTest extends \Airstory\TestCase {
 		remove_connection( 123 );
 	}
 
-	public function testSetConnectedSites() {
+	public function testSetConnectedBlogs() {
 		M::userFunction( 'is_multisite', array(
 			'return' => true,
 		) );
@@ -407,7 +407,7 @@ class ConnectionTest extends \Airstory\TestCase {
 		set_connected_blogs( 5, array( 1, 2, 3 ) );
 	}
 
-	public function testSetConnectedSitesReturnsEarlyIfNotMultisite() {
+	public function testSetConnectedBlogsReturnsEarlyIfNotMultisite() {
 		M::userFunction( 'is_multisite', array(
 			'return' => false,
 		) );

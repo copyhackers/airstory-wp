@@ -38,7 +38,7 @@ function get_body_contents( $content ) {
 	$content = preg_replace( '/&#([0-9]*);/', '<!-- airstory-entity2-$1 -->', $content );
 
 	$doc = new \DOMDocument( '1.0', 'UTF-8' );
-	$doc->loadHTML( $content, LIBXML_HTML_NODEFDTD );
+	$doc->loadHTML( mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' ), LIBXML_HTML_NODEFDTD );
 
 	// Will retrieve the entire <body> node.
 	$body_node = $doc->getElementsByTagName( 'body' );

@@ -95,6 +95,8 @@ EOT;
 
 	/**
 	 * @dataProvider foreignLanguageProvider
+	 *
+	 * @link https://github.com/liquidweb/airstory-wp/issues/44
 	 */
 	public function testGetBodyContentsWithAccentedLanguages( $content ) {
 		$content = '<p>' . $content . '</p>';
@@ -166,14 +168,35 @@ EOT;
 	}
 
 	/**
-	 * Since we're not only encoding &nbsp;, check other common HTML entities as well.
-	 *
-	 * @link https://github.com/liquidweb/airstory-wp/issues/28
+	 * @dataProvider htmlEntitiesProvider
 	 */
-	public function testEncodingOfAdditionalEntities() {
-		$response = '<p>&quot;&#34;&amp;&#38;&apos;&#39;&lt;&#60;&gt;&#62;&copy;&#169;&laquo;&#171;&reg;&#174;&raquo;&#187;&trade;&#8482;</p>';
+	public function testGetBodyContentsWithHtmlEntities( $decimal, $hex ) {
+		foreach ( func_get_args() as $entity ) {
+			$content = '<p>' . $entity . '</p>';
 
-		$this->assertEquals( $response, get_body_contents( $response ) );
+			$this->assertEquals( $content, get_body_contents( $content ) );
+		}
+	}
+
+	/**
+	 * Provide decimal and hex equivalents for common HTML entities.
+	 *
+	 * @link http://www.fileformat.info/info/unicode/index.htm
+	 * @link https://github.com/liquidweb/airstory-wp/issues/28
+	 * @link https://github.com/liquidweb/airstory-wp/issues/47
+	 */
+	public function htmlEntitiesProvider() {
+		return array(
+			'AMPERSAND'         => array( '&#38;', '&#x26;', '&amp;' ),
+			'APOSTROPHE'        => array( '&#39;', '&#x27;', '&apos;' ),
+			'COPYRIGHT SIGN'    => array( '&#169;', '&#xa9;', '&copy;' ),
+			'LESS-THAN SIGN'    => array( '&#60;', '&#x3c;', '&lt;' ),
+			'GREATER-THAN SIGN' => array( '&#62;', '&#x3e;', '&gt;' ),
+			'QUOTATION MARK'    => array( '&#34;', '&#x22;', '&quot;'),
+			'REGISTERED SIGN'   => array( '&#174;', '&#xae;', '&reg;' ),
+			'TRADE MARK SIGN'   => array( '&#8482;', '&#x2122;', '&trade;' ),
+			'ZERO WIDTH SPACE'  => array( '&#8203;', '&#x200b;' ),
+		);
 	}
 
 	public function testSideloadSingleImage() {

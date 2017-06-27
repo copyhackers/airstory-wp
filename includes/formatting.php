@@ -320,7 +320,10 @@ function set_attachment_author( $post ) {
  *                         created. These keys and values are assumed to be sanitized.
  */
 function retrieve_original_media( $url, $post_id, $metadata ) {
-	$url_components = array_merge( array( 'host' => '', 'path' => '' ), (array) parse_url( $url ) );
+	$url_components = array_merge( array(
+		'host' => '',
+		'path' => '',
+	), (array) parse_url( $url ) );
 	$url_components = array_map( 'strtolower', $url_components );
 
 	// Only operate on Cloudinary-hosted images.

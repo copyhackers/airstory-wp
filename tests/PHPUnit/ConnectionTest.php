@@ -418,6 +418,22 @@ class ConnectionTest extends \Airstory\TestCase {
 
 		set_connected_blogs( 5, array() );
 	}
+
+	public function testTriggerConnectionRefresh() {
+		M::expectAction( 'airstory_update_all_connections' );
+
+		trigger_connection_refresh( 'foo', 'bar' );
+	}
+
+	public function testTriggerConnectionRefreshReturnsEarlyIfValuesMatch() {
+		$value = uniqid();
+
+		M::userFunction( 'do_action', array(
+			'times' => 0,
+		) );
+
+		trigger_connection_refresh( $value, $value );
+	}
 }
 
 /**

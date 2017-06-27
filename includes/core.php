@@ -84,8 +84,6 @@ add_action( 'admin_init', __NAMESPACE__ . '\check_for_missing_requirements' );
 
 /**
  * Notify the user of missing plugin requirements and direct them to more detailed information.
- *
- * @todo Fill in the FAQ URL.
  */
 function notify_user_of_missing_requirements() {
 ?>

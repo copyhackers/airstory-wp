@@ -279,6 +279,32 @@ class ConnectionTest extends \Airstory\TestCase {
 		$this->assertEquals( $target, update_connection( 5 ) );
 	}
 
+	public function testUpdateConnectionReturnsEarlyIfProfileIsEmpty() {
+		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
+			'return' => array(),
+		) );
+
+		$this->assertNull( update_connection( 5 ) );
+	}
+
+	public function testUpdateConnectionHandlesWpError() {
+		Patchwork\replace( 'Airstory\API::put_target', function () {
+			return new WP_Error;
+		} );
+
+		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
+			'return' => array( 'email' => 'test@example.com' ),
+		) );
+
+		M::userFunction( 'get_user_option' );
+		M::userFunction( __NAMESPACE__ . '\get_target' );
+		M::userFunction( 'is_wp_error', array(
+			'return' => true,
+		) );
+
+		$this->assertNull( update_connection( 5 ) );
+	}
+
 	public function testRemoveConnection() {
 		$connection_id = uniqid();
 		$profile       = array(

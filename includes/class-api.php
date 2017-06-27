@@ -105,7 +105,9 @@ class API {
 	public function post_target( $email, $target ) {
 		$response = $this->make_authenticated_request( sprintf( '/users/%s/targets', $email ), array(
 			'method'  => 'POST',
-			'headers' => array( 'content-type' => 'application/json' ),
+			'headers' => array(
+				'content-type' => 'application/json',
+			),
 			'body'    => wp_json_encode( $target ),
 		) );
 
@@ -131,7 +133,9 @@ class API {
 	public function put_target( $email, $connection_id, $target ) {
 		$response = $this->make_authenticated_request( sprintf( '/users/%s/targets/%s', $email, $connection_id ), array(
 			'method'  => 'PUT',
-			'headers' => array( 'content-type' => 'application/json' ),
+			'headers' => array(
+				'content-type' => 'application/json',
+			),
 			'body'    => wp_json_encode( $target ),
 		) );
 

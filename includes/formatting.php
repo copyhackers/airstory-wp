@@ -199,7 +199,7 @@ function sideload_all_images( $post_id ) {
 		$sanitized_src = strtolower( filter_var( $src, FILTER_SANITIZE_URL ) ); // Used for comparisons only.
 
 		// Skip this image if it isn't Airstory-hosted media.
-		if ( ! in_array( parse_url( $sanitized_src, PHP_URL_HOST ), $domains, true ) ) {
+		if ( ! in_array( wp_parse_url( $sanitized_src, PHP_URL_HOST ), $domains, true ) ) {
 			continue;
 		}
 
@@ -322,7 +322,10 @@ function set_attachment_author( $post ) {
  *                         created. These keys and values are assumed to be sanitized.
  */
 function retrieve_original_media( $url, $post_id, $metadata ) {
-	$url_components = array_merge( array( 'host' => '', 'path' => '' ), (array) parse_url( $url ) );
+	$url_components = array_merge( array(
+		'host' => '',
+		'path' => '',
+	), (array) wp_parse_url( $url ) );
 	$url_components = array_map( 'strtolower', $url_components );
 
 	// Only operate on Cloudinary-hosted images.

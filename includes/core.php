@@ -84,8 +84,6 @@ add_action( 'admin_init', __NAMESPACE__ . '\check_for_missing_requirements' );
 
 /**
  * Notify the user of missing plugin requirements and direct them to more detailed information.
- *
- * @todo Fill in the FAQ URL.
  */
 function notify_user_of_missing_requirements() {
 ?>
@@ -93,7 +91,8 @@ function notify_user_of_missing_requirements() {
 	<div class="notice notice-warning">
 		<p><?php esc_html_e( 'The Airstory plugin is missing one or more of its dependencies, so it\'s not yet available to users on this site.', 'airstory' ); ?></p>
 		<p><?php echo wp_kses_post( sprintf(
-			__( 'For more information, <a href="%s" target="_blank">please see the Airstory Tools page</a>.', 'airstory' ),
+			/* Translators: %1$s is the URL of the Tools > Airstory page. */
+			__( 'For more information, <a href="%1$s" target="_blank">please see the Airstory Tools page</a>.', 'airstory' ),
 			esc_url( admin_url( 'tools.php?page=airstory' ) )
 		) );?></p>
 	</div>

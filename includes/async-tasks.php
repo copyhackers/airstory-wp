@@ -14,7 +14,7 @@
 namespace Airstory\AsyncTasks;
 
 require_once AIRSTORY_DIR . '/includes/lib/wp-async-task/wp-async-task.php';
-require_once AIRSTORY_DIR . '/includes/async-tasks/update-all-connections.php';
+require_once AIRSTORY_DIR . '/includes/async-tasks/class-updateallconnections.php';
 
 /**
  * Each task must be initialized, no earlier than plugins_loaded.

@@ -61,6 +61,12 @@ class FormattingTest extends \Airstory\TestCase {
 				return $content;
 			},
 		) );
+
+		M::userFunction( 'wp_parse_url', array(
+			'return' => function ( $url, $component = -1 ) {
+				return parse_url( $url, $component );
+			}
+		) );
 	}
 
 	public function testGetBodyContents() {

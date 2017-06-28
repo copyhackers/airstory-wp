@@ -75,10 +75,18 @@ class ToolsTest extends \Airstory\TestCase {
 
 	/**
 	 * @runInSeparateProcess
+	 *
+	 * @link https://github.com/liquidweb/airstory-wp/issues/48
 	 */
 	public function testCheckCompatibilityWithLibxml() {
 		M::userFunction( __NAMESPACE__ . '\version_compare', array(
-			'return_in_order' => array( true, false ),
+			'args'   => array( PHP_VERSION, '*', '*' ),
+			'return' => true,
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\version_compare', array(
+			'args'   => array( LIBXML_DOTTED_VERSION, '*', '>=' ),
+			'return' => false,
 		) );
 
 		M::userFunction( __NAMESPACE__ . '\verify_https_support', array(

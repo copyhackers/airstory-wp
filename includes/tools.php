@@ -254,7 +254,7 @@ function check_compatibility() {
 	}
 
 	// Verify libxml version.
-	$compatibility['details']['libxml'] = defined( 'LIBXML_VERSION' ) && version_compare( LIBXML_VERSION, '2.7.8', '>=' );
+	$compatibility['details']['libxml'] = defined( 'LIBXML_DOTTED_VERSION' ) && version_compare( LIBXML_DOTTED_VERSION, '2.7.8', '>=' );
 
 	if ( ! $compatibility['details']['libxml'] ) {
 		$compatibility['compatible'] = false;

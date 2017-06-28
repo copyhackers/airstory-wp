@@ -76,6 +76,24 @@ class ToolsTest extends \Airstory\TestCase {
 	/**
 	 * @runInSeparateProcess
 	 */
+	public function testCheckCompatibilityWithLibxml() {
+		M::userFunction( __NAMESPACE__ . '\version_compare', array(
+			'return_in_order' => array( true, false ),
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\verify_https_support', array(
+			'return' => true,
+		) );
+
+		$compatibility = check_compatibility();
+
+		$this->assertFalse( $compatibility['compatible'] );
+		$this->assertFalse( $compatibility['details']['libxml'] );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function testCheckCompatibilityWithDom() {
 		M::userFunction( __NAMESPACE__ . '\extension_loaded', array(
 			'return' => false,

@@ -87,7 +87,7 @@ function render_tools_page() {
 			<tbody>
 
 				<tr class="dependency-<?php echo esc_attr( $compatibility['details']['php'] ? 'met' : 'unmet' ); ?>">
-					<td><?php esc_html_e( 'PHP Version >= 5.3', 'airstory' ); ?></td>
+					<td><?php esc_html_e( 'PHP 5.3 or higher', 'airstory' ); ?></td>
 					<td><?php echo esc_html( sprintf(
 						/* Translators: %1$s is the current PHP version. */
 						_x( 'Version %1$s', 'PHP version', 'airstory' ),
@@ -111,7 +111,7 @@ function render_tools_page() {
 				<?php unset( $compatibility['details']['https'] ); ?>
 
 				<tr class="dependency-<?php echo esc_attr( $compatibility['details']['libxml'] ? 'met' : 'unmet' ); ?>">
-					<td><?php esc_html_e( 'Libxml version >= 2.7.8' ); ?></td>
+					<td><?php esc_html_e( 'Libxml 2.7.8 or higher' ); ?></td>
 					<td><?php echo esc_html( sprintf(
 						/* Translators: %1$s is the current libxml version. */
 						_x( 'Version %1$s', 'libxml version', 'airstory' ),

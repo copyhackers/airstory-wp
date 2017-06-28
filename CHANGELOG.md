@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 * Improve support for accented and non-Latin characters when importing into WordPress.
+* Add explicit check for libxml >= 2.7.8, as versions before that don't support the `LIBXML_HTML_NODEFDTD` constant.
 * Clean up coding standards.
 
 

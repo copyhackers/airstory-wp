@@ -564,6 +564,42 @@ EOT;
 		$this->assertEquals( 1, sideload_all_images( 123 ) );
 	}
 
+	/**
+	 * @dataProvider originalImageUrlProvider
+	 *
+	 * @link https://github.com/liquidweb/airstory-wp/issues/27
+	 * @link https://github.com/liquidweb/airstory-wp/issues/51
+	 */
+	public function testGetOriginalImageUrl( $url, $expected ) {
+		$this->assertEquals( $expected, get_original_image_url( $url ) );
+	}
+
+	/**
+	 * Data provider for testGetOriginalImageUrl().
+	 *
+	 * @return array An array of arrays, each containing the original and expected image URL.
+	 */
+	public function originalImageUrlProvider() {
+		return array(
+			'masked, scale 10%' => array(
+				'https://images.airstory.co/c_scale,w_0.1/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg',
+				'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg',
+			),
+			'cloudinary, scale 10%' => array(
+				'https://res.cloudinary.com/airstory/image/upload/c_scale,w_0.1/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg',
+				'https://res.cloudinary.com/airstory/image/upload/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg',
+			),
+			'masked, unmodified' => array(
+				'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg',
+				'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg',
+			),
+			'cloudinary, unmodified' => array(
+				'https://res.cloudinary.com/airstory/image/upload/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg',
+				'https://res.cloudinary.com/airstory/image/upload/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg',
+			),
+		);
+	}
+
 	public function testStripWrappingDiv() {
 		$content = <<<EOT
 <div>

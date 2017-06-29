@@ -88,6 +88,7 @@ add_filter( 'airstory_before_insert_content', __NAMESPACE__ . '\get_body_content
  * @param array  $metadata Optional. Additional post meta keys to assign once the attachment post
  *                         has been created. These keys and values are assumed to be sanitized.
  *                         Default is an empty array.
+ * @return int The ID of the newly-uploaded attachment, or 0 if the attachment failed to import.
  */
 function sideload_single_image( $url, $post_id = 0, $metadata = array() ) {
 	if ( ! filter_var( $url, FILTER_VALIDATE_URL ) ) {

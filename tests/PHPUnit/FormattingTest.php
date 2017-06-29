@@ -353,6 +353,36 @@ EOT;
 		}
 	}
 
+	public function testSideloadSingleImageDownloadsResizedVersion() {
+		$resized_url  = 'https://example.com/resized/image.jpg';
+		$original_url = 'https://example.com/image.jpg';
+
+		M::userFunction( __NAMESPACE__ . '\get_original_image_url', array(
+			'args'   => array( $resized_url ),
+			'return' => $original_url,
+		) );
+
+		M::userFunction( 'media_handle_sideload', array(
+			'return' => 42,
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\sideload_resized_image', array(
+			'times'  => 1,
+			'args'   => array( $resized_url, 42 ),
+		) );
+
+		M::userFunction( 'download_url' );
+		M::userFunction( 'add_post_meta' );
+		M::passthruFunction( 'esc_url' );
+		M::passthruFunction( 'esc_url_raw' );
+
+		sideload_single_image( $resized_url, 123, array() );
+	}
+
 	public function testSideloadAllImages() {
 		$content = <<<EOT
 <h1>Here's an image</h1>

@@ -95,6 +95,21 @@ function sideload_single_image( $url, $post_id = 0, $metadata = array() ) {
 		return 0;
 	}
 
+	/*
+	 * Determine if the image being sideloaded is the original or a resized version.
+	 *
+	 * If the original image is not the URL we've been given, set aside $url and import it at the end
+	 * of the process as a thumbnail.
+	 */
+	$original_image_url = get_original_image_url( $url );
+	$resized_image_url  = false;
+
+	if ( $url !== $original_image_url ) {
+		$resized_image_url = $url;
+		$url               = $original_image_url;
+	}
+
+	// Load the wp-admin files for media importing.
 	require_once ABSPATH . 'wp-admin/includes/media.php';
 	require_once ABSPATH . 'wp-admin/includes/file.php';
 	require_once ABSPATH . 'wp-admin/includes/image.php';
@@ -124,7 +139,7 @@ function sideload_single_image( $url, $post_id = 0, $metadata = array() ) {
 	}
 
 	/*
-	 * Finally, store post meta. We'll always set _airstory_origin (the original image URL), but any
+	 * Next, store post meta. We'll always set _airstory_origin (the original image URL), but any
 	 * non-empty values in $metadata will also be set.
 	 */
 	add_post_meta( $image_id, '_airstory_origin', esc_url( $url ) );
@@ -146,6 +161,11 @@ function sideload_single_image( $url, $post_id = 0, $metadata = array() ) {
 	 *                         created. These keys and values are assumed to be sanitized.
 	 */
 	do_action( 'airstory_sideload_single_image', $url, $post_id, $metadata );
+
+	// If the $url we were given was a resized image, download the one used in the post.
+	if ( false !== $resized_image_url ) {
+		sideload_resized_image( $resized_image_url, $image_id );
+	}
 
 	return $image_id;
 }
@@ -308,6 +328,18 @@ function get_original_image_url( $url ) {
 
 	// Using the appropriate URL pattern, remove the modifiers portion of the path.
 	return preg_replace( $replacement_pattern, '$1$3', $url );
+}
+
+/**
+ * Download a generated thumbnail for a given attachment ID, rename it, and put it alongside the
+ * other thumbnails for an attachment.
+ *
+ * @param string $url           The generated thumbnail URL.
+ * @param int    $attachment_id The ID of the attachment this is a thumbnail for.
+ * @return string The URL of the local version of the newly-imported thumbnail.
+ */
+function sideload_resized_image( $url, $attachment_id ) {
+
 }
 
 /**

@@ -22,9 +22,6 @@ use Airstory;
 function get_body_contents( $content ) {
 	$use_internal = libxml_use_internal_errors( true );
 
-	// Ensure Emoji are properly encoded.
-	$content = wp_encode_emoji( $content );
-
 	/*
 	 * DOMDocument sometimes has issues with HTML entities (particularly &nbsp;), so we'll do a basic
 	 * token replacement before ingesting into DOMDocument::loadHTML(), then restore them after the
@@ -32,13 +29,17 @@ function get_body_contents( $content ) {
 	 *
 	 * Regex for these replacements taken from the HTML5DOMDocument parser.
 	 *
-	 * @link
+	 * @link https://github.com/ivopetkov/html5-dom-document-php
 	 */
 	$content = preg_replace( '/&([a-zA-Z]*);/', '<!-- airstory-entity1-$1 -->', $content );
 	$content = preg_replace( '/&#([0-9]*);/', '<!-- airstory-entity2-$1 -->', $content );
+	$content = preg_replace( '/&#x([0-9A-Fa-f]*);/', '<!-- airstory-entity3-$1 -->', $content );
+
+	// Ensure Emoji are properly encoded.
+	$content = wp_encode_emoji( $content );
 
 	$doc = new \DOMDocument( '1.0', 'UTF-8' );
-	$doc->loadHTML( $content, LIBXML_HTML_NODEFDTD );
+	$doc->loadHTML( mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' ), LIBXML_HTML_NODEFDTD );
 
 	// Will retrieve the entire <body> node.
 	$body_node = $doc->getElementsByTagName( 'body' );
@@ -67,6 +68,7 @@ function get_body_contents( $content ) {
 	if ( false !== strpos( $body, '<!-- airstory-entity' ) ) {
 		$body = preg_replace( '/\<!--\sairstory-entity1-(.*?)\s--\>/', '&$1;', $body );
 		$body = preg_replace( '/\<!--\sairstory-entity2-(.*?)\s--\>/', '&#$1;', $body );
+		$body = preg_replace( '/\<!--\sairstory-entity3-(.*?)\s--\>/', '&#x$1;', $body );
 	}
 
 	// Strip opening and trailing <body> tags (plus any whitespace).
@@ -197,7 +199,7 @@ function sideload_all_images( $post_id ) {
 		$sanitized_src = strtolower( filter_var( $src, FILTER_SANITIZE_URL ) ); // Used for comparisons only.
 
 		// Skip this image if it isn't Airstory-hosted media.
-		if ( ! in_array( parse_url( $sanitized_src, PHP_URL_HOST ), $domains, true ) ) {
+		if ( ! in_array( wp_parse_url( $sanitized_src, PHP_URL_HOST ), $domains, true ) ) {
 			continue;
 		}
 
@@ -320,7 +322,10 @@ function set_attachment_author( $post ) {
  *                         created. These keys and values are assumed to be sanitized.
  */
 function retrieve_original_media( $url, $post_id, $metadata ) {
-	$url_components = array_merge( array( 'host' => '', 'path' => '' ), (array) parse_url( $url ) );
+	$url_components = array_merge( array(
+		'host' => '',
+		'path' => '',
+	), (array) wp_parse_url( $url ) );
 	$url_components = array_map( 'strtolower', $url_components );
 
 	// Only operate on Cloudinary-hosted images.

@@ -61,6 +61,12 @@ class FormattingTest extends \Airstory\TestCase {
 				return $content;
 			},
 		) );
+
+		M::userFunction( 'wp_parse_url', array(
+			'return' => function ( $url, $component = -1 ) {
+				return parse_url( $url, $component );
+			}
+		) );
 	}
 
 	public function testGetBodyContents() {
@@ -91,6 +97,38 @@ EOT;
 EOT;
 
 		$this->assertEquals( $response, get_body_contents( $response ) );
+	}
+
+	/**
+	 * @dataProvider foreignLanguageProvider
+	 *
+	 * @link https://github.com/liquidweb/airstory-wp/issues/44
+	 */
+	public function testGetBodyContentsWithAccentedLanguages( $content ) {
+		$content = '<p>' . $content . '</p>';
+
+		$this->assertEquals($content, get_body_contents( $content ));
+	}
+
+	/**
+	 * Sample paragraphs in a number of different languages, to ensure that characters aren't being
+	 * butchered by get_body_contents().
+	 *
+	 * @link http://randomtextgenerator.com/
+	 * @link http://justanotherfoundry.com/generator
+	 * @link http://german-ipsum.herokuapp.com/
+	 * @link http://es.lipsum.com/
+	 */
+	public function foreignLanguageProvider() {
+		return array(
+			'Chinese (Han)' => array( '玉，不題 父親回衙 汗流如雨 冒認收了. 此是後話 饒爾去罷」 也懊悔不了 ，愈聽愈惱. 在一處 後竊聽 ﻿白圭志 分得意 以測機 危德至. 去 關雎 耳 意 矣 事. 關雎 矣 誨 耳 意 事 曰：. 耳 曰： ，可 」 去. 分得意 意 第十一回 樂而不淫 曰： 己轉身 事 矣 覽 在一處 後竊聽 誨 出. 也懊悔不了 此是後話 饒爾去罷」. 樂而不淫 訖乃返 建章曰：. 父親回衙 冒認收了 汗流如雨 玉，不題. 出 誨 曰： ，可 關雎 」. 事 關雎 覽 去 ，可 」 誨 耳. 玉，不題 矣 意 耳 吉安而來 曰： 覽 父親回衙 冒認收了.'),
+			'German' => array( 'Deutsches Ipsum Dolor quo Kartoffelkopf posidonium über adhuc Wurst sadipscing Mesut Özil at, Bildung mei Hackfleisch gloriatur. Reise virtute Polizei per Currywurst At Freude schöner Götterfunken scaevola Lukas Podolski An Mozart malorum Heisenberg ius' ),
+			'Hebrew' => array( 'הכוח עול בני רות שסוף שולח רגע נשק. יד אח להצעתו די הִנָּם סר ול על ואנשים. הטבק דומם שאול וחרץ התנו בסוס. =יחידת ראו כאל ירק אין עוז שעה כפר באה. הַסֻּלָּם לְשָׁלוֹם וְתַבִּיט הַיְקָרָה רִגְשׁוֹת. פיו וגם כפר יתד לחש =יחידת פרק.' ),
+			'Icelandic' => array( 'Fraust viðast hvensi lauði tir vo afti það komist auður, þykipt að við ti ofanin út mika.' ),
+			'Japanese' => array( '. 復讐者」. 第三章 第九章 第八章 第七章 第四章. .復讐者」 伯母さん. 復讐者」 伯母さん. 伯母さん 復讐者」 . 第十三章 第十一章 手配書 第十四章 第十六章. 第十七章 第十三章 第十二章 第十八章. 復讐者」 . 第十九章 第十三章 第十八章. 第十章 第六章 第三章 .伯母さん 復讐者」 .' ),
+			'Russian' => array( 'Яд от защититель сокрушеньи Тя страданьем простирают со. . ﻿кто шум дел дни дев. Под бранят Зри Зло кою нуждам зрелой Муж. Ея Вы ах По. Увенчанна Создателю щит сил чуд бед Наш изъяснить ухищренье Они иго вседневно.' ),
+			'Spanish' => array( 'Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido usó una galería de textos y los mezcló de tal manera que logró hacer un libro de textos especimen.' ),
+		);
 	}
 
 	public function testGetBodyContentsWithNoBodyTag() {
@@ -136,14 +174,35 @@ EOT;
 	}
 
 	/**
-	 * Since we're not only encoding &nbsp;, check other common HTML entities as well.
-	 *
-	 * @link https://github.com/liquidweb/airstory-wp/issues/28
+	 * @dataProvider htmlEntitiesProvider
 	 */
-	public function testEncodingOfAdditionalEntities() {
-		$response = '<p>&quot;&#34;&amp;&#38;&apos;&#39;&lt;&#60;&gt;&#62;&copy;&#169;&laquo;&#171;&reg;&#174;&raquo;&#187;&trade;&#8482;</p>';
+	public function testGetBodyContentsWithHtmlEntities( $decimal, $hex ) {
+		foreach ( func_get_args() as $entity ) {
+			$content = '<p>' . $entity . '</p>';
 
-		$this->assertEquals( $response, get_body_contents( $response ) );
+			$this->assertEquals( $content, get_body_contents( $content ) );
+		}
+	}
+
+	/**
+	 * Provide decimal and hex equivalents for common HTML entities.
+	 *
+	 * @link http://www.fileformat.info/info/unicode/index.htm
+	 * @link https://github.com/liquidweb/airstory-wp/issues/28
+	 * @link https://github.com/liquidweb/airstory-wp/issues/47
+	 */
+	public function htmlEntitiesProvider() {
+		return array(
+			'AMPERSAND'         => array( '&#38;', '&#x26;', '&amp;' ),
+			'APOSTROPHE'        => array( '&#39;', '&#x27;', '&apos;' ),
+			'COPYRIGHT SIGN'    => array( '&#169;', '&#xa9;', '&copy;' ),
+			'LESS-THAN SIGN'    => array( '&#60;', '&#x3c;', '&lt;' ),
+			'GREATER-THAN SIGN' => array( '&#62;', '&#x3e;', '&gt;' ),
+			'QUOTATION MARK'    => array( '&#34;', '&#x22;', '&quot;'),
+			'REGISTERED SIGN'   => array( '&#174;', '&#xae;', '&reg;' ),
+			'TRADE MARK SIGN'   => array( '&#8482;', '&#x2122;', '&trade;' ),
+			'ZERO WIDTH SPACE'  => array( '&#8203;', '&#x200b;' ),
+		);
 	}
 
 	public function testSideloadSingleImage() {

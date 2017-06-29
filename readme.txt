@@ -4,7 +4,7 @@ Donate link: http://airstory.co
 Tags: blogging, writing, import, airstory, content, publishing
 Requires at least: 4.7
 Tested up to: 4.8
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -52,6 +52,7 @@ Airstory is a paid solution, which includes support and integrations, like this 
 * This plugin requires an active [Airstory](http://www.airstory.co/) subscription.
 	* Not already an Airstory user? [Get one project free for life, just by signing up!](http://www.airstory.co/pricing/)
 * PHP version 5.3 or higher, with the DOM, Mcrypt, and OpenSSL extensions active.
+* Libxml version 2.7.8 or higher.
 * The WordPress site must have a valid SSL certificate in order for Airstory to publish content.
 
 
@@ -82,7 +83,7 @@ If your token has been verified successfully, the "Airstory Configuration" secti
 
 = I have multiple blogs to publish to. Will this work? =
 
-Yes, you’ll install this plugin under My Sites > Network Admin. Each member of your team can publish to any of the blogs you manage.
+Yes, you’ll install this plugin under My Sites &rsaquo; Network Admin. Each member of your team can publish to any of the blogs you manage.
 
 
 = Where do I find my user token in Airstory? =
@@ -144,10 +145,14 @@ All modern hosts (Liquid Web, WP Engine, SiteGround, etc.) should support these 
 
 For a full list of changes, please [view the change log on GitHub](https://github.com/liquidweb/airstory-wp/blob/develop/CHANGELOG.md).
 
+= 1.1.1 =
+* Improved UTF-8 support for accented and non-Latin character sets.
+* Added compatibility check for outdated versions of libxml.
+
 = 1.1.0 =
 * Introduce two connectivity checks in the "Compatibility" table to help identify issues accessing either the Airstory API or the WP REST API.
 * Improve error messaging around the webhook, making it easier to troubleshoot connection issues.
-* Add the plugin version to the header of the Tools > Airstory page.
+* Add the plugin version to the header of the Tools &rsaquo; Airstory page.
 * Refactor the logic when saving user settings.
 
 = 1.0.1 =
@@ -159,6 +164,9 @@ For a full list of changes, please [view the change log on GitHub](https://githu
 
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+Better support for accented and non-Latin characters, ensuring content imports cleanly.
 
 = 1.1.0 =
 Introduces connectivity checks and better error reporting, ensuring the best possible publishing experience.

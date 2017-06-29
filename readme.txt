@@ -4,7 +4,7 @@ Donate link: http://airstory.co
 Tags: blogging, writing, import, airstory, content, publishing
 Requires at least: 4.7
 Tested up to: 4.8
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -145,6 +145,9 @@ All modern hosts (Liquid Web, WP Engine, SiteGround, etc.) should support these 
 
 For a full list of changes, please [view the change log on GitHub](https://github.com/liquidweb/airstory-wp/blob/develop/CHANGELOG.md).
 
+= 1.1.2 =
+* Fix an issue with a missing file distributed with version 1.1.1.
+
 = 1.1.1 =
 * Improved UTF-8 support for accented and non-Latin character sets.
 * Added compatibility check for outdated versions of libxml.
@@ -164,6 +167,9 @@ For a full list of changes, please [view the change log on GitHub](https://githu
 
 
 == Upgrade Notice ==
+
+= 1.1.2 =
+Fixes an issue with the 1.1.1 release where a file that does not exist was being loaded.
 
 = 1.1.1 =
 Better support for accented and non-Latin characters, ensuring content imports cleanly.

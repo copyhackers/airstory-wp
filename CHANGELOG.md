@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file, according t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [Unreleased]
+
+* Explicitly import `WP_Error` into `Airstory\Credentials`.
+
+
 ## [1.1.2]
 
 * Fix an issue with a missing file distributed with version 1.1.1.

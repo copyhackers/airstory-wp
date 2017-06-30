@@ -40,7 +40,11 @@ class CredentialsTest extends \Airstory\TestCase {
 	public function testSetToken() {
 		$token     = uniqid();
 		$iv        = '1234567890123456';
-		$encrypted = openssl_encrypt( $token, AIRSTORY_ENCRYPTION_ALGORITHM, AUTH_KEY, null, $iv );
+		$encrypted = openssl_encrypt( $token, 'AES-256-CTR', AUTH_KEY, null, $iv );
+
+		M::userFunction( __NAMESPACE__ . '\get_cipher_algorithm', array(
+			'return' => 'AES-256-CTR',
+		) );
 
 		M::userFunction( __NAMESPACE__ . '\get_iv', array(
 			'return' => $iv,
@@ -61,7 +65,11 @@ class CredentialsTest extends \Airstory\TestCase {
 	public function testGetToken() {
 		$token     = uniqid();
 		$iv        = '1234567890123456';
-		$encrypted = openssl_encrypt( $token, AIRSTORY_ENCRYPTION_ALGORITHM, AUTH_KEY, null, $iv );
+		$encrypted = openssl_encrypt( $token, 'AES-256-CTR', AUTH_KEY, null, $iv );
+
+		M::userFunction( __NAMESPACE__ . '\get_cipher_algorithm', array(
+			'return' => 'AES-256-CTR',
+		) );
 
 		M::userFunction( 'get_user_by', array(
 			'args'   => array( 'ID', 123 ),

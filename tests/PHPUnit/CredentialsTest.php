@@ -134,6 +134,35 @@ class CredentialsTest extends \Airstory\TestCase {
 		$this->assertEquals( $encrypted, set_token( 123, $token ), 'The same string, encrypted twice with the same arguments, should produce the same result' );
 	}
 
+	public function testSetTokenReturnsWPErrorIfGetCipherAlgorithmThrowsException() {
+		M::userFunction( __NAMESPACE__ . '\get_cipher_algorithm', array(
+			'return' => function () {
+				throw new InvalidArgumentException;
+			},
+		) );
+
+		$this->assertInstanceOf( 'WP_Error', set_token( 123, 'token' ) );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function testSetTokenReturnsWPErrorIfEncryptionFails() {
+		M::userFunction( __NAMESPACE__ . '\get_cipher_algorithm', array(
+			'return' => 'AES-256-CTR',
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\get_iv', array(
+			'return' => uniqid(),
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\openssl_encrypt', array(
+			'return' => false,
+		) );
+
+		$this->assertInstanceOf( 'WP_Error', set_token( 123, 'token' ) );
+	}
+
 	/**
 	 * @requires extension openssl
 	 */
@@ -165,6 +194,53 @@ class CredentialsTest extends \Airstory\TestCase {
 		) );
 
 		$this->assertEquals( $token, get_token( 123 ), 'The same string, encrypted twice with the same arguments, should produce the same result' );
+	}
+
+	public function testGetTokenReturnsWPErrorIfGetCipherAlgorithmThrowsException() {
+		M::userFunction( __NAMESPACE__ . '\get_cipher_algorithm', array(
+			'return' => function () {
+				throw new InvalidArgumentException;
+			}
+		) );
+
+		M::userFunction( 'get_user_by', array(
+			'return' => new \stdClass,
+		) );
+
+		M::userFunction( 'Airstory\Settings\get_user_data', array(
+			'return' => array(
+				'token' => uniqid(),
+				'iv'    => uniqid(),
+			),
+		) );
+
+		$this->assertInstanceOf( 'WP_Error', get_token( 123 ) );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function testGetTokenReturnsWPErrorIfDecryptionFails() {
+		M::userFunction( __NAMESPACE__ . '\get_cipher_algorithm', array(
+			'return' => 'AES-256-CTR',
+		) );
+
+		M::userFunction( 'get_user_by', array(
+			'return' => new \stdClass,
+		) );
+
+		M::userFunction( 'Airstory\Settings\get_user_data', array(
+			'return' => array(
+				'token' => uniqid(),
+				'iv'    => uniqid(),
+			),
+		) );
+
+		M::userFunction( __NAMESPACE__ . '\openssl_decrypt', array(
+			'return' => false,
+		) );
+
+		$this->assertInstanceOf( 'WP_Error', get_token( 123 ) );
 	}
 
 	public function testClearToken() {

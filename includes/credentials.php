@@ -14,6 +14,7 @@
 namespace Airstory\Credentials;
 
 use Airstory\Settings as Settings;
+use Exception;
 use InvalidArgumentException;
 use WP_Error;
 
@@ -80,16 +81,26 @@ function get_iv() {
 /**
  * Encrypt and store the Airstory token for a given user.
  *
+ * @throws Exception When OpenSSL fails to encrypt a token.
+ *
  * @param int    $user_id The user ID.
  * @param string $token   The token to store for the user.
  * @return string The encrypted version of the token, which has been stored.
  */
 function set_token( $user_id, $token ) {
-	$iv        = get_iv();
-	$encrypted = openssl_encrypt( $token, get_cipher_algorithm(), AUTH_KEY, null, $iv );
+	try {
+		$iv        = get_iv();
+		$encrypted = openssl_encrypt( $token, get_cipher_algorithm(), AUTH_KEY, null, $iv );
 
-	if ( false === $encrypted ) {
-		return new WP_Error( 'airstory-encryption', __( 'Unable to encrypt Airstory token', 'airstory' ) );
+		if ( false === $encrypted ) {
+			throw new Exception;
+		}
+	} catch ( Exception $e ) {
+		return new WP_Error(
+			'airstory-encryption',
+			__( 'Unable to encrypt Airstory token', 'airstory' ),
+			$e->getMessage()
+		);
 	}
 
 	// Store the encrypted values and the IV.
@@ -103,6 +114,8 @@ function set_token( $user_id, $token ) {
 
 /**
  * Retrieve the unencrypted Airstory token for the current user.
+ *
+ * @throws Exception When OpenSSL fails to decrypt a token.
  *
  * @param  int $user_id The ID of the user to retrieve the token for.
  * @return string|WP_Error Either the unencrypted Airstory token for the current user, an empty
@@ -122,10 +135,18 @@ function get_token( $user_id ) {
 		return '';
 	}
 
-	$token = openssl_decrypt( $encrypted['token'], get_cipher_algorithm(), AUTH_KEY, null, $encrypted['iv'] );
+	try {
+		$token = openssl_decrypt( $encrypted['token'], get_cipher_algorithm(), AUTH_KEY, null, $encrypted['iv'] );
 
-	if ( false === $token ) {
-		return new WP_Error( 'airstory-decryption', __( 'Unable to decrypt Airstory token', 'airstory' ) );
+		if ( false === $token ) {
+			throw new Exception;
+		}
+	} catch ( Exception $e ) {
+		return new WP_Error(
+			'airstory-decryption',
+			__( 'Unable to decrypt Airstory token', 'airstory' ),
+			$e->getMessage()
+		);
 	}
 
 	// Extra sanitization on the now-unencrypted value.

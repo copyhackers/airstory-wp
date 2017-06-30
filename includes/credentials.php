@@ -14,6 +14,7 @@
 namespace Airstory\Credentials;
 
 use Airstory\Settings as Settings;
+use WP_Error;
 
 /**
  * Defines the cipher algorithm used by set_token().

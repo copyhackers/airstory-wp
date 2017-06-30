@@ -8,6 +8,7 @@
 namespace Airstory\Credentials;
 
 use WP_Mock as M;
+use InvalidArgumentException;
 use Mockery;
 use WP_Error;
 
@@ -21,6 +22,80 @@ class CredentialsTest extends \Airstory\TestCase {
 		'credentials.php',
 		'settings.php',
 	);
+
+	public function testGetCipherAlgorithm() {
+		M::userFunction( __NAMESPACE__ . '\openssl_get_cipher_methods', array(
+			'return' => array(
+				'AES-256-CTR',
+				'AES-256-CFB',
+				'AES-128-CFB',
+			),
+		) );
+
+		M::userFunction( 'get_site_option', array(
+			'times'  => 1,
+			'args'   => array( '_airstory_cipher_algorithm' ),
+		) );
+
+		M::userFunction( 'add_site_option', array(
+			'times'  => 1,
+			'args'   => array( '_airstory_cipher_algorithm', 'AES-256-CTR' ),
+		) );
+
+		$this->assertEquals( 'AES-256-CTR', get_cipher_algorithm() );
+	}
+
+	public function testGetCipherAlgorithmCachesResult() {
+		$uniqid = uniqid();
+
+		M::userFunction( 'get_site_option', array(
+			'return' => $uniqid,
+		) );
+
+		$this->assertEquals( $uniqid, get_cipher_algorithm() );
+	}
+
+	public function testGetCipherAlgorithmSecondChoice() {
+		M::userFunction( __NAMESPACE__ . '\openssl_get_cipher_methods', array(
+			'return' => array(
+				'AES-256-CFB',
+				'AES-128-CFB',
+			),
+		) );
+
+		M::userFunction( 'get_site_option' );
+		M::userFunction( 'add_site_option' );
+
+		$this->assertEquals( 'AES-256-CFB', get_cipher_algorithm() );
+	}
+
+	public function testGetCipherAlgorithmThirdChoice() {
+		M::userFunction( __NAMESPACE__ . '\openssl_get_cipher_methods', array(
+			'return' => array(
+				'AES-128-CFB',
+			),
+		) );
+
+		M::userFunction( 'get_site_option' );
+		M::userFunction( 'add_site_option' );
+
+		$this->assertEquals( 'AES-128-CFB', get_cipher_algorithm() );
+	}
+
+	/**
+	 * @expectException InvalidArgumentException
+	 */
+	public function testGetCipherAlgorithmThrowsExceptionIfNoCiphersFound() {
+		M::userFunction( __NAMESPACE__ . '\openssl_get_cipher_methods', array(
+			'return' => array(),
+		) );
+
+		M::userFunction( 'get_site_option' );
+
+		$this->expectException( InvalidArgumentException::class );
+
+		get_cipher_algorithm();
+	}
 
 	public function testGetIv() {
 		$iv = get_iv();

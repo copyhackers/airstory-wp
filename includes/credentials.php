@@ -14,24 +14,50 @@
 namespace Airstory\Credentials;
 
 use Airstory\Settings as Settings;
+use InvalidArgumentException;
 use WP_Error;
 
 /**
  * Get the cipher algorithm used in this environment.
  *
  * Will compare a list of preferred ciphers against the ciphers available in this environment, then
- * store the cipher used in the database.
+ * store the cipher used in the database. This avoids users having to reconnect to Airstory after
+ * system updates (for instance, a new version of PHP that includes a more preferred cipher).
  *
  * For a full list of available options, @see openssl_get_cipher_methods().
+ *
+ * @throws InvalidArgumentException If no preferred algorithm is found.
  *
  * @return string The cipher algorithm to use on this site.
  */
 function get_cipher_algorithm() {
+	$cached = get_site_option( '_airstory_cipher_algorithm' );
+
+	if ( $cached ) {
+		return $cached;
+	}
+
+	// Of the preferred ciphers, which ones are available?
 	$preferred = array(
 		'AES-256-CTR', // Must be first in the list, as this used to be the *only* option.
+		'AES-256-CFB',
+		'AES-128-CFB',
 	);
+	$available = array_intersect( $preferred, openssl_get_cipher_methods() );
 
-	return array_shift( $preferred );
+	if ( empty( $available ) ) {
+		throw new InvalidArgumentException(
+			__( 'None of the preferred cipher algorithms are available on this server.', 'airstory' )
+		);
+	}
+
+	// Get the first value of the filtered array — that's our top choice.
+	$algorithm = array_shift( $available );
+
+	// Cache the result.
+	add_site_option( '_airstory_cipher_algorithm', $algorithm );
+
+	return $algorithm;
 }
 
 /**

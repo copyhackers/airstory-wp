@@ -174,7 +174,7 @@ function sideload_all_images( $post_id ) {
 	 */
 	$use_internal = libxml_use_internal_errors( true );
 	$body         = new \DOMDocument;
-	$body->loadHTML( '<div>' . $post->post_content . '</div>', LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED );
+	$body->loadHTML( '<div>' . $post->post_content . '</div>', LIBXML_HTML_NODEFDTD );
 	$images       = $body->getElementsByTagName( 'img' );
 	$domains      = array( 'images.airstory.co', 'res.cloudinary.com' );
 	$replaced     = array();

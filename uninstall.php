@@ -98,6 +98,9 @@ function delete_airstory_data() {
 	global $wpdb;
 
 	$wpdb->query( "DELETE FROM $wpdb->usermeta WHERE meta_key = '_airstory_data';" ); // WPCS: unprepared SQL ok.
+
+	// Remove the _airstory_encryption_algorithm site option.
+	delete_site_option( '_airstory_cipher_algorithm' );
 }
 
 // Prevent this file from being executed outside of the plugin uninstallation.

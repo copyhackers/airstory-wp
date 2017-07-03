@@ -14,14 +14,52 @@
 namespace Airstory\Credentials;
 
 use Airstory\Settings as Settings;
+use Exception;
+use InvalidArgumentException;
 use WP_Error;
 
 /**
- * Defines the cipher algorithm used by set_token().
+ * Get the cipher algorithm used in this environment.
+ *
+ * Will compare a list of preferred ciphers against the ciphers available in this environment, then
+ * store the cipher used in the database. This avoids users having to reconnect to Airstory after
+ * system updates (for instance, a new version of PHP that includes a more preferred cipher).
  *
  * For a full list of available options, @see openssl_get_cipher_methods().
+ *
+ * @throws InvalidArgumentException If no preferred algorithm is found.
+ *
+ * @return string The cipher algorithm to use on this site.
  */
-define( 'AIRSTORY_ENCRYPTION_ALGORITHM', 'AES-256-CTR' );
+function get_cipher_algorithm() {
+	$cached = get_site_option( '_airstory_cipher_algorithm' );
+
+	if ( $cached ) {
+		return $cached;
+	}
+
+	// Of the preferred ciphers, which ones are available?
+	$preferred = array(
+		'AES-256-CTR', // Must be first in the list, as this used to be the *only* option.
+		'AES-256-CFB',
+		'AES-128-CFB',
+	);
+	$available = array_intersect( $preferred, openssl_get_cipher_methods() );
+
+	if ( empty( $available ) ) {
+		throw new InvalidArgumentException(
+			__( 'None of the preferred cipher algorithms are available on this server.', 'airstory' )
+		);
+	}
+
+	// Get the first value of the filtered array — that's our top choice.
+	$algorithm = array_shift( $available );
+
+	// Cache the result.
+	add_site_option( '_airstory_cipher_algorithm', $algorithm );
+
+	return $algorithm;
+}
 
 /**
  * Generate an initialization vector (IV) for encrypting tokens.
@@ -43,16 +81,26 @@ function get_iv() {
 /**
  * Encrypt and store the Airstory token for a given user.
  *
+ * @throws Exception When OpenSSL fails to encrypt a token.
+ *
  * @param int    $user_id The user ID.
  * @param string $token   The token to store for the user.
  * @return string The encrypted version of the token, which has been stored.
  */
 function set_token( $user_id, $token ) {
-	$iv        = get_iv();
-	$encrypted = openssl_encrypt( $token, AIRSTORY_ENCRYPTION_ALGORITHM, AUTH_KEY, null, $iv );
+	try {
+		$iv        = get_iv();
+		$encrypted = openssl_encrypt( $token, get_cipher_algorithm(), AUTH_KEY, null, $iv );
 
-	if ( false === $encrypted ) {
-		return new WP_Error( 'airstory-encryption', __( 'Unable to encrypt Airstory token', 'airstory' ) );
+		if ( false === $encrypted ) {
+			throw new Exception;
+		}
+	} catch ( Exception $e ) {
+		return new WP_Error(
+			'airstory-encryption',
+			__( 'Unable to encrypt Airstory token', 'airstory' ),
+			$e->getMessage()
+		);
 	}
 
 	// Store the encrypted values and the IV.
@@ -66,6 +114,8 @@ function set_token( $user_id, $token ) {
 
 /**
  * Retrieve the unencrypted Airstory token for the current user.
+ *
+ * @throws Exception When OpenSSL fails to decrypt a token.
  *
  * @param  int $user_id The ID of the user to retrieve the token for.
  * @return string|WP_Error Either the unencrypted Airstory token for the current user, an empty
@@ -85,10 +135,18 @@ function get_token( $user_id ) {
 		return '';
 	}
 
-	$token = openssl_decrypt( $encrypted['token'], AIRSTORY_ENCRYPTION_ALGORITHM, AUTH_KEY, null, $encrypted['iv'] );
+	try {
+		$token = openssl_decrypt( $encrypted['token'], get_cipher_algorithm(), AUTH_KEY, null, $encrypted['iv'] );
 
-	if ( false === $token ) {
-		return new WP_Error( 'airstory-decryption', __( 'Unable to decrypt Airstory token', 'airstory' ) );
+		if ( false === $token ) {
+			throw new Exception;
+		}
+	} catch ( Exception $e ) {
+		return new WP_Error(
+			'airstory-decryption',
+			__( 'Unable to decrypt Airstory token', 'airstory' ),
+			$e->getMessage()
+		);
 	}
 
 	// Extra sanitization on the now-unencrypted value.

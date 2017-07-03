@@ -110,17 +110,6 @@ function render_tools_page() {
 				</tr>
 				<?php unset( $compatibility['details']['https'] ); ?>
 
-				<tr class="dependency-<?php echo esc_attr( $compatibility['details']['libxml'] ? 'met' : 'unmet' ); ?>">
-					<td><?php esc_html_e( 'Libxml 2.7.8 or higher' ); ?></td>
-					<td><?php echo esc_html( sprintf(
-						/* Translators: %1$s is the current libxml version. */
-						_x( 'Version %1$s', 'libxml version', 'airstory' ),
-						LIBXML_DOTTED_VERSION
-					) ); ?></td>
-					<td><?php render_status_icon( $compatibility['details']['libxml'] ); ?></td>
-				</tr>
-				<?php unset( $compatibility['details']['libxml'] ); ?>
-
 				<?php foreach ( array_keys( $compatibility['details'] ) as $ext ) : // Everything left is an extension. ?>
 
 					<tr class="dependency-<?php echo esc_attr( $compatibility['details'][ $ext ] ? 'met' : 'unmet' ); ?>">
@@ -264,13 +253,6 @@ function check_compatibility() {
 		}
 	}
 
-	// Verify libxml version.
-	$compatibility['details']['libxml'] = defined( 'LIBXML_DOTTED_VERSION' ) && version_compare( LIBXML_DOTTED_VERSION, '2.7.8', '>=' );
-
-	if ( ! $compatibility['details']['libxml'] ) {
-		$compatibility['compatible'] = false;
-	}
-
 	return $compatibility;
 }
 
@@ -369,7 +351,6 @@ function get_support_details() {
 	$report .= 'Requirements:' . PHP_EOL;
 	$report .= '- PHP >= 5.3         ' . ( $compatibility['details']['php'] ? 'PASS' : 'FAIL' ) . PHP_EOL;
 	$report .= '- HTTPS support      ' . ( $compatibility['details']['https'] ? 'PASS' : 'FAIL' ) . PHP_EOL;
-	$report .= '- Libxml >= 2.7.8    ' . ( $compatibility['details']['libxml'] ? 'PASS' : 'FAIL' ) . PHP_EOL;
 	$report .= '- DOM Extension      ' . ( $compatibility['details']['dom'] ? 'PASS' : 'FAIL' ) . PHP_EOL;
 	$report .= '- Mcrypt Extension   ' . ( $compatibility['details']['mcrypt'] ? 'PASS' : 'FAIL' ) . PHP_EOL;
 	$report .= '- OpenSSL Extension  ' . ( $compatibility['details']['openssl'] ? 'PASS' : 'FAIL' ) . PHP_EOL;

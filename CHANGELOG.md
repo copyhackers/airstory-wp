@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Explicitly import `WP_Error` into `Airstory\Credentials`.
 * Add fallback cipher algorithms for environments running older versions of OpenSSL.
+* Remove requirement for libxml 2.7.8 or newer, which was introduced in version [1.1.1].
 
 
 ## [1.1.2]

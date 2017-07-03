@@ -39,7 +39,7 @@ function get_body_contents( $content ) {
 	$content = wp_encode_emoji( $content );
 
 	$doc = new \DOMDocument( '1.0', 'UTF-8' );
-	$doc->loadHTML( mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' ), LIBXML_HTML_NODEFDTD );
+	$doc->loadHTML( mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' ) );
 
 	// Will retrieve the entire <body> node.
 	$body_node = $doc->getElementsByTagName( 'body' );

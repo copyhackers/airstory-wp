@@ -87,10 +87,10 @@ function render_tools_page() {
 			<tbody>
 
 				<tr class="dependency-<?php echo esc_attr( $compatibility['details']['php'] ? 'met' : 'unmet' ); ?>">
-					<td><?php esc_html_e( 'PHP Version >= 5.3', 'airstory' ); ?></td>
+					<td><?php esc_html_e( 'PHP 5.3 or higher', 'airstory' ); ?></td>
 					<td><?php echo esc_html( sprintf(
 						/* Translators: %1$s is the current PHP version. */
-						__( 'Version %1$s', 'airstory' ),
+						_x( 'Version %1$s', 'PHP version', 'airstory' ),
 						PHP_VERSION
 					) ); ?></td>
 					<td><?php render_status_icon( $compatibility['details']['php'] ); ?></td>
@@ -424,6 +424,7 @@ function get_support_details() {
 	$report .= 'PHP Version:         ' . PHP_VERSION . PHP_EOL;
 	$report .= 'MySQL Version:       ' . $wpdb->db_version() . PHP_EOL;
 	$report .= 'Web Server:          ' . $_SERVER['SERVER_SOFTWARE'] . PHP_EOL;
+	$report .= 'Libxml version       ' . LIBXML_DOTTED_VERSION . PHP_EOL;
 
 	// PHP Configuration.
 	$report .= PHP_EOL . '-- PHP Configuration' . PHP_EOL . PHP_EOL;

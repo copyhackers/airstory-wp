@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file, according t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [Unreleased]
+## [1.1.3]
 
 * Explicitly import `WP_Error` into `Airstory\Credentials`.
 * Add fallback cipher algorithms for environments running older versions of OpenSSL.
@@ -47,6 +47,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 [Unreleased]: https://github.com/liquidweb/airstory-wp/compare/master...develop
+[1.1.3]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.3
 [1.1.2]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.2
 [1.1.1]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.1
 [1.1.0]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.0

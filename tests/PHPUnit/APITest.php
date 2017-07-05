@@ -401,6 +401,10 @@ class APITest extends \Airstory\TestCase {
 		$method   = new ReflectionMethod( $instance, 'decode_json_response' );
 		$method->setAccessible( true );
 
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
+
 		M::userFunction( 'wp_remote_retrieve_body', array(
 			'return' => '{"foo": "bar"}',
 		) );
@@ -410,10 +414,30 @@ class APITest extends \Airstory\TestCase {
 		$this->assertEquals( 'bar', $response->foo );
 	}
 
+	/**
+	 * @link https://github.com/liquidweb/airstory-wp/issues/58
+	 */
+	public function testDecodeJsonResponseHandlesWPErrors() {
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$method   = new ReflectionMethod( $instance, 'decode_json_response' );
+		$method->setAccessible( true );
+		$error    = new WP_Error;
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => true,
+		) );
+
+		$this->assertSame( $error, $method->invoke( $instance, $error ) );
+	}
+
 	public function testDecodeJsonResponseReturnsWPErrorOnParseError() {
 		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
 		$method   = new ReflectionMethod( $instance, 'decode_json_response' );
 		$method->setAccessible( true );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => false,
+		) );
 
 		M::userFunction( 'wp_remote_retrieve_body', array(
 			'return' => '{this is "invalid" JSON}',

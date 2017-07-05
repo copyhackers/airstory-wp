@@ -252,11 +252,18 @@ class API {
 	 * For requests that return JSON (e.g. anything except getting the generated HTML), JSON-decode
 	 * the API response and return it.
 	 *
-	 * @param array $response The HTTP response array.
+	 * @param array|WP_Error $response The HTTP response array, or a WP_Error object that might be
+	 *                                 passed from the HTTP request.
 	 * @return stdClass|WP_Error If JSON-decoded successfully, a stdClass representation of the
 	 *                           response body, otherwise a WP_Error object.
 	 */
 	protected function decode_json_response( $response ) {
+
+		// If we were given a WP_Error object, give it right back.
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
 		$result = json_decode( wp_remote_retrieve_body( $response ), false );
 
 		// Something went wrong decoding the JSON.

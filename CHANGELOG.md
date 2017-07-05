@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Explicitly import `WP_Error` into `Airstory\Credentials`.
 * Add fallback cipher algorithms for environments running older versions of OpenSSL.
+* Better handling of `WP_Error` objects when decoding JSON responses from the Airstory API.
 
 
 ## [1.1.2]

@@ -52,7 +52,6 @@ Airstory is a paid solution, which includes support and integrations, like this 
 * This plugin requires an active [Airstory](http://www.airstory.co/) subscription.
 	* Not already an Airstory user? [Get one project free for life, just by signing up!](http://www.airstory.co/pricing/)
 * PHP version 5.3 or higher, with the DOM, Mcrypt, and OpenSSL extensions active.
-* Libxml version 2.7.8 or higher.
 * The WordPress site must have a valid SSL certificate in order for Airstory to publish content.
 
 
@@ -145,6 +144,11 @@ All modern hosts (Liquid Web, WP Engine, SiteGround, etc.) should support these 
 
 For a full list of changes, please [view the change log on GitHub](https://github.com/liquidweb/airstory-wp/blob/develop/CHANGELOG.md).
 
+= 1.1.3 =
+* Improved error handling throughout the plugin.
+* Add fallback cipher algorithms for environments running older versions of OpenSSL.
+* Remove requirement for libxml 2.7.8 or newer, which was introduced in version 1.1.1.
+
 = 1.1.2 =
 * Fix an issue with a missing file distributed with version 1.1.1.
 
@@ -167,6 +171,9 @@ For a full list of changes, please [view the change log on GitHub](https://githu
 
 
 == Upgrade Notice ==
+
+= 1.1.3 =
+Improved error handling, wider support for older versions of OpenSSL and libxml.
 
 = 1.1.2 =
 Fixes an issue with the 1.1.1 release where a file that does not exist was being loaded.

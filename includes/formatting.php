@@ -39,7 +39,7 @@ function get_body_contents( $content ) {
 	$content = wp_encode_emoji( $content );
 
 	$doc = new \DOMDocument( '1.0', 'UTF-8' );
-	$doc->loadHTML( mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' ), LIBXML_HTML_NODEFDTD );
+	$doc->loadHTML( mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' ) );
 
 	// Will retrieve the entire <body> node.
 	$body_node = $doc->getElementsByTagName( 'body' );
@@ -174,7 +174,7 @@ function sideload_all_images( $post_id ) {
 	 */
 	$use_internal = libxml_use_internal_errors( true );
 	$body         = new \DOMDocument;
-	$body->loadHTML( '<div>' . $post->post_content . '</div>', LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED );
+	$body->loadHTML( '<div>' . $post->post_content . '</div>' );
 	$images       = $body->getElementsByTagName( 'img' );
 	$domains      = array( 'images.airstory.co', 'res.cloudinary.com' );
 	$replaced     = array();

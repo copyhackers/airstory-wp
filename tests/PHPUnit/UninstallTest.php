@@ -103,6 +103,11 @@ class UninstallTest extends \Airstory\TestCase {
 			->once()
 			->with( "DELETE FROM usermeta_table WHERE meta_key = '_airstory_data';" );
 
+		M::userFunction( 'delete_site_option', array(
+			'times' => 1,
+			'args'  => array( '_airstory_cipher_algorithm' ),
+		) );
+
 		$this->bootstrap();
 		delete_airstory_data();
 	}

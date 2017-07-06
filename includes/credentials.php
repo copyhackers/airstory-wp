@@ -94,7 +94,7 @@ function set_token( $user_id, $token ) {
 		$encrypted = openssl_encrypt( $token, get_cipher_algorithm(), AUTH_KEY, null, $iv );
 
 		if ( false === $encrypted ) {
-			throw new Exception;
+			throw new Exception( __( 'Encrypted token was empty', 'airstory' ) );
 		}
 	} catch ( Exception $e ) {
 		return new WP_Error(

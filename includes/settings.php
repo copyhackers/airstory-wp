@@ -188,7 +188,11 @@ function save_profile_settings( $user_id ) {
 
 	// The user is setting their token.
 	if ( ! empty( $_POST['airstory-token'] ) ) {
-		Credentials\set_token( $user_id, sanitize_text_field( $_POST['airstory-token'] ) );
+		$token_set = Credentials\set_token( $user_id, sanitize_text_field( $_POST['airstory-token'] ) );
+
+		if ( is_wp_error( $token_set ) ) {
+			return $token_set;
+		}
 	}
 
 	// If the user has access to more than one site, update them accordingly.

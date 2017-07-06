@@ -9,6 +9,7 @@ namespace Airstory\Settings;
 
 use WP_Mock as M;
 use Mockery;
+use WP_Error;
 
 class SettingsTest extends \Airstory\TestCase {
 
@@ -400,6 +401,33 @@ class SettingsTest extends \Airstory\TestCase {
 		M::expectAction( 'airstory_user_disconnect', 123 );
 
 		$this->assertTrue( save_profile_settings( 123 ) );
+	}
+
+	public function testSaveProfileSettingsCatchesWPErrors() {
+		$_POST = array(
+			'_airstory_nonce' => 'abc123',
+			'airstory-token'  => 'my-secret-token',
+		);
+		$error = new WP_Error;
+
+		M::userFunction( 'wp_verify_nonce', array(
+			'return' => true,
+		) );
+
+		M::userFunction( 'current_user_can', array(
+			'return' => true,
+		) );
+
+		M::userFunction( 'Airstory\Credentials\set_token', array(
+			'return' => $error,
+		) );
+
+		M::userFunction( 'is_wp_error', array(
+			'args'   => array( $error ),
+			'return' => true,
+		) );
+
+		$this->assertSame( $error, save_profile_settings( 123 ) );
 	}
 
 	public function testGetAvailableBlogs() {

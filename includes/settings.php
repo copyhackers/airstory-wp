@@ -11,6 +11,7 @@ use Airstory\Connection as Connection;
 use Airstory\Credentials as Credentials;
 use Airstory\Settings as Settings;
 use Airstory\Tools as Tools;
+use WP_Error;
 
 /**
  * Retrieve a value from the _airstory_data user meta key.

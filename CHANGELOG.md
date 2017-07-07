@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file, according t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [Unreleased]
+
+* Ensure content is being consistently converted to UTF-8 before performing any operations on it, drastically reducing some of the special character issues that have been reported by users.
+
+
 ## [1.1.3]
 
 * Explicitly import `WP_Error` into `Airstory\Credentials`.

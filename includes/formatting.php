@@ -21,24 +21,7 @@ use Airstory;
  */
 function get_body_contents( $content ) {
 	$use_internal = libxml_use_internal_errors( true );
-
-	/*
-	 * DOMDocument sometimes has issues with HTML entities (particularly &nbsp;), so we'll do a basic
-	 * token replacement before ingesting into DOMDocument::loadHTML(), then restore them after the
-	 * HTML has been processed.
-	 *
-	 * Regex for these replacements taken from the HTML5DOMDocument parser.
-	 *
-	 * @link https://github.com/ivopetkov/html5-dom-document-php
-	 */
-	$content = preg_replace( '/&([a-zA-Z]*);/', '<!-- airstory-entity1-$1 -->', $content );
-	$content = preg_replace( '/&#([0-9]*);/', '<!-- airstory-entity2-$1 -->', $content );
-	$content = preg_replace( '/&#x([0-9A-Fa-f]*);/', '<!-- airstory-entity3-$1 -->', $content );
-
-	// Ensure Emoji are properly encoded.
-	$content = wp_encode_emoji( $content );
-
-	$doc = new \DOMDocument( '1.0', 'UTF-8' );
+	$doc          = new \DOMDocument( '1.0', 'UTF-8' );
 	$doc->loadHTML( mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' ) );
 
 	// Will retrieve the entire <body> node.
@@ -62,13 +45,6 @@ function get_body_contents( $content ) {
 	// If the body's empty at this point, no further work is necessary.
 	if ( empty( $body ) ) {
 		return $body;
-	}
-
-	// Restore HTML entities if replacements were made earlier.
-	if ( false !== strpos( $body, '<!-- airstory-entity' ) ) {
-		$body = preg_replace( '/\<!--\sairstory-entity1-(.*?)\s--\>/', '&$1;', $body );
-		$body = preg_replace( '/\<!--\sairstory-entity2-(.*?)\s--\>/', '&#$1;', $body );
-		$body = preg_replace( '/\<!--\sairstory-entity3-(.*?)\s--\>/', '&#x$1;', $body );
 	}
 
 	// Strip opening and trailing <body> tags (plus any whitespace).

@@ -107,7 +107,7 @@ EOT;
 	public function testGetBodyContentsWithAccentedLanguages( $content ) {
 		$content = '<p>' . $content . '</p>';
 
-		$this->assertEquals($content, get_body_contents( $content ));
+		$this->assertEquals( $content, get_body_contents( $content ) );
 	}
 
 	/**
@@ -562,6 +562,27 @@ EOT;
 			->reply( array( 'someimagehost.com' ) );
 
 		$this->assertEquals( 1, sideload_all_images( 123 ) );
+	}
+
+	/**
+	 * @dataProvider foreignLanguageProvider
+	 *
+	 * @link https://github.com/liquidweb/airstory-wp/issues/61
+	 */
+	public function testSideloadAllImagesWithAccentedLanguages( $content ) {
+		$post = new \stdClass;
+		$post->post_content = '<p>' . $content . '</p>';
+
+		M::userFunction( 'get_post', array(
+			'return' => $post,
+		) );
+
+		// The $content contains no images, so there should be nothing changed.
+		M::userFunction( 'wp_update_post', array(
+			'times'  => 0,
+		) );
+
+		$this->assertEquals( 0, sideload_all_images( 123 ) );
 	}
 
 	public function testStripWrappingDiv() {

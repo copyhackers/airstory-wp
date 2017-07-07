@@ -187,14 +187,6 @@ function create_document( Airstory\API $api, $project_id, $document_id, $author_
  *                      wrong during the updating of the post.
  */
 function update_document( Airstory\API $api, $project_id, $document_id, $post_id ) {
-	$document = $api->get_document( $project_id, $document_id );
-
-	// Something went wrong getting metadata about the document.
-	if ( is_wp_error( $document ) ) {
-		return $document;
-	}
-
-	// Next, retrieve the post content.
 	$contents = $api->get_document_content( $project_id, $document_id );
 
 	// Unable to retrieve the rendered content.

@@ -233,13 +233,7 @@ class CoreTest extends \Airstory\TestCase {
 		$project  = 'pXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 		$document = 'dXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX';
 
-		$doc = new \stdClass;
-		$doc->title = 'My sample document';
-
 		$api = Mockery::mock( 'Airstory\API' )->makePartial();
-		$api->shouldReceive( 'get_document' )
-			->once()
-			->andReturn( $doc );
 		$api->shouldReceive( 'get_document_content' )
 			->once()
 			->andReturn( 'My document body' );

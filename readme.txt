@@ -4,7 +4,7 @@ Donate link: http://airstory.co
 Tags: blogging, writing, import, airstory, content, publishing
 Requires at least: 4.7
 Tested up to: 4.8
-Stable tag: 1.1.2
+Stable tag: 1.1.4
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 

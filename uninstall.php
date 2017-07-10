@@ -13,6 +13,7 @@ namespace Airstory\Uninstall;
 use Airstory\Connection as Connection;
 
 require_once __DIR__ . '/includes/connection.php';
+require_once __DIR__ . '/includes/settings.php';
 
 /**
  * Retrieve the IDs of any sites with active Airstory connections.

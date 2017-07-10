@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file, according t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [Unreleased]
+
+* Improved error handling if WordPress fails to authenticate with Airstory when saving the user token.
+
+
 ## [1.1.3]
 
 * Explicitly import `WP_Error` into `Airstory\Credentials`.

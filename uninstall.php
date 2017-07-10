@@ -12,7 +12,9 @@ namespace Airstory\Uninstall;
 
 use Airstory\Connection as Connection;
 
+require_once __DIR__ . '/includes/class-api.php';
 require_once __DIR__ . '/includes/connection.php';
+require_once __DIR__ . '/includes/credentials.php';
 require_once __DIR__ . '/includes/settings.php';
 
 /**

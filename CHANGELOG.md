@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 * Ensure content is being consistently converted to UTF-8 before performing any operations on it, drastically reducing some of the special character issues that have been reported by users.
+* Updated README files to reflect changes in Airstory's billing model.
 
 
 ## [1.1.3]

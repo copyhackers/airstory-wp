@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Improved error handling if WordPress fails to authenticate with Airstory when saving the user token.
 * Updated README files to reflect changes in Airstory's billing model.
 
 

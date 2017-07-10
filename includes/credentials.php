@@ -85,7 +85,8 @@ function get_iv() {
  *
  * @param int    $user_id The user ID.
  * @param string $token   The token to store for the user.
- * @return string The encrypted version of the token, which has been stored.
+ * @return string|WP_Error The encrypted version of the token, which has been stored. If the token
+ *                         could not be encrypted, a WP_Error object will be returned instead.
  */
 function set_token( $user_id, $token ) {
 	try {
@@ -93,7 +94,7 @@ function set_token( $user_id, $token ) {
 		$encrypted = openssl_encrypt( $token, get_cipher_algorithm(), AUTH_KEY, null, $iv );
 
 		if ( false === $encrypted ) {
-			throw new Exception;
+			throw new Exception( __( 'Encrypted token was empty', 'airstory' ) );
 		}
 	} catch ( Exception $e ) {
 		return new WP_Error(

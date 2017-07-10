@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file, according t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [Unreleased]
+
+* Updated README files to reflect changes in Airstory's billing model.
+
+
 ## [1.1.3]
 
 * Explicitly import `WP_Error` into `Airstory\Credentials`.

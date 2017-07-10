@@ -305,6 +305,10 @@ class ConnectionTest extends \Airstory\TestCase {
 	}
 
 	public function testRemoveConnectionOnlyDeletesIfItHasTheUserEmail() {
+		Patchwork\replace( 'Airstory\API::delete_target', function () {
+			$this->fail( 'This should never be called without the user email address' );
+		} );
+
 		M::userFunction( 'Airstory\Settings\get_user_data', array(
 			'args'   => array( 123, 'profile', array() ),
 			'return' => array( 'email' => '' )
@@ -316,13 +320,17 @@ class ConnectionTest extends \Airstory\TestCase {
 		) );
 
 		M::userFunction( 'delete_user_option', array(
-			'times'  => 0,
+			'times'  => 1,
 		) );
 
 		remove_connection( 123 );
 	}
 
 	public function testRemoveConnectionOnlyDeletesIfItHasTheConnectionID() {
+		Patchwork\replace( 'Airstory\API::delete_target', function () {
+			$this->fail( 'This should never be called without the connection ID' );
+		} );
+
 		M::userFunction( 'Airstory\Settings\get_user_data', array(
 			'args'   => array( 123, 'profile', array() ),
 			'return' => array( 'email' => 'test@example.com' ),
@@ -334,7 +342,7 @@ class ConnectionTest extends \Airstory\TestCase {
 		) );
 
 		M::userFunction( 'delete_user_option', array(
-			'times'  => 0,
+			'times'  => 1,
 		) );
 
 		remove_connection( 123 );

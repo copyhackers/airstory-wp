@@ -13,6 +13,14 @@ module.exports = function(grunt) {
 					'composer.json',
 					'CHANGELOG.md',
 					'LICENSE.md',
+
+					/*
+					 * Exclude files not necessary in the distribution.
+					 *
+					 * @link https://github.com/liquidweb/airstory-wp/issues/69
+					 */
+					'!includes/lib/wp-async-task/*.dist',
+					'!includes/lib/wp-async-task/tests/**',
 				],
 				dest: 'dist/'
 			},

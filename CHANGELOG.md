@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Ensure content is being consistently converted to UTF-8 before performing any operations on it, drastically reducing some of the special character issues that have been reported by users.
 * Improved error handling if WordPress fails to authenticate with Airstory when saving the user token.
 * Updated README files to reflect changes in Airstory's billing model.
 

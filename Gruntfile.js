@@ -32,6 +32,7 @@ module.exports = function(grunt) {
 					domainPath: 'languages/',
 					exclude: [
 						'dist',
+						'includes/lib',
 						'node_modules',
 						'tests',
 						'vendor',

@@ -191,6 +191,8 @@ function save_profile_settings( $user_id ) {
 		$token_set = Credentials\set_token( $user_id, sanitize_text_field( $_POST['airstory-token'] ) );
 
 		if ( is_wp_error( $token_set ) ) {
+			add_action( 'user_profile_update_errors', __NAMESPACE__ . '\profile_error_save_token' );
+
 			return $token_set;
 		}
 	}
@@ -211,6 +213,19 @@ function save_profile_settings( $user_id ) {
 	return true;
 }
 add_action( 'personal_options_update', __NAMESPACE__ . '\save_profile_settings' );
+
+/**
+ * Add an error message to the user profile screen if the token could not be saved.
+ *
+ * @param WP_Error $errors WP_Error object, passed by reference.
+ */
+function profile_error_save_token( $errors ) {
+	$errors->add(
+		'airstory-save-token',
+		__( 'WordPress was unable to establish a connection with Airstory using the token provided', 'airstory' )
+	);
+}
+
 
 /**
  * Generate a list of blogs that $user_id is a member of *and* can publish to.

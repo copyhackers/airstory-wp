@@ -427,7 +427,16 @@ class SettingsTest extends \Airstory\TestCase {
 			'return' => true,
 		) );
 
+		M::expectActionAdded( 'user_profile_update_errors', __NAMESPACE__ . '\profile_error_save_token' );
+
 		$this->assertSame( $error, save_profile_settings( 123 ) );
+	}
+
+	public function testProfileErrorSaveToken() {
+		$errors = Mockery::mock( 'WP_Error' )->makePartial();
+		$errors->shouldReceive( 'add' )->once()->with( 'airstory-save-token', Mockery::any() );
+
+		profile_error_save_token( $errors );
 	}
 
 	public function testGetAvailableBlogs() {

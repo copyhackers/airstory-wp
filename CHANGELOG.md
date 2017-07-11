@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file, according t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [1.1.4]
+
+* Ensure content is being consistently converted to UTF-8 before performing any operations on it, drastically reducing some of the special character issues that have been reported by users.
+* Improved error handling if WordPress fails to authenticate with Airstory when saving the user token.
+* Fixed issue where not all user data was being removed on plugin uninstall.
+* Updated README files to reflect changes in Airstory's billing model.
+
+
 ## [1.1.3]
 
 * Explicitly import `WP_Error` into `Airstory\Credentials`.
@@ -47,6 +55,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 [Unreleased]: https://github.com/liquidweb/airstory-wp/compare/master...develop
+[1.1.4]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.4
 [1.1.3]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.3
 [1.1.2]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.2
 [1.1.1]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.1

@@ -4,7 +4,7 @@ Donate link: http://airstory.co
 Tags: blogging, writing, import, airstory, content, publishing
 Requires at least: 4.7
 Tested up to: 4.8
-Stable tag: 1.1.2
+Stable tag: 1.1.4
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -50,7 +50,7 @@ Airstory is a paid solution, which includes support and integrations, like this 
 === Requirements ===
 
 * This plugin requires an active [Airstory](http://www.airstory.co/) subscription.
-	* Not already an Airstory user? [Get one project free for life, just by signing up!](http://www.airstory.co/pricing/)
+	* Not already an Airstory user? [Sign up for a free two-week trial!](http://www.airstory.co/)
 * PHP version 5.3 or higher, with the DOM, Mcrypt, and OpenSSL extensions active.
 * The WordPress site must have a valid SSL certificate in order for Airstory to publish content.
 
@@ -144,6 +144,10 @@ All modern hosts (Liquid Web, WP Engine, SiteGround, etc.) should support these 
 
 For a full list of changes, please [view the change log on GitHub](https://github.com/liquidweb/airstory-wp/blob/develop/CHANGELOG.md).
 
+= 1.1.4 =
+* Ensure content is being consistently converted to UTF-8 before performing any operations on it, drastically reducing some of the special character issues that have been reported by users.
+* Improved error handling if WordPress fails to authenticate with Airstory when saving the user token.
+
 = 1.1.3 =
 * Improved error handling throughout the plugin.
 * Add fallback cipher algorithms for environments running older versions of OpenSSL.
@@ -171,6 +175,9 @@ For a full list of changes, please [view the change log on GitHub](https://githu
 
 
 == Upgrade Notice ==
+
+= 1.1.4 =
+Improved support for accented and non-Latin characters, along with better error handling when connecting to Airstory.
 
 = 1.1.3 =
 Improved error handling, wider support for older versions of OpenSSL and libxml.

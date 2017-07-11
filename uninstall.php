@@ -12,7 +12,10 @@ namespace Airstory\Uninstall;
 
 use Airstory\Connection as Connection;
 
+require_once __DIR__ . '/includes/class-api.php';
 require_once __DIR__ . '/includes/connection.php';
+require_once __DIR__ . '/includes/credentials.php';
+require_once __DIR__ . '/includes/settings.php';
 
 /**
  * Retrieve the IDs of any sites with active Airstory connections.
@@ -60,15 +63,19 @@ function get_active_site_ids() {
 
 /**
  * Collect any users that are connected to Airstory and close their connections.
+ *
+ * @global $wpdb
  */
 function disconnect_all_users() {
+	global $wpdb;
+
 	$user_args       = array(
 		'fields'      => 'ID',
 		'number'      => 100,
 		'count_total' => false,
 		'meta_query'  => array(
 			array(
-				'key'     => '_airstory_target',
+				'key'     => $wpdb->prefix . '_airstory_target',
 				'compare' => 'EXISTS',
 			),
 		),

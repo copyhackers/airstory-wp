@@ -10,6 +10,7 @@ namespace Airstory\Uninstall;
 use WP_Mock as M;
 use Mockery;
 use Patchwork;
+use WP_User_Query;
 
 /**
  * @runTestsInSeparateProcesses
@@ -60,6 +61,11 @@ class UninstallTest extends \Airstory\TestCase {
 	}
 
 	public function testDisconnectAllUsers() {
+		global $wpdb;
+
+		$wpdb         = new \stdClass;
+		$wpdb->prefix = 'wp_2_';
+
 		\WP_User_Query::$__results = array( 1, 2, 3 );
 
 		M::userFunction( 'Airstory\Connection\remove_connection', array(
@@ -71,9 +77,19 @@ class UninstallTest extends \Airstory\TestCase {
 
 		$this->bootstrap();
 		disconnect_all_users();
+
+		$this->assertContains( array(
+			'key'     => 'wp_2__airstory_target',
+			'compare' => 'EXISTS',
+		), WP_User_Query::$__query['meta_query'], 'The meta_key should include the database table prefix.' );
 	}
 
 	public function testDisconnectAllUsersChunksUserQueries() {
+		global $wpdb;
+
+		$wpdb         = new \stdClass;
+		$wpdb->prefix = 'wp_';
+
 		\WP_User_Query::$__results = array( 1, 2, 3 );
 
 		M::userFunction( 'Airstory\Connection\remove_connection', array(

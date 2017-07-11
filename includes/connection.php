@@ -183,12 +183,10 @@ function remove_connection( $user_id ) {
 	$profile       = Settings\get_user_data( $user_id, 'profile', array() );
 	$connection_id = get_user_option( '_airstory_target', $user_id );
 
-	if ( empty( $profile['email'] ) || empty( $connection_id ) ) {
-		return;
+	if ( ! empty( $profile['email'] ) && ! empty( $connection_id ) ) {
+		$api = new Airstory\API;
+		$api->delete_target( $profile['email'], $connection_id );
 	}
-
-	$api = new Airstory\API;
-	$api->delete_target( $profile['email'], $connection_id );
 
 	// Clean up the user meta.
 	delete_user_option( $user_id, '_airstory_target' );

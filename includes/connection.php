@@ -16,6 +16,7 @@ namespace Airstory\Connection;
 use Airstory;
 use Airstory\Credentials as Credentials;
 use Airstory\Settings as Settings;
+use WP_Error;
 
 /**
  * Retrieve basic information about the user.
@@ -66,15 +67,6 @@ function get_target( $user_id ) {
 }
 
 /**
- * Display an error if the user was unable to authenticate with Airstory.
- *
- * @param WP_Error $errors Current user errors, passed by reference.
- */
-function user_connection_error( &$errors ) {
-	$errors->add( 'airstory-connection', __( 'WordPress was unable to authenticate with Airstory, please try again.', 'airstory' ) );
-}
-
-/**
  * Does the given user have a connection to Airstory?
  *
  * Note that this function does not check the validity of a connection, only whether or not one
@@ -97,6 +89,8 @@ function has_connection( $user_id ) {
  * Airstory account, and the target ID stored.
  *
  * @param int $user_id The ID of the user who has connected.
+ * @return string|WP_Error Either the GUID for the connection ID if registered successfully, or a
+ *                         WP_Error object explaining what went wrong.
  */
 function register_connection( $user_id ) {
 	if ( has_connection( $user_id ) ) {
@@ -106,9 +100,12 @@ function register_connection( $user_id ) {
 	$profile = get_user_profile( $user_id );
 
 	if ( empty( $profile ) ) {
-		add_action( 'user_profile_update_errors', __NAMESPACE__ . '\user_connection_error' );
+		add_action( 'user_profile_update_errors', 'Airstory\Settings\profile_error_save_token' );
 
-		return;
+		return new WP_Error(
+			'airstory-empty-profile',
+			__( 'User does not have an Airstory profile registered within WordPress.', 'airstory' )
+		);
 	}
 
 	$target        = get_target( $user_id );
@@ -116,7 +113,9 @@ function register_connection( $user_id ) {
 	$connection_id = $api->post_target( $profile['email'], $target );
 
 	if ( is_wp_error( $connection_id ) ) {
-		return;
+		add_action( 'user_profile_update_errors', 'Airstory\Settings\profile_error_save_token' );
+
+		return $connection_id;
 	}
 
 	// Store the profile and connection ID for the user.
@@ -184,12 +183,10 @@ function remove_connection( $user_id ) {
 	$profile       = Settings\get_user_data( $user_id, 'profile', array() );
 	$connection_id = get_user_option( '_airstory_target', $user_id );
 
-	if ( empty( $profile['email'] ) || empty( $connection_id ) ) {
-		return;
+	if ( ! empty( $profile['email'] ) && ! empty( $connection_id ) ) {
+		$api = new Airstory\API;
+		$api->delete_target( $profile['email'], $connection_id );
 	}
-
-	$api = new Airstory\API;
-	$api->delete_target( $profile['email'], $connection_id );
 
 	// Clean up the user meta.
 	delete_user_option( $user_id, '_airstory_target' );

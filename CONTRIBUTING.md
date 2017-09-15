@@ -70,6 +70,14 @@ $ ./vendor/bin/phpunit
 $ npm test
 ```
 
+To generate a report of code coverage for the current branch, you may run the following Composer script, which will generate an HTML report in `tests/coverage/`:
+
+```bash
+$ composer test-coverage
+```
+
+Note that [both the Xdebug and tokenizer PHP extensions must be installed and active](https://phpunit.de/manual/current/en/textui.html) on the machine running the tests. If you're building in VVV, [both are available, but Xdebug is disabled by default](https://github.com/Varying-Vagrant-Vagrants/VVV/wiki/Code-Debugging#meet-xdebug).
+
 
 ## Contributors
 

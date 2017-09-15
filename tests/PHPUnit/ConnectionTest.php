@@ -16,6 +16,7 @@ use WP_User_Query;
 class ConnectionTest extends \Airstory\TestCase {
 
 	protected $testFiles = array(
+		'class-api.php',
 		'connection.php',
 		'credentials.php',
 		'settings.php',
@@ -274,6 +275,32 @@ class ConnectionTest extends \Airstory\TestCase {
 		$this->assertEquals( $target, update_connection( 5 ) );
 	}
 
+	public function testUpdateConnectionReturnsEarlyIfProfileIsEmpty() {
+		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
+			'return' => array(),
+		) );
+
+		$this->assertNull( update_connection( 5 ) );
+	}
+
+	public function testUpdateConnectionHandlesWpError() {
+		Patchwork\replace( 'Airstory\API::put_target', function () {
+			return new WP_Error;
+		} );
+
+		M::userFunction( __NAMESPACE__ . '\get_user_profile', array(
+			'return' => array( 'email' => 'test@example.com' ),
+		) );
+
+		M::userFunction( 'get_user_option' );
+		M::userFunction( __NAMESPACE__ . '\get_target' );
+		M::userFunction( 'is_wp_error', array(
+			'return' => true,
+		) );
+
+		$this->assertNull( update_connection( 5 ) );
+	}
+
 	public function testRemoveConnection() {
 		$connection_id = uniqid();
 		$profile       = array(
@@ -348,7 +375,7 @@ class ConnectionTest extends \Airstory\TestCase {
 		remove_connection( 123 );
 	}
 
-	public function testSetConnectedSites() {
+	public function testSetConnectedBlogs() {
 		M::userFunction( 'is_multisite', array(
 			'return' => true,
 		) );
@@ -384,7 +411,7 @@ class ConnectionTest extends \Airstory\TestCase {
 		set_connected_blogs( 5, array( 1, 2, 3 ) );
 	}
 
-	public function testSetConnectedSitesReturnsEarlyIfNotMultisite() {
+	public function testSetConnectedBlogsReturnsEarlyIfNotMultisite() {
 		M::userFunction( 'is_multisite', array(
 			'return' => false,
 		) );
@@ -394,6 +421,44 @@ class ConnectionTest extends \Airstory\TestCase {
 		) );
 
 		set_connected_blogs( 5, array() );
+	}
+
+	public function testTriggerConnectionRefresh() {
+		M::expectAction( 'airstory_update_all_connections' );
+
+		trigger_connection_refresh( 'foo', 'bar' );
+	}
+
+	public function testTriggerConnectionRefreshReturnsEarlyIfValuesMatch() {
+		$value = uniqid();
+
+		M::userFunction( 'do_action', array(
+			'times' => 0,
+		) );
+
+		trigger_connection_refresh( $value, $value );
+	}
+
+	public function testUpdateAllConnections() {
+		WP_User_Query::$__results = array( 1, 2, 3 );
+		WP_User_Query::$__filter = function ( $results, $query ) {
+			switch ( $query['paged'] ) {
+				case 1:
+					return $results;
+
+				case 2:
+					return array( 4 );
+
+				default:
+					return array();
+			}
+		};
+
+		M::userFunction( __NAMESPACE__ . '\update_connection', array(
+			'times' => 4,
+		) );
+
+		update_all_connections();
 	}
 }
 

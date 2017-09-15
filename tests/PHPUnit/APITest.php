@@ -224,6 +224,22 @@ class APITest extends \Airstory\TestCase {
 		$this->assertEquals( $target, $instance->delete_target( $email, $target ) );
 	}
 
+	public function testDeleteTargetHandlesWpError() {
+		$wp_error = new WP_Error;
+
+		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();
+		$instance->shouldReceive( 'make_authenticated_request' )->andReturn( $wp_error );
+
+		M::userFunction( 'is_wp_error', array(
+			'return' => true,
+		) );
+
+		$this->assertSame(
+			$wp_error,
+			$instance->delete_target( 'test@example.com', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX' )
+		);
+	}
+
 	public function testSetToken() {
 		$instance = new API;
 		$token    = uniqid();

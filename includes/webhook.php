@@ -104,3 +104,28 @@ function handle_webhook( WP_REST_Request $request ) {
 		'edit_url' => admin_url( $edit_path ),
 	);
 }
+
+/**
+ * Override the default WP REST API CORS headers for the webhook, only enabling requests from the
+ * Airstory domain(s).
+ *
+ * @param bool $served Whether the request has already been served. This will not be used.
+ * @return bool The (unmodified) $served value.
+ */
+function override_cors_headers( $served ) {
+	/**
+	 * Filter the permitted CORS origins for Airstory webhook requests.
+	 *
+	 * @param array $origins Origins that should be permitted via CORS.
+	 */
+	$origins = apply_filters( 'airstory_webhook_cors_origin', array( 'https://app.airstory.co' ) );
+
+	if ( ! empty( $origins ) ) {
+		header( sprintf(
+			'Access-Control-Allow-Origin: %s',
+			implode( ' ', array_map( 'esc_url', $origins ) )
+		) );
+	}
+
+	return $served;
+}

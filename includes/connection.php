@@ -72,7 +72,25 @@ function get_target( $user_id ) {
  * @return string The Airstory webhook endpoint URI.
  */
 function get_webhook_uri() {
-	return get_rest_url( null, '/airstory/v1/webhook', 'https' );
+	$cached = wp_cache_get( 'airstory_webhook_uri', 'airstory' );
+
+	if ( $cached ) {
+		return $cached;
+	}
+
+	$url = get_rest_url( null, '/airstory/v1/webhook', 'https' );
+
+	// Get the resolved webhook URI, after any redirects.
+	$request  = wp_remote_head( $url );
+	$resolved = wp_remote_retrieve_header( $request, 'Location' );
+
+	if ( $resolved ) {
+		$url = $resolved;
+	}
+
+	wp_cache_set( 'airstory_webhook_uri', $url, 'airstory' );
+
+	return $url;
 }
 
 /**
@@ -252,6 +270,9 @@ function trigger_connection_refresh( $old_value, $new_value ) {
 	if ( $old_value === $new_value ) {
 		return;
 	}
+
+	// Delete cached configurations.
+	wp_cache_delete( 'airstory_webhook_uri', 'airstory' );
 
 	/**
 	 * Cause Airstory to update all known connections.

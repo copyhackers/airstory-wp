@@ -122,12 +122,63 @@ class ConnectionTest extends \Airstory\TestCase {
 	}
 
 	public function testGetWebhookUri() {
+		$url = 'http://example.com/airstory/v1/webhook';
+
 		M::userFunction( 'get_rest_url', array(
 			'args'   => array( null, '/airstory/v1/webhook', 'https' ),
-			'return' => 'http://example.com/airstory/v1/webhook'
+			'return' => $url,
 		) );
 
-		$this->assertEquals( 'http://example.com/airstory/v1/webhook', get_webhook_uri() );
+		M::userFunction( 'wp_cache_get' );
+
+		M::userFunction( 'wp_remote_head', array(
+			'times' => 1,
+			'args'  => array( $url ),
+		) );
+
+		M::userFunction( 'wp_remote_retrieve_header', array(
+			'return' => '',
+		) );
+
+		M::userFunction( 'wp_cache_set', array(
+			'times' => 1,
+			'args'  => array( 'airstory_webhook_uri', $url, 'airstory' ),
+		) );
+
+		$this->assertEquals( $url, get_webhook_uri() );
+	}
+
+	public function testGetWebhookUriChecksForRedirects() {
+		$url = 'http://example.com/airstory/v1/webhook';
+
+		M::userFunction( 'get_rest_url', array(
+			'return' => $url,
+		) );
+
+		M::userFunction( 'wp_cache_get' );
+		M::userFunction( 'wp_remote_head' );
+		M::userFunction( 'wp_remote_retrieve_header', array(
+			'return' => $url . '/',
+		) );
+
+		M::userFunction( 'wp_cache_set', array(
+			'times' => 1,
+			'args'  => array( 'airstory_webhook_uri', $url . '/', 'airstory' ),
+		) );
+
+		$this->assertEquals( $url . '/', get_webhook_uri() );
+	}
+
+	public function testGetWebhookUriReturnsFromCache() {
+		M::userFunction( 'wp_cache_get', array(
+			'return' => 'http://example.com/foo',
+		) );
+
+		M::userFunction( 'get_rest_url', array(
+			'times' => 0,
+		) );
+
+		$this->assertEquals( 'http://example.com/foo', get_webhook_uri() );
 	}
 
 	public function testHasConnection() {
@@ -402,6 +453,25 @@ class ConnectionTest extends \Airstory\TestCase {
 		) );
 
 		set_connected_blogs( 5, array() );
+	}
+
+	public function testTriggerConnectionRefresh() {
+		M::userFunction( 'wp_cache_delete', array(
+			'times' => 1,
+			'args'  => array( 'airstory_webhook_uri', 'airstory' ),
+		) );
+
+		M::expectAction( 'airstory_update_all_connections' );
+
+		trigger_connection_refresh( 'old', 'new' );
+	}
+
+	public function testTriggerConnectionRefreshOnlyFiresIfValuesChanged() {
+		M::userFunction( 'wp_cache_delete', array(
+			'times' => 0,
+		) );
+
+		trigger_connection_refresh( 'same', 'same' );
 	}
 }
 

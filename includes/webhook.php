@@ -73,6 +73,9 @@ function handle_webhook( WP_REST_Request $request ) {
 		);
 	}
 
+	// Ensure that the proper CORS headers are sent.
+	add_filter( 'rest_pre_serve_request', __NAMESPACE__ . '\override_cors_headers' );
+
 	// Establish an API connection, using the Airstory token of the connection owner.
 	$api = new Airstory\API;
 	$api->set_token( $user_token );

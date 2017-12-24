@@ -54,6 +54,8 @@ class WebhookTest extends \Airstory\TestCase {
 			->with( 'document' )
 			->andReturn( $document );
 
+		M::expectFilterAdded( 'rest_pre_serve_request', __NAMESPACE__ . '\override_cors_headers' );
+
 		M::userFunction( 'Airstory\Credentials\get_token', array(
 			'args'   => array( 5 ),
 			'return' => uniqid(),

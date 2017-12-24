@@ -155,10 +155,43 @@ class ConnectionTest extends \Airstory\TestCase {
 			'return' => $url,
 		) );
 
+		M::userFunction( 'wp_parse_url', array(
+			'returnUsing' => '/airstory/v1/webhook/',
+		) );
+
 		M::userFunction( 'wp_cache_get' );
 		M::userFunction( 'wp_remote_head' );
 		M::userFunction( 'wp_remote_retrieve_header', array(
 			'return' => $url . '/',
+		) );
+
+		M::userFunction( 'wp_cache_set', array(
+			'times' => 1,
+			'args'  => array( 'airstory_webhook_uri', $url . '/', 'airstory' ),
+		) );
+
+		$this->assertEquals( $url . '/', get_webhook_uri() );
+	}
+
+	public function testGetWebhookUriCreatesAbsoluteRedirectUris() {
+		$url = 'http://example.com/airstory/v1/webhook';
+
+		M::userFunction( 'get_rest_url', array(
+			'return' => $url,
+		) );
+
+		M::userFunction( 'wp_parse_url', array(
+			'return' => '/airstory/v1/webhook/',
+		) );
+
+		M::userFunction( 'site_url', array(
+			'return' => $url . '/',
+		) );
+
+		M::userFunction( 'wp_cache_get' );
+		M::userFunction( 'wp_remote_head' );
+		M::userFunction( 'wp_remote_retrieve_header', array(
+			'return' => '/airstory/v1/webhook/',
 		) );
 
 		M::userFunction( 'wp_cache_set', array(

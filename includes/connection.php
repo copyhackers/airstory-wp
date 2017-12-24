@@ -86,6 +86,11 @@ function get_webhook_uri() {
 
 	if ( $resolved ) {
 		$url = $resolved;
+
+		// If the resolved URL is only a path (no host), prepend one.
+		if ( wp_parse_url( $resolved, PHP_URL_PATH ) === $resolved ) {
+			$url = site_url( $resolved );
+		}
 	}
 
 	wp_cache_set( 'airstory_webhook_uri', $url, 'airstory' );

@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file, according t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [Unreleased]
+
+* Explicitly set `Access-Control-Allow-Origin` headers for the Airstory webhook request ([#74]).
+
+
 ## [1.1.4]
 
 * Ensure content is being consistently converted to UTF-8 before performing any operations on it, drastically reducing some of the special character issues that have been reported by users.
@@ -62,3 +67,4 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [1.1.0]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.0
 [1.0.1]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.0.1
 [1.0.0]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.0.0
+[#74]: https://github.com/liquidweb/airstory-wp/issues/74

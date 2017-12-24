@@ -61,9 +61,18 @@ function get_target( $user_id ) {
 	return array(
 		'identifier' => (string) $user_id, // Airstory expects a string.
 		'name'       => get_bloginfo( 'name' ),
-		'url'        => get_rest_url( null, '/airstory/v1/webhook', 'https' ),
+		'url'        => get_webhook_uri(),
 		'type'       => 'wordpress',
 	);
+}
+
+/**
+ * Retrieve the webhook URL for this site.
+ *
+ * @return string The Airstory webhook endpoint URI.
+ */
+function get_webhook_uri() {
+	return get_rest_url( null, '/airstory/v1/webhook', 'https' );
 }
 
 /**

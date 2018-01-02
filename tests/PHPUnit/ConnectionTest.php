@@ -113,6 +113,8 @@ class ConnectionTest extends \Airstory\TestCase {
 			'return' => 'http://example.com/airstory/v1/webhook'
 		) );
 
+		M::passthruFunction( 'esc_url_raw' );
+
 		$response = get_target( 5 );
 
 		$this->assertEquals( '5', $response['identifier'] );

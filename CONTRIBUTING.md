@@ -17,7 +17,7 @@ $ git clone https://github.com/liquidweb/airstory-wp.git airstory && cd airstory
 $ composer install && npm install
 ```
 
-The Airstory plugin is built for PHP versions 5.3 and above (required for using PHP namespaces), and requires the `dom`, `mcrypt`, and `openssl` PHP extensions.
+The Airstory plugin is built for PHP versions 5.3 and above (required for using PHP namespaces), and requires the `dom` and `openssl` PHP extensions. Additionally, `mcrypt` is required for PHP versions below 7.0.
 
 
 ### Project structure

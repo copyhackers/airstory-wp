@@ -52,7 +52,7 @@ Airstory is a paid solution, which includes support and integrations, like this 
 
 * This plugin requires an active [Airstory](http://www.airstory.co/) subscription.
 	* Not already an Airstory user? [Sign up for a free two-week trial!](http://www.airstory.co/)
-* PHP version 5.3 or higher, with the DOM, Mcrypt, and OpenSSL extensions active.
+* PHP version 5.3 or higher, with the DOM and OpenSSL extensions active. Additionally, the Mcrypt PHP extension is required for PHP versions below 7.0.
 * The WordPress site must have a valid SSL certificate in order for Airstory to publish content.
 
 

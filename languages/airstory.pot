@@ -2,9 +2,9 @@
 # This file is distributed under the MIT.
 msgid ""
 msgstr ""
-"Project-Id-Version: Airstory 1.1.2\n"
+"Project-Id-Version: Airstory 1.1.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/airstory\n"
-"POT-Creation-Date: 2017-06-29 17:56:35+00:00\n"
+"POT-Creation-Date: 2017-07-11 13:47:17+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,12 +25,12 @@ msgstr ""
 msgid "An Airstory token is required to make this request"
 msgstr ""
 
-#: includes/class-api.php:266
+#: includes/class-api.php:273
 msgid "The request did not return valid JSON"
 msgstr ""
 
-#: includes/connection.php:74
-msgid "WordPress was unable to authenticate with Airstory, please try again."
+#: includes/connection.php:107
+msgid "User does not have an Airstory profile registered within WordPress."
 msgstr ""
 
 #: includes/core.php:92
@@ -46,55 +46,69 @@ msgid ""
 "Airstory Tools page</a>."
 msgstr ""
 
-#: includes/credentials.php:54
+#: includes/credentials.php:51
+msgid "None of the preferred cipher algorithms are available on this server."
+msgstr ""
+
+#: includes/credentials.php:97
+msgid "Encrypted token was empty"
+msgstr ""
+
+#: includes/credentials.php:102
 msgid "Unable to encrypt Airstory token"
 msgstr ""
 
-#: includes/credentials.php:90
+#: includes/credentials.php:148
 msgid "Unable to decrypt Airstory token"
 msgstr ""
 
-#: includes/settings.php:60
+#: includes/settings.php:61
 #. Translators: %1s$ is the WordPress user edit link.
 msgid ""
 "To get started, please connect WordPress to your Airstory account <a "
 "href=\"%1$s#airstory\">on your profile page</a>."
 msgstr ""
 
-#: includes/settings.php:66
+#: includes/settings.php:67
 msgid "Welcome to Airstory!"
 msgstr ""
 
-#: includes/settings.php:69
+#: includes/settings.php:70
 msgid "Dismiss this notice"
 msgstr ""
 
-#: includes/settings.php:97
+#: includes/settings.php:98
 msgid "Airstory Configuration"
 msgstr ""
 
-#: includes/settings.php:101
+#: includes/settings.php:102
 msgid "User Token"
 msgstr ""
 
-#: includes/settings.php:105
+#: includes/settings.php:106
 msgid "Disconnect from Airstory"
 msgstr ""
 
-#: includes/settings.php:109
+#: includes/settings.php:110
 #. Translators: %1$s is the user's Airstory email address.
 msgid "Currently authenticated as <strong>%1$s</strong>"
 msgstr ""
 
-#: includes/settings.php:117
+#: includes/settings.php:118
 msgid ""
 "You can retrieve your user token from <a "
 "href=\"https://app.airstory.co/projects?overlay=account\" "
 "target=\"_blank\">your Airstory account settings</a>."
 msgstr ""
 
-#: includes/settings.php:129
+#: includes/settings.php:130
 msgid "Sites connected to Airstory"
+msgstr ""
+
+#: includes/settings.php:225
+msgid ""
+"WordPress was unable to establish a connection with Airstory using the "
+"token provided"
 msgstr ""
 
 #: includes/tools.php:72
@@ -130,56 +144,52 @@ msgstr ""
 msgid "Airstory is unable to talk to your site over HTTPS"
 msgstr ""
 
-#: includes/tools.php:114
-msgid "Libxml 2.7.8 or higher"
-msgstr ""
-
-#: includes/tools.php:129
+#: includes/tools.php:118
 #. Translators: %1$s represents the PHP extension name.
 msgid "PHP Extension: %1$s"
 msgstr ""
 
-#: includes/tools.php:134
+#: includes/tools.php:123
 msgid "Extension loaded"
 msgstr ""
 
-#: includes/tools.php:138
+#: includes/tools.php:127
 #. Translators: %1$s is the name of the missing PHP extension.
 msgid "The %1$s extension is missing!"
 msgstr ""
 
-#: includes/tools.php:149
+#: includes/tools.php:138
 msgid "WordPress REST API"
 msgstr ""
 
-#: includes/tools.php:150
+#: includes/tools.php:139
 msgid "Is this site's REST API accessible via HTTPS?"
 msgstr ""
 
-#: includes/tools.php:152 includes/tools.php:160
+#: includes/tools.php:141 includes/tools.php:149
 msgid "Loading"
 msgstr ""
 
-#: includes/tools.php:157
+#: includes/tools.php:146
 msgid "Airstory connection"
 msgstr ""
 
-#: includes/tools.php:158
+#: includes/tools.php:147
 msgid "Can this site communicate with Airstory?"
 msgstr ""
 
-#: includes/tools.php:168
+#: includes/tools.php:157
 msgid "It appears you're missing one or more dependencies!"
 msgstr ""
 
-#: includes/tools.php:169
+#: includes/tools.php:158
 msgid ""
 "PHP, the programming language behind WordPress, <a "
 "href=\"https://en.wikipedia.org/wiki/List_of_PHP_extensions\">has a number "
 "of extensions available</a> to enable new or improve existing functionality."
 msgstr ""
 
-#: includes/tools.php:170
+#: includes/tools.php:159
 msgid ""
 "The Airstory WordPress plugin leverages several common PHP extensions, all "
 "of which are typically enabled by default (or at least available) across "
@@ -188,7 +198,7 @@ msgid ""
 "support."
 msgstr ""
 
-#: includes/tools.php:171
+#: includes/tools.php:160
 msgid ""
 "Airstory also uses Secure Socket Layers (SSL) to send data back and forth "
 "between your site and Airstory, so your site must be accessible over HTTPS. "
@@ -196,11 +206,11 @@ msgid ""
 "no cost to you."
 msgstr ""
 
-#: includes/tools.php:174
+#: includes/tools.php:163
 msgid "Get Support"
 msgstr ""
 
-#: includes/tools.php:175
+#: includes/tools.php:164
 msgid ""
 "The Airstory WordPress plugin is backed by <a "
 "href=\"https://www.liquidweb.com/support/heroic-promise.html\">Liquid Web's "
@@ -211,7 +221,7 @@ msgid ""
 "repo</a>."
 msgstr ""
 
-#: includes/tools.php:176
+#: includes/tools.php:165
 msgid ""
 "To help troubleshoot any issues, please include the following report in "
 "your support request:"
@@ -248,7 +258,7 @@ msgstr ""
 msgid "https://www.liquidweb.com"
 msgstr ""
 
-#: includes/settings.php:126
+#: includes/settings.php:127
 msgctxt "label for list of WordPress blogs (multisite only)"
 msgid "Connected Sites"
 msgstr ""
@@ -289,18 +299,12 @@ msgctxt "PHP version"
 msgid "Version %1$s"
 msgstr ""
 
-#: includes/tools.php:117
-#. Translators: %1$s is the current libxml version.
-msgctxt "libxml version"
-msgid "Version %1$s"
-msgstr ""
-
-#: includes/tools.php:197
+#: includes/tools.php:186
 msgctxt "dependency check status"
 msgid "Passed"
 msgstr ""
 
-#: includes/tools.php:201
+#: includes/tools.php:190
 msgctxt "dependency check status"
 msgid "Failed"
 msgstr ""

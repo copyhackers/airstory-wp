@@ -61,9 +61,41 @@ function get_target( $user_id ) {
 	return array(
 		'identifier' => (string) $user_id, // Airstory expects a string.
 		'name'       => get_bloginfo( 'name' ),
-		'url'        => get_rest_url( null, '/airstory/v1/webhook', 'https' ),
+		'url'        => esc_url_raw( get_webhook_uri() ),
 		'type'       => 'wordpress',
 	);
+}
+
+/**
+ * Retrieve the webhook URL for this site.
+ *
+ * @return string The Airstory webhook endpoint URI.
+ */
+function get_webhook_uri() {
+	$cached = wp_cache_get( 'airstory_webhook_uri', 'airstory' );
+
+	if ( $cached ) {
+		return $cached;
+	}
+
+	$url = get_rest_url( null, '/airstory/v1/webhook', 'https' );
+
+	// Get the resolved webhook URI, after any redirects.
+	$request  = wp_remote_head( $url );
+	$resolved = wp_remote_retrieve_header( $request, 'Location' );
+
+	if ( $resolved ) {
+		$url = $resolved;
+
+		// If the resolved URL is only a path (no host), prepend one.
+		if ( wp_parse_url( $resolved, PHP_URL_PATH ) === $resolved ) {
+			$url = site_url( $resolved );
+		}
+	}
+
+	wp_cache_set( 'airstory_webhook_uri', $url, 'airstory' );
+
+	return $url;
 }
 
 /**
@@ -243,6 +275,9 @@ function trigger_connection_refresh( $old_value, $new_value ) {
 	if ( $old_value === $new_value ) {
 		return;
 	}
+
+	// Delete cached configurations.
+	wp_cache_delete( 'airstory_webhook_uri', 'airstory' );
 
 	/**
 	 * Cause Airstory to update all known connections.

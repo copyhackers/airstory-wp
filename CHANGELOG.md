@@ -7,6 +7,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+* Explicitly set `Access-Control-Allow-Origin` headers for the Airstory webhook request ([#74]).
+* Plugin now attempts to resolve any redirects for the webhook URI before connecting to Airstory ([#75]).
+
+
+## [1.1.4]
+
 * Ensure content is being consistently converted to UTF-8 before performing any operations on it, drastically reducing some of the special character issues that have been reported by users.
 * Improved error handling if WordPress fails to authenticate with Airstory when saving the user token.
 * Fixed issue where not all user data was being removed on plugin uninstall.
@@ -55,9 +61,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 [Unreleased]: https://github.com/liquidweb/airstory-wp/compare/master...develop
+[1.1.4]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.4
 [1.1.3]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.3
 [1.1.2]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.2
 [1.1.1]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.1
 [1.1.0]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.0
 [1.0.1]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.0.1
 [1.0.0]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.0.0
+[#74]: https://github.com/liquidweb/airstory-wp/issues/74
+[#75]: https://github.com/liquidweb/airstory-wp/issues/75

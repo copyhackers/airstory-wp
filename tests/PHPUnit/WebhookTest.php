@@ -54,6 +54,8 @@ class WebhookTest extends \Airstory\TestCase {
 			->with( 'document' )
 			->andReturn( $document );
 
+		M::expectFilterAdded( 'rest_pre_serve_request', __NAMESPACE__ . '\override_cors_headers' );
+
 		M::userFunction( 'Airstory\Credentials\get_token', array(
 			'args'   => array( 5 ),
 			'return' => uniqid(),
@@ -215,5 +217,46 @@ class WebhookTest extends \Airstory\TestCase {
 		) );
 
 		$this->assertEquals( $wp_error, handle_webhook( $request ) );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 * @requires extension xdebug
+	 */
+	public function testOverrideCorsHeaders() {
+		$value = uniqid();
+
+		$this->assertEquals(
+			$value,
+			override_cors_headers( $value ),
+			'The $served value should not be modified.'
+		);
+
+		$this->assertContains(
+			'Access-Control-Allow-Origin: https://app.airstory.co',
+			xdebug_get_headers(),
+			'The Access-Control-Allow-Origin header should be set.'
+		);
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 * @requires extension xdebug
+	 */
+	public function testOverrideCorsHeadersCanAcceptOtherOrigins() {
+		M::onFilter( 'airstory_webhook_cors_origin' )
+			->with( array( 'https://app.airstory.co' ) )
+			->reply( array(
+				'https://app.airstory.co',
+				'https://example.com'
+			) );
+
+		override_cors_headers( false );
+
+		$this->assertContains(
+			'Access-Control-Allow-Origin: https://app.airstory.co https://example.com',
+			xdebug_get_headers(),
+			'The Access-Control-Allow-Origin header value should be filterable, and be capable of imploding an array.'
+		);
 	}
 }

@@ -145,6 +145,11 @@ All modern hosts (Liquid Web, WP Engine, SiteGround, etc.) should support these 
 
 For a full list of changes, please [view the change log on GitHub](https://github.com/liquidweb/airstory-wp/blob/develop/CHANGELOG.md).
 
+= 1.1.5 =
+* Explicitly set "Access-Control-Allow-Origin" headers for the Airstory webhook request.
+* Plugin now attempts to resolve any redirects for the webhook URI before connecting to Airstory.
+* Explicitly whitelist the Airstory webhook within [WP-SpamShield](https://www.redsandmarketing.com/plugins/wp-spamshield-anti-spam/).
+
 = 1.1.4 =
 * Ensure content is being consistently converted to UTF-8 before performing any operations on it, drastically reducing some of the special character issues that have been reported by users.
 * Improved error handling if WordPress fails to authenticate with Airstory when saving the user token.
@@ -176,6 +181,9 @@ For a full list of changes, please [view the change log on GitHub](https://githu
 
 
 == Upgrade Notice ==
+
+= 1.1.5 =
+Fixes cases where the Airstory application was unable to communicate with WordPress.
 
 = 1.1.4 =
 Improved support for accented and non-Latin characters, along with better error handling when connecting to Airstory.

@@ -1,14 +1,14 @@
-# Copyright (C) 2017 Liquid Web
+# Copyright (C) 2018 Liquid Web
 # This file is distributed under the MIT.
 msgid ""
 msgstr ""
-"Project-Id-Version: Airstory 1.1.4\n"
+"Project-Id-Version: Airstory 1.1.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/airstory\n"
-"POT-Creation-Date: 2017-07-11 13:47:17+00:00\n"
+"POT-Creation-Date: 2018-03-21 17:57:47+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2018-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "X-Generator: grunt-wp-i18n1.0.0\n"
@@ -29,7 +29,7 @@ msgstr ""
 msgid "The request did not return valid JSON"
 msgstr ""
 
-#: includes/connection.php:107
+#: includes/connection.php:139
 msgid "User does not have an Airstory profile registered within WordPress."
 msgstr ""
 

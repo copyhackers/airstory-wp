@@ -13,8 +13,8 @@ use Mockery;
 use WP_Error;
 
 /**
+ * @requires PHP 7.0
  * @requires extension openssl
- * @requires extension mcrypt
  */
 class CredentialsTest extends \Airstory\TestCase {
 

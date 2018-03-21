@@ -166,6 +166,10 @@ class WebhookTest extends \Airstory\TestCase {
 		$request->shouldReceive( 'get_param' )->with( 'project' )->andReturn( $project );
 		$request->shouldReceive( 'get_param' )->with( 'document' )->andReturn( $document );
 
+		M::userFunction( 'Airstory\Credentials\get_token', array(
+			'return' => 'token',
+		) );
+
 		M::userFunction( 'Airstory\Core\get_current_draft', array(
 			'return' => 123,
 		) );

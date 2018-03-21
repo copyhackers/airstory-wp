@@ -95,6 +95,10 @@ class ToolsTest extends \Airstory\TestCase {
 	 * @runInSeparateProcess
 	 */
 	public function testCheckCompatibilityWithMcrypt() {
+		M::userFunction( __NAMESPACE__ . '\version_compare', array(
+			'return' => true,
+		) );
+
 		M::userFunction( __NAMESPACE__ . '\extension_loaded', array(
 			'return' => false,
 		) );
@@ -107,6 +111,21 @@ class ToolsTest extends \Airstory\TestCase {
 
 		$this->assertFalse( $compatibility['compatible'] );
 		$this->assertFalse( $compatibility['details']['mcrypt'] );
+	}
+
+	/**
+	 * @requires PHP 7.0
+	 * @runInSeparateProcess
+	 */
+	public function testCheckCompatibilityWithMcryptForPHP7() {
+		M::userFunction( __NAMESPACE__ . '\verify_https_support', array(
+			'return' => true,
+		) );
+
+		$compatibility = check_compatibility();
+
+		$this->assertTrue( $compatibility['compatible'] );
+		$this->assertTrue( $compatibility['details']['mcrypt'] );
 	}
 
 	/**

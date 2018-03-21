@@ -243,7 +243,14 @@ function check_compatibility() {
 	}
 
 	// Check required PHP extensions.
-	$extensions = array( 'dom', 'mcrypt', 'openssl' );
+	$extensions = array( 'dom', 'openssl' );
+
+	// Mcrypt is required for PHP < 7.0.
+	if ( version_compare( PHP_VERSION, '7.0.0', '<' ) ) {
+		$extensions[] = 'mcrypt';
+	} else {
+		$compatibility['details']['mcrypt'] = true;
+	}
 
 	foreach ( $extensions as $extension ) {
 		$compatibility['details'][ $extension ] = extension_loaded( $extension );

@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file, according t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [Unreleased]
+## [1.1.5]
 
 * Explicitly set `Access-Control-Allow-Origin` headers for the Airstory webhook request ([#74]).
 * Plugin now attempts to resolve any redirects for the webhook URI before connecting to Airstory ([#75]).
@@ -61,6 +61,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 [Unreleased]: https://github.com/liquidweb/airstory-wp/compare/master...develop
+[1.1.5]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.5-beta
 [1.1.4]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.4
 [1.1.3]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.3
 [1.1.2]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.2

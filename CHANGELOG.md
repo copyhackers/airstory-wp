@@ -5,10 +5,14 @@ All notable changes to this project will be documented in this file, according t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [Unreleased]
+## [1.1.5]
 
+* Add a minimum PHP version (5.3) to the `readme.txt` file ([#73]).
 * Explicitly set `Access-Control-Allow-Origin` headers for the Airstory webhook request ([#74]).
 * Plugin now attempts to resolve any redirects for the webhook URI before connecting to Airstory ([#75]).
+* Explicitly whitelist the Airstory webhook within [WP-SpamShield](https://www.redsandmarketing.com/plugins/wp-spamshield-anti-spam/) ([#79]).
+* Only require Mcrypt for environments running PHP < 7.0 ([#83]).
+* Exclude non-essential [WP Async Task](https://github.com/techcrunch/wp-async-task) files from the plugin build.
 
 
 ## [1.1.4]
@@ -61,6 +65,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 [Unreleased]: https://github.com/liquidweb/airstory-wp/compare/master...develop
+[1.1.5]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.5
 [1.1.4]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.4
 [1.1.3]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.3
 [1.1.2]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.2
@@ -68,5 +73,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [1.1.0]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.0
 [1.0.1]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.0.1
 [1.0.0]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.0.0
+[#73]: https://github.com/liquidweb/airstory-wp/issues/73
 [#74]: https://github.com/liquidweb/airstory-wp/issues/74
 [#75]: https://github.com/liquidweb/airstory-wp/issues/75
+[#79]: https://github.com/liquidweb/airstory-wp/issues/79
+[#83]: https://github.com/liquidweb/airstory-wp/issues/83

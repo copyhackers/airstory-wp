@@ -118,6 +118,24 @@ EOT;
 		$this->assertEmpty( get_body_contents( $response ) );
 	}
 
+	/**
+	 * @runInSeparateProcess Or risk the libxml error buffer getting all kinds of screwy.
+	 */
+	public function testGetBodyContentsWithInvalidHTMLBody() {
+		$response = <<<EOT
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title></title>
+<body>
+	<h1>Bad heading</div>
+</body>
+</html>
+EOT;
+
+		$this->expectException('PHPUnit_Framework_Error_Warning');
+		$this->assertEmpty( get_body_contents( $response ) );
+	}
+
 	public function testGetBodyContentsDoesNotButcherEmoji() {
 		$emoji = '<p>emoji: 😉</p>';
 
@@ -677,5 +695,25 @@ EOT;
 		) );
 
 		retrieve_original_media( $url, 1, array() );
+	}
+
+	public function testFormatLibXMLError() {
+		$error = new \libXMLError();
+		$error->level   = LIBXML_ERR_ERROR;
+		$error->code    = 76; // XML_ERR_TAG_NAME_MISMATCH.
+		$error->column  = 23;
+		$error->message = 'Unexpected end tag : div';
+		$error->file    = 'some-file.html';
+		$error->line    = 5;
+
+		$this->assertEquals(
+			'[LibXML Error] There was a problem parsing the document: "Unexpected end tag : div".'
+			. PHP_EOL . '- some-file.html line 5, column 23. XML error code 76.',
+			format_libxml_error( $error )
+		);
+	}
+
+	public function testFormatLibXMLErrorWithInvalidError() {
+		$this->assertEmpty( format_libxml_error( array() ) );
 	}
 }

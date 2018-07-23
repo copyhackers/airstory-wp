@@ -118,6 +118,24 @@ EOT;
 		$this->assertEmpty( get_body_contents( $response ) );
 	}
 
+	/**
+	 * @runInSeparateProcess Or risk the libxml error buffer getting all kinds of screwy.
+	 */
+	public function testGetBodyContentsWithInvalidHTMLBody() {
+		$response = <<<EOT
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title></title>
+<body>
+	<h1>Bad heading</div>
+</body>
+</html>
+EOT;
+
+		$this->expectException('PHPUnit_Framework_Error_Warning');
+		$this->assertEmpty( get_body_contents( $response ) );
+	}
+
 	public function testGetBodyContentsDoesNotButcherEmoji() {
 		$emoji = '<p>emoji: 😉</p>';
 

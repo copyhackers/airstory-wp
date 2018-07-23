@@ -34,7 +34,13 @@ function get_body_contents( $content ) {
 	$body = $doc->saveHTML( $body_node->item( 0 ) );
 
 	// If an error occurred while parsing the data, return an empty string.
-	if ( libxml_get_errors() ) {
+	$errors = libxml_get_errors();
+
+	if ( ! empty( $errors ) ) {
+		foreach ( $errors as $error ) {
+			// @codingStandardsIgnoreLine
+			trigger_error( format_libxml_error( esc_html( $error ) ), E_USER_WARNING );
+		}
 		$body = '';
 	}
 

@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file, according t
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [1.1.6]
+
+* Log any libxml errors that occur while importing post content ([#85]).
+
 ## [1.1.5]
 
 * Add a minimum PHP version (5.3) to the `readme.txt` file ([#73]).
@@ -65,6 +69,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 [Unreleased]: https://github.com/liquidweb/airstory-wp/compare/master...develop
+[1.1.6]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.6
 [1.1.5]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.5
 [1.1.4]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.4
 [1.1.3]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.3
@@ -78,3 +83,4 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [#75]: https://github.com/liquidweb/airstory-wp/issues/75
 [#79]: https://github.com/liquidweb/airstory-wp/issues/79
 [#83]: https://github.com/liquidweb/airstory-wp/issues/83
+[#85]: https://github.com/liquidweb/airstory-wp/pull/85

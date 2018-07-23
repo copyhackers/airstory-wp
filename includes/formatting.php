@@ -34,7 +34,13 @@ function get_body_contents( $content ) {
 	$body = $doc->saveHTML( $body_node->item( 0 ) );
 
 	// If an error occurred while parsing the data, return an empty string.
-	if ( libxml_get_errors() ) {
+	$errors = libxml_get_errors();
+
+	if ( ! empty( $errors ) ) {
+		foreach ( $errors as $error ) {
+			// @codingStandardsIgnoreLine
+			trigger_error( format_libxml_error( esc_html( $error ) ), E_USER_WARNING );
+		}
 		$body = '';
 	}
 
@@ -330,3 +336,34 @@ function retrieve_original_media( $url, $post_id, $metadata ) {
 	sideload_single_image( $original_media_url, $post_id, $metadata );
 }
 add_action( 'airstory_sideload_single_image', __NAMESPACE__ . '\retrieve_original_media', 10, 3 );
+
+/**
+ * A helper function to format libXMLError messages for logging.
+ *
+ * @param libXMLError $error The libXMLError error object.
+ *
+ * @return string A nicely-formatted error message.
+ */
+function format_libxml_error( $error ) {
+	if ( ! $error instanceof \libXMLError ) {
+		return '';
+	}
+
+	// Map the possible LIBXML_ERR_* constants to labels.
+	$levels = [
+		LIBXML_ERR_WARNING => 'Warning',
+		LIBXML_ERR_ERROR   => 'Error',
+		LIBXML_ERR_FATAL   => 'Fatal',
+	];
+
+	return sprintf(
+		'[LibXML %1$s] There was a problem parsing the document: "%2$s".'
+		. PHP_EOL . '- %3$s line %4$d, column %5$d. XML error code %6$d.',
+		isset( $levels[ $error->level ] ) ? $levels[ $error->level ] : $levels[ LIBXML_ERR_ERROR ],
+		$error->message,
+		$error->file,
+		$error->line,
+		$error->column,
+		$error->code
+	);
+}

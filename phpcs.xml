@@ -37,6 +37,11 @@
 		<exclude-pattern>includes/credentials.php</exclude-pattern>
 	</rule>
 
+	<!-- ini_get() will return an empty string in a directive is missing in older PHP. -->
+	<rule ref="PHPCompatibility.PHP.NewIniDirectives">
+		<exclude-pattern>includes/tools.php</exclude-pattern>
+	</rule>
+
 	<!-- There are elements that will be referenced in get_support_details() that don't conform. -->
 	<rule ref="WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar">
 		<exclude-pattern>includes/tools.php</exclude-pattern>

@@ -39,7 +39,7 @@ function get_body_contents( $content ) {
 	if ( ! empty( $errors ) ) {
 		foreach ( $errors as $error ) {
 			// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
-			trigger_error( format_libxml_error( esc_html( $error ) ), E_USER_WARNING );
+			trigger_error( esc_html( format_libxml_error( $error ) ), E_USER_WARNING );
 			// phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
 		}
 		$body = '';

@@ -55,7 +55,7 @@ function get_user_profile( $user_id = null ) {
  * @param int $user_id The ID of the WordPress user associated with the target.
  * @return array An array that will serve as a the post body for the target, containing four keys:
  *               identifier (user ID), name (blog name), url (webhook URL), and the type of
- *               connection ("wordpress").
+ *               connection ("WordPress", but intentionally lower-cased).
  */
 function get_target( $user_id ) {
 	return array(

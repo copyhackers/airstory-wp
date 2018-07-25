@@ -132,7 +132,7 @@ EOT;
 </html>
 EOT;
 
-		$this->expectException('PHPUnit_Framework_Error_Warning');
+		$this->expectException(\PHPUnit\Framework\Error\Warning::class);
 		$this->assertEmpty( get_body_contents( $response ) );
 	}
 
@@ -202,7 +202,7 @@ EOT;
 	}
 
 	/**
-	 * @expectedException        PHPUnit_Framework_Error_Warning
+	 * @expectedException        \PHPUnit\Framework\Error\Warning
 	 * @expectedExceptionMessage Error Message
 	 */
 	public function testSideloadSingleImageReturnsEarlyIfSideloadFails() {
@@ -232,7 +232,7 @@ EOT;
 	}
 
 	/**
-	 * @expectedException        PHPUnit_Framework_Error_Warning
+	 * @expectedException        \PHPUnit\Framework\Error\Warning
 	 * @expectedExceptionMessage Error Message
 	 */
 	public function testSideloadSingleImageReturnsEarlyIfDownloadUrlFails() {
@@ -267,7 +267,7 @@ EOT;
 	 * @link https://codex.wordpress.org/Function_Reference/media_sideload_image#Notes
 	 *
 	 * @runInSeparateProcess
-	 * @expectedException PHPUnit_Framework_Error_Warning
+	 * @expectedException \PHPUnit\Framework\Error\Warning
 	 */
 	public function testSideloadSingleImageLoadsMediaDependencies() {
 		$error = Mockery::mock( 'WP_Error' )->makePartial();

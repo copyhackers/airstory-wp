@@ -160,7 +160,7 @@ class API {
 	 */
 	public function delete_target( $email, $target ) {
 		$response = $this->make_authenticated_request( sprintf( '/users/%s/targets/%s', $email, $target ), array(
-			'method'  => 'DELETE',
+			'method' => 'DELETE',
 		) );
 
 		if ( is_wp_error( $response ) ) {

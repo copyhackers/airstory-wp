@@ -26,6 +26,17 @@
 	<rule ref="PHPCompatibility"/>
 	<config name="testVersion" value="5.3-" />
 
+	<!--
+		Prevent warnings about 'The function openssl_*crypt() does not have a parameter "iv" in
+		PHP version 5.3.2 or earlier' — no iv going in, nothing needed coming out.
+	-->
+	<rule ref="PHPCompatibility.PHP.NewFunctionParameters.openssl_encrypt_ivFound">
+		<exclude-pattern>includes/credentials.php</exclude-pattern>
+	</rule>
+	<rule ref="PHPCompatibility.PHP.NewFunctionParameters.openssl_decrypt_ivFound">
+		<exclude-pattern>includes/credentials.php</exclude-pattern>
+	</rule>
+
 	<!-- There are elements that will be referenced in get_support_details() that don't conform. -->
 	<rule ref="WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar">
 		<exclude-pattern>includes/tools.php</exclude-pattern>

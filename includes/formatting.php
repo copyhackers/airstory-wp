@@ -355,11 +355,11 @@ function format_libxml_error( $error ) {
 	}
 
 	// Map the possible LIBXML_ERR_* constants to labels.
-	$levels = [
+	$levels = array(
 		LIBXML_ERR_WARNING => 'Warning',
 		LIBXML_ERR_ERROR   => 'Error',
 		LIBXML_ERR_FATAL   => 'Fatal',
-	];
+	);
 
 	return sprintf(
 		'[LibXML %1$s] There was a problem parsing the document: "%2$s".'

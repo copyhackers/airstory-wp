@@ -26,7 +26,7 @@ use WP_Error;
  *               and email) or an empty array if the user could not be validated.
  */
 function get_user_profile( $user_id = null ) {
-	$api = new Airstory\API;
+	$api = new Airstory\API();
 
 	// If we have a user ID, set the API token accordingly.
 	if ( $user_id ) {
@@ -141,7 +141,7 @@ function register_connection( $user_id ) {
 	}
 
 	$target        = get_target( $user_id );
-	$api           = new Airstory\API;
+	$api           = new Airstory\API();
 	$connection_id = $api->post_target( $profile['email'], $target );
 
 	if ( is_wp_error( $connection_id ) ) {
@@ -183,7 +183,7 @@ function update_connection( $user_id ) {
 	// Overwrite the existing target info for $connection_id.
 	$connection_id = get_user_option( '_airstory_target', $user_id );
 	$target        = get_target( $user_id );
-	$api           = new Airstory\API;
+	$api           = new Airstory\API();
 	$response      = $api->put_target( $profile['email'], $connection_id, $target );
 
 	if ( is_wp_error( $response ) ) {
@@ -216,7 +216,7 @@ function remove_connection( $user_id ) {
 	$connection_id = get_user_option( '_airstory_target', $user_id );
 
 	if ( ! empty( $profile['email'] ) && ! empty( $connection_id ) ) {
-		$api = new Airstory\API;
+		$api = new Airstory\API();
 		$api->delete_target( $profile['email'], $connection_id );
 	}
 

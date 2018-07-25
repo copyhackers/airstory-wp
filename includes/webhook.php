@@ -47,7 +47,7 @@ function handle_webhook( WP_REST_Request $request ) {
 	$document   = $request->get_param( 'document' );
 
 	if ( empty( $identifier ) || empty( $project ) || empty( $document ) ) {
-		$error = new WP_Error;
+		$error = new WP_Error();
 
 		foreach ( array( 'identifier', 'project', 'document' ) as $arg ) {
 			if ( empty( $$arg ) ) {
@@ -77,7 +77,7 @@ function handle_webhook( WP_REST_Request $request ) {
 	add_filter( 'rest_pre_serve_request', __NAMESPACE__ . '\override_cors_headers' );
 
 	// Establish an API connection, using the Airstory token of the connection owner.
-	$api = new Airstory\API;
+	$api = new Airstory\API();
 	$api->set_token( $user_token );
 
 	// Determine if there's a current post that matches.

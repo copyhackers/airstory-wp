@@ -140,7 +140,7 @@ function get_token( $user_id ) {
 		$token = openssl_decrypt( $encrypted['token'], get_cipher_algorithm(), AUTH_KEY, null, $encrypted['iv'] );
 
 		if ( false === $token ) {
-			throw new Exception;
+			throw new Exception();
 		}
 	} catch ( Exception $e ) {
 		return new WP_Error(

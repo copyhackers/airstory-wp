@@ -48,6 +48,7 @@ function get_active_site_ids() {
 	 * less the length of the static portion ("_airstory_target"), the length of the table prefix,
 	 * and one more (for the extra underscore immediately following the site ID).
 	 */
+	// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
 	$site_ids = $wpdb->get_col( $wpdb->prepare( "
 		SELECT DISTINCT SUBSTRING(
 			meta_key,
@@ -57,6 +58,7 @@ function get_active_site_ids() {
 		FROM $wpdb->usermeta WHERE meta_key LIKE '%_airstory_target'
 		ORDER BY site_id;", $wpdb->base_prefix, $wpdb->base_prefix ) );
 	$site_ids = array_map( 'intval', $site_ids );
+	// phpcs:enable WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
 
 	return array_values( array_filter( $site_ids ) );
 }

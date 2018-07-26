@@ -22,7 +22,7 @@ class TestCase extends \WP_Mock\Tools\TestCase {
 		parent::setUp();
 	}
 
-	public function run( \PHPUnit_Framework_TestResult $result = null ) {
+	public function run( \PHPUnit\Framework\TestResult $result = null ) {
 		$this->setPreserveGlobalState( false );
 		return parent::run( $result );
 	}

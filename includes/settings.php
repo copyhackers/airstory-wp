@@ -38,8 +38,8 @@ function get_user_data( $user_id, $key, $default = null ) {
  * @return bool True if the _airstory_data user meta was updated, false otherwise.
  */
 function set_user_data( $user_id, $key, $value = null ) {
-	$key  = sanitize_title( $key );
-	$data = (array) get_user_option( '_airstory_data', $user_id );
+	$key          = sanitize_title( $key );
+	$data         = (array) get_user_option( '_airstory_data', $user_id );
 	$data[ $key ] = $value;
 
 	return update_user_option( $user_id, '_airstory_data', $data, true );
@@ -61,6 +61,8 @@ function show_user_connection_notice() {
 		__( 'To get started, please connect WordPress to your Airstory account <a href="%1$s#airstory">on your profile page</a>.', 'airstory' ),
 		esc_url( get_edit_user_link() )
 	);
+
+	// phpcs:disable Generic.WhiteSpace.ScopeIndent
 ?>
 
 	<div class="notice notice-success is-dismissible">
@@ -72,6 +74,7 @@ function show_user_connection_notice() {
 	</div>
 
 <?php
+	// phpcs:enable Generic.WhiteSpace.ScopeIndent
 
 	// Indicate that the user has seen the welcome message.
 	set_user_data( $user_id, 'welcome_message_seen', true );
@@ -93,6 +96,8 @@ function render_profile_settings( $user ) {
 
 	$profile = Settings\get_user_data( $user->ID, 'profile', array() );
 	$blogs   = get_available_blogs( $user->ID );
+
+	// phpcs:disable Generic.WhiteSpace.ScopeIndent
 ?>
 
 	<h2 id="airstory"><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>
@@ -105,11 +110,13 @@ function render_profile_settings( $user ) {
 
 						<input name="airstory-disconnect" type="submit" class="button" value="<?php esc_attr_e( 'Disconnect from Airstory', 'airstory' ); ?>" />
 						<p class="description">
-							<?php echo wp_kses_post( sprintf(
-								/* Translators: %1$s is the user's Airstory email address. */
-								__( 'Currently authenticated as <strong>%1$s</strong>', 'airstory' ),
-								$profile['email']
-							) ); ?>
+							<?php
+								echo wp_kses_post( sprintf(
+									/* Translators: %1$s is the user's Airstory email address. */
+									__( 'Currently authenticated as <strong>%1$s</strong>', 'airstory' ),
+									$profile['email']
+								) );
+							?>
 						</p>
 
 					<?php else : ?>
@@ -146,6 +153,8 @@ function render_profile_settings( $user ) {
 	</table>
 
 <?php
+	// phpcs:enable Generic.WhiteSpace.ScopeIndent
+
 	wp_nonce_field( 'airstory-profile', '_airstory_nonce' );
 }
 add_action( 'show_user_profile', __NAMESPACE__ . '\render_profile_settings' );

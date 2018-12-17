@@ -102,3 +102,20 @@ function dismiss_notice() {
 	Settings\set_user_data( wp_get_current_user()->ID, 'sunset_notice_dismissed', true );
 }
 add_action( 'wp_ajax_airstory-dismiss-sunset-notice', __NAMESPACE__ . '\dismiss_notice' );
+
+/**
+ * Display a notice above the user settings.
+ */
+function render_settings_page_sunset_notice() {
+	// phpcs:disable Generic.WhiteSpace.ScopeIndent
+?>
+
+	<div class="notice notice-warning inline">
+		<p><?php echo wp_kses_post( __( '<strong>Reminder:</strong> Airstory documents are being deprecated on January 15, 2019. Please export all content from Airstory by this date!', 'airstory' ) ); ?></p>
+		<p><a href="<?php echo esc_url( DEPRECATION_NOTICE ); ?>"><?php esc_html_e( 'Additional information is available on the Airstory site.', 'airstory' ); ?></a></p>
+	</div>
+
+<?php
+	// phpcs:enable Generic.WhiteSpace.ScopeIndent
+}
+add_action( 'airstory_before_settings', __NAMESPACE__ . '\render_settings_page_sunset_notice' );

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Airstory
  * Plugin URI:  http://www.airstory.co/integrations/
- * Description: Send your blog posts from Airstory writing software to WordPress for publication.
+ * Description: *DEPRECATED* Send your blog posts from Airstory writing software to WordPress for publication.
  * Version:     1.1.6
  * Author:      Liquid Web
  * Author URI:  https://www.liquidweb.com
@@ -33,3 +33,4 @@ require_once AIRSTORY_DIR . '/includes/formatting.php';
 require_once AIRSTORY_DIR . '/includes/settings.php';
 require_once AIRSTORY_DIR . '/includes/tools.php';
 require_once AIRSTORY_DIR . '/includes/webhook.php';
+require_once AIRSTORY_DIR . '/includes/sunset.php';

@@ -101,6 +101,7 @@ function render_profile_settings( $user ) {
 ?>
 
 	<h2 id="airstory"><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>
+	<?php do_action( 'airstory_before_settings', $user ); ?>
 	<table class="form-table">
 		<tbody>
 			<tr>

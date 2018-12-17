@@ -73,7 +73,9 @@ function get_cipher_algorithm() {
  * @return string A 16-byte initialization vector, for use with openssl_encrypt().
  */
 function get_iv() {
+	// phpcs:disable PHPCompatibility.PHP.NewFunctions.random_bytesFound, PHPCompatibility.PHP.RemovedExtensions.mcryptDeprecatedRemoved, PHPCompatibility.PHP.DeprecatedFunctions.mcrypt_create_ivDeprecatedRemoved
 	$bytes = function_exists( 'random_bytes' ) ? random_bytes( 8 ) : mcrypt_create_iv( 8 );
+	// phpcs:enable PHPCompatibility.PHP.NewFunctions.random_bytesFound, PHPCompatibility.PHP.RemovedExtensions.mcryptDeprecatedRemoved, PHPCompatibility.PHP.DeprecatedFunctions.mcrypt_create_ivDeprecatedRemoved
 
 	return bin2hex( $bytes ); // Will produce an IV 16 characters long.
 }
@@ -140,7 +142,7 @@ function get_token( $user_id ) {
 		$token = openssl_decrypt( $encrypted['token'], get_cipher_algorithm(), AUTH_KEY, null, $encrypted['iv'] );
 
 		if ( false === $token ) {
-			throw new Exception;
+			throw new Exception();
 		}
 	} catch ( Exception $e ) {
 		return new WP_Error(

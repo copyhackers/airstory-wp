@@ -38,8 +38,9 @@ function get_body_contents( $content ) {
 
 	if ( ! empty( $errors ) ) {
 		foreach ( $errors as $error ) {
-			// @codingStandardsIgnoreLine
-			trigger_error( format_libxml_error( esc_html( $error ) ), E_USER_WARNING );
+			// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+			trigger_error( esc_html( format_libxml_error( $error ) ), E_USER_WARNING );
+			// phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
 		}
 		$body = '';
 	}
@@ -88,8 +89,10 @@ function sideload_single_image( $url, $post_id = 0, $metadata = array() ) {
 
 	// Something went wrong downloading the image.
 	if ( is_wp_error( $tmp_file ) ) {
-		@unlink( $file_array['tmp_name'] ); // @codingStandardsIgnoreLine
+		// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, Generic.PHP.NoSilencedErrors.Discouraged
+		@unlink( $file_array['tmp_name'] );
 		trigger_error( esc_html( $tmp_file->get_error_message() ), E_USER_WARNING );
+		// phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, Generic.PHP.NoSilencedErrors.Discouraged
 
 		return 0;
 	}
@@ -98,8 +101,10 @@ function sideload_single_image( $url, $post_id = 0, $metadata = array() ) {
 	$image_id = media_handle_sideload( $file_array, $post_id );
 
 	if ( is_wp_error( $image_id ) ) {
-		@unlink( $file_array['tmp_name'] ); // @codingStandardsIgnoreLine
+		// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, Generic.PHP.NoSilencedErrors.Discouraged
+		@unlink( $file_array['tmp_name'] );
 		trigger_error( esc_html( $image_id->get_error_message() ), E_USER_WARNING );
+		// phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, Generic.PHP.NoSilencedErrors.Discouraged
 
 		return 0;
 	}
@@ -350,11 +355,11 @@ function format_libxml_error( $error ) {
 	}
 
 	// Map the possible LIBXML_ERR_* constants to labels.
-	$levels = [
+	$levels = array(
 		LIBXML_ERR_WARNING => 'Warning',
 		LIBXML_ERR_ERROR   => 'Error',
 		LIBXML_ERR_FATAL   => 'Fatal',
-	];
+	);
 
 	return sprintf(
 		'[LibXML %1$s] There was a problem parsing the document: "%2$s".'

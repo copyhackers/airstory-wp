@@ -3,9 +3,9 @@ Contributors: liquidweb, airstory, stevegrunwell
 Donate link: http://airstory.co
 Tags: blogging, writing, import, airstory, content, publishing
 Requires at least: 4.7
-Tested up to: 4.9.7
+Tested up to: 4.9.9
 Requires PHP: 5.3
-Stable tag: 1.1.6
+Stable tag: 1.1.7
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -13,6 +13,8 @@ Send your blog posts from Airstory writing software to WordPress for publication
 
 
 == Description ==
+
+**Notice:** [Airstory documents are being deprecated on January 15, 2019](https://www.airstory.co/airstory-update-2018/), at which point this plugin will cease to connect.
 
 Send your blog posts from [Airstory](http://www.airstory.co/) to WordPress.
 
@@ -145,6 +147,9 @@ All modern hosts (Liquid Web, WP Engine, SiteGround, etc.) should support these 
 
 For a full list of changes, please [view the change log on GitHub](https://github.com/liquidweb/airstory-wp/blob/develop/CHANGELOG.md).
 
+= 1.1.7 =
+* Sunset the plugin in preparation for [Airstory deprecating documents on January 15, 2019](https://www.airstory.co/airstory-update-2018/).
+
 = 1.1.6 =
 * [Log any libxml errors that occur while importing content into WordPress](https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.6).
 
@@ -184,6 +189,9 @@ For a full list of changes, please [view the change log on GitHub](https://githu
 
 
 == Upgrade Notice ==
+
+= 1.1.7 =
+Airstory is deprecating documents on January 15, 2019; this update ensures users are warned.
 
 = 1.1.6 =
 Additional logging to help troubleshoot cases where a new post is created by the post body is empty.

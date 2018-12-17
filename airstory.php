@@ -33,3 +33,4 @@ require_once AIRSTORY_DIR . '/includes/formatting.php';
 require_once AIRSTORY_DIR . '/includes/settings.php';
 require_once AIRSTORY_DIR . '/includes/tools.php';
 require_once AIRSTORY_DIR . '/includes/webhook.php';
+require_once AIRSTORY_DIR . '/includes/sunset.php';

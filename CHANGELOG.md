@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file, according t
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.8]
+
+* Removed deprecation message. Fixed bugs introduce with PHP 7.3.
+
 ## [1.1.7]
 
 * Sunset the plugin in preparation for [Airstory deprecating documents on January 15, 2019](https://www.airstory.co/airstory-update-2018/) ([#91]).
@@ -65,6 +69,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 
 [Unreleased]: https://github.com/liquidweb/airstory-wp/compare/master...develop
+[1.1.8]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.8
 [1.1.7]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.7
 [1.1.6]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.6
 [1.1.5]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.5

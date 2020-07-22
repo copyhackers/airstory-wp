@@ -5,7 +5,7 @@ Tags: blogging, writing, import, airstory, content, publishing
 Requires at least: 4.7
 Tested up to: 4.9.9
 Requires PHP: 5.3
-Stable tag: 1.1.7
+Stable tag: 1.1.8
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -145,6 +145,9 @@ All modern hosts (Liquid Web, WP Engine, SiteGround, etc.) should support these 
 
 For a full list of changes, please [view the change log on GitHub](https://github.com/liquidweb/airstory-wp/blob/develop/CHANGELOG.md).
 
+= 1.1.8 =
+* Removed deprecation message. Fixed bugs introduce with PHP 7.3.
+
 = 1.1.7 =
 * Sunset the plugin in preparation for [Airstory deprecating documents on January 15, 2019](https://www.airstory.co/airstory-update-2018/).
 
@@ -187,6 +190,9 @@ For a full list of changes, please [view the change log on GitHub](https://githu
 
 
 == Upgrade Notice ==
+
+= 1.1.8 =
+Removed deprecation message. Fixed bugs introduce with PHP 7.3.
 
 = 1.1.7 =
 Airstory is deprecating documents on January 15, 2019; this update ensures users are warned.

@@ -34,7 +34,14 @@ function get_body_contents( $content ) {
 	$body = $doc->saveHTML( $body_node->item( 0 ) );
 
 	// If an error occurred while parsing the data, return an empty string.
-	if ( libxml_get_errors() ) {
+	$errors = libxml_get_errors();
+
+	if ( ! empty( $errors ) ) {
+		foreach ( $errors as $error ) {
+			// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+			trigger_error( esc_html( format_libxml_error( $error ) ), E_USER_WARNING );
+			// phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+		}
 		$body = '';
 	}
 
@@ -82,8 +89,10 @@ function sideload_single_image( $url, $post_id = 0, $metadata = array() ) {
 
 	// Something went wrong downloading the image.
 	if ( is_wp_error( $tmp_file ) ) {
-		@unlink( $file_array['tmp_name'] ); // @codingStandardsIgnoreLine
+		// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, Generic.PHP.NoSilencedErrors.Discouraged
+		@unlink( $file_array['tmp_name'] );
 		trigger_error( esc_html( $tmp_file->get_error_message() ), E_USER_WARNING );
+		// phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, Generic.PHP.NoSilencedErrors.Discouraged
 
 		return 0;
 	}
@@ -92,8 +101,10 @@ function sideload_single_image( $url, $post_id = 0, $metadata = array() ) {
 	$image_id = media_handle_sideload( $file_array, $post_id );
 
 	if ( is_wp_error( $image_id ) ) {
-		@unlink( $file_array['tmp_name'] ); // @codingStandardsIgnoreLine
+		// phpcs:disable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, Generic.PHP.NoSilencedErrors.Discouraged
+		@unlink( $file_array['tmp_name'] );
 		trigger_error( esc_html( $image_id->get_error_message() ), E_USER_WARNING );
+		// phpcs:enable WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, Generic.PHP.NoSilencedErrors.Discouraged
 
 		return 0;
 	}
@@ -184,9 +195,11 @@ function sideload_all_images( $post_id ) {
 			$local_url = $replaced[ $sanitized_src ];
 
 		} else {
-			$image_id = sideload_single_image( $src, $post_id, array(
-				'_wp_attachment_image_alt' => sanitize_text_field( $image->getAttribute( 'alt' ) ),
-			) );
+			$image_id = sideload_single_image(
+				$src, $post_id, array(
+					'_wp_attachment_image_alt' => sanitize_text_field( $image->getAttribute( 'alt' ) ),
+				)
+			);
 
 			if ( ! $image_id ) {
 				continue;
@@ -298,10 +311,12 @@ function set_attachment_author( $post ) {
  *                         created. These keys and values are assumed to be sanitized.
  */
 function retrieve_original_media( $url, $post_id, $metadata ) {
-	$url_components = array_merge( array(
-		'host' => '',
-		'path' => '',
-	), (array) wp_parse_url( $url ) );
+	$url_components = array_merge(
+		array(
+			'host' => '',
+			'path' => '',
+		), (array) wp_parse_url( $url )
+	);
 	$url_components = array_map( 'strtolower', $url_components );
 
 	// Only operate on Cloudinary-hosted images.
@@ -330,3 +345,34 @@ function retrieve_original_media( $url, $post_id, $metadata ) {
 	sideload_single_image( $original_media_url, $post_id, $metadata );
 }
 add_action( 'airstory_sideload_single_image', __NAMESPACE__ . '\retrieve_original_media', 10, 3 );
+
+/**
+ * A helper function to format libXMLError messages for logging.
+ *
+ * @param libXMLError $error The libXMLError error object.
+ *
+ * @return string A nicely-formatted error message.
+ */
+function format_libxml_error( $error ) {
+	if ( ! $error instanceof \libXMLError ) {
+		return '';
+	}
+
+	// Map the possible LIBXML_ERR_* constants to labels.
+	$levels = array(
+		LIBXML_ERR_WARNING => 'Warning',
+		LIBXML_ERR_ERROR   => 'Error',
+		LIBXML_ERR_FATAL   => 'Fatal',
+	);
+
+	return sprintf(
+		'[LibXML %1$s] There was a problem parsing the document: "%2$s".'
+		. PHP_EOL . '- %3$s line %4$d, column %5$d. XML error code %6$d.',
+		isset( $levels[ $error->level ] ) ? $levels[ $error->level ] : $levels[ LIBXML_ERR_ERROR ],
+		$error->message,
+		$error->file,
+		$error->line,
+		$error->column,
+		$error->code
+	);
+}

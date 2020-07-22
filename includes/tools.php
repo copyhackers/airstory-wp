@@ -34,14 +34,16 @@ function register_tools_script() {
 		true
 	);
 
-	wp_localize_script( 'airstory-tools', 'airstoryTools', array(
-		'restApiUrl'  => get_rest_url( null, '/airstory/v1', 'https' ),
-		'statusIcons' => array(
-			'loading' => '',
-			'success' => render_status_icon( true, false ),
-			'failure' => render_status_icon( false, false ),
-		),
-	) );
+	wp_localize_script(
+		'airstory-tools', 'airstoryTools', array(
+			'restApiUrl'  => get_rest_url( null, '/airstory/v1', 'https' ),
+			'statusIcons' => array(
+				'loading' => '',
+				'success' => render_status_icon( true, false ),
+				'failure' => render_status_icon( false, false ),
+			),
+		)
+	);
 }
 add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\register_tools_script' );
 
@@ -51,6 +53,8 @@ add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\register_tools_script' );
 function render_tools_page() {
 	wp_enqueue_script( 'airstory-tools' );
 	$compatibility = check_compatibility();
+
+	// phpcs:disable Generic.WhiteSpace.ScopeIndent
 ?>
 
 	<style type="text/css">
@@ -67,11 +71,17 @@ function render_tools_page() {
 
 	<div class="wrap">
 		<h1><?php echo esc_html( _x( 'Airstory', 'tools page heading', 'airstory' ) ); ?></h1>
-		<p class="description"><?php echo esc_html( sprintf(
-			/* Translators: %1$s is the current plugin version. */
-			__( 'Version %1$s', 'airstory' ),
-			AIRSTORY_VERSION
-		) ); ?></p>
+		<p class="description">
+			<?php
+				echo esc_html(
+					sprintf(
+						/* Translators: %1$s is the current plugin version. */
+						__( 'Version %1$s', 'airstory' ),
+						AIRSTORY_VERSION
+					)
+				);
+			?>
+		</p>
 		<p><?php esc_html_e( 'This page contains useful information for integrating Airstory into WordPress.', 'airstory' ); ?></p>
 
 		<h2><?php echo esc_html( _x( 'Compatibility', 'tools page heading', 'airstory' ) ); ?></h2>
@@ -88,11 +98,17 @@ function render_tools_page() {
 
 				<tr class="dependency-<?php echo esc_attr( $compatibility['details']['php'] ? 'met' : 'unmet' ); ?>">
 					<td><?php esc_html_e( 'PHP 5.3 or higher', 'airstory' ); ?></td>
-					<td><?php echo esc_html( sprintf(
-						/* Translators: %1$s is the current PHP version. */
-						_x( 'Version %1$s', 'PHP version', 'airstory' ),
-						PHP_VERSION
-					) ); ?></td>
+					<td>
+						<?php
+							echo esc_html(
+								sprintf(
+									/* Translators: %1$s is the current PHP version. */
+									_x( 'Version %1$s', 'PHP version', 'airstory' ),
+									PHP_VERSION
+								)
+							);
+						?>
+					</td>
 					<td><?php render_status_icon( $compatibility['details']['php'] ); ?></td>
 				</tr>
 				<?php unset( $compatibility['details']['php'] ); ?>
@@ -113,20 +129,32 @@ function render_tools_page() {
 				<?php foreach ( array_keys( $compatibility['details'] ) as $ext ) : // Everything left is an extension. ?>
 
 					<tr class="dependency-<?php echo esc_attr( $compatibility['details'][ $ext ] ? 'met' : 'unmet' ); ?>">
-						<td><?php echo esc_html( sprintf(
-							/* Translators: %1$s represents the PHP extension name. */
-							__( 'PHP Extension: %1$s', 'airstory' ),
-							$ext
-						) ); ?></td>
+						<td>
+							<?php
+								echo esc_html(
+									sprintf(
+										/* Translators: %1$s represents the PHP extension name. */
+										__( 'PHP Extension: %1$s', 'airstory' ),
+										$ext
+									)
+								);
+							?>
+						</td>
 						<td>
 							<?php if ( $compatibility['details'][ $ext ] ) : ?>
 								<?php esc_html_e( 'Extension loaded', 'airstory' ); ?>
 							<?php else : ?>
-								<strong><?php echo esc_html( sprintf(
-									/* Translators: %1$s is the name of the missing PHP extension. */
-									__( 'The %1$s extension is missing!', 'airstory' ),
-									$ext
-								) ); ?></strong>
+								<strong>
+									<?php
+										echo esc_html(
+											sprintf(
+												/* Translators: %1$s is the name of the missing PHP extension. */
+												__( 'The %1$s extension is missing!', 'airstory' ),
+												$ext
+											)
+										);
+									?>
+								</strong>
 							<?php endif; ?>
 						</td>
 						<td><?php render_status_icon( $compatibility['details'][ $ext ] ); ?></td>
@@ -167,6 +195,7 @@ function render_tools_page() {
 	</div>
 
 <?php
+	// phpcs:enable Generic.WhiteSpace.ScopeIndent
 }
 
 /**
@@ -284,10 +313,12 @@ function verify_https_support() {
 		return true;
 	}
 
-	$response = wp_remote_request( get_rest_url( null, '/airstory/v1', 'https' ), array(
-		'method' => 'HEAD',
-		'sslverify' => false,
-	) );
+	$response = wp_remote_request(
+		get_rest_url( null, '/airstory/v1', 'https' ), array(
+			'method'    => 'HEAD',
+			'sslverify' => false,
+		)
+	);
 
 	if ( is_wp_error( $response ) ) {
 		return false;
@@ -318,7 +349,7 @@ function verify_https_support() {
 function get_support_details() {
 	global $wpdb;
 
-	$report  = '### Begin System Info ###' . PHP_EOL;
+	$report = '### Begin System Info ###' . PHP_EOL;
 
 	// Basic details about the site.
 	$report .= PHP_EOL . '-- Site Info' . PHP_EOL . PHP_EOL;

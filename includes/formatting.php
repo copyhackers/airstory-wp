@@ -195,9 +195,11 @@ function sideload_all_images( $post_id ) {
 			$local_url = $replaced[ $sanitized_src ];
 
 		} else {
-			$image_id = sideload_single_image( $src, $post_id, array(
-				'_wp_attachment_image_alt' => sanitize_text_field( $image->getAttribute( 'alt' ) ),
-			) );
+			$image_id = sideload_single_image(
+				$src, $post_id, array(
+					'_wp_attachment_image_alt' => sanitize_text_field( $image->getAttribute( 'alt' ) ),
+				)
+			);
 
 			if ( ! $image_id ) {
 				continue;
@@ -309,10 +311,12 @@ function set_attachment_author( $post ) {
  *                         created. These keys and values are assumed to be sanitized.
  */
 function retrieve_original_media( $url, $post_id, $metadata ) {
-	$url_components = array_merge( array(
-		'host' => '',
-		'path' => '',
-	), (array) wp_parse_url( $url ) );
+	$url_components = array_merge(
+		array(
+			'host' => '',
+			'path' => '',
+		), (array) wp_parse_url( $url )
+	);
 	$url_components = array_map( 'strtolower', $url_components );
 
 	// Only operate on Cloudinary-hosted images.

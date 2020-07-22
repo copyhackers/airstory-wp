@@ -43,6 +43,9 @@ function get_cipher_algorithm() {
 		'AES-256-CTR', // Must be first in the list, as this used to be the *only* option.
 		'AES-256-CFB',
 		'AES-128-CFB',
+		'aes-256-ctr', // Need lowercase as well since some servers only give lowercase.
+		'aes-256-cfb',
+		'aes-128-cfb',
 	);
 	$available = array_intersect( $preferred, openssl_get_cipher_methods() );
 
@@ -107,10 +110,12 @@ function set_token( $user_id, $token ) {
 	}
 
 	// Store the encrypted values and the IV.
-	Settings\set_user_data( $user_id, 'user_token', array(
-		'token' => $encrypted,
-		'iv'    => $iv,
-	) );
+	Settings\set_user_data(
+		$user_id, 'user_token', array(
+			'token' => $encrypted,
+			'iv'    => $iv,
+		)
+	);
 
 	return $encrypted;
 }

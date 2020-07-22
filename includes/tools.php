@@ -34,14 +34,16 @@ function register_tools_script() {
 		true
 	);
 
-	wp_localize_script( 'airstory-tools', 'airstoryTools', array(
-		'restApiUrl'  => get_rest_url( null, '/airstory/v1', 'https' ),
-		'statusIcons' => array(
-			'loading' => '',
-			'success' => render_status_icon( true, false ),
-			'failure' => render_status_icon( false, false ),
-		),
-	) );
+	wp_localize_script(
+		'airstory-tools', 'airstoryTools', array(
+			'restApiUrl'  => get_rest_url( null, '/airstory/v1', 'https' ),
+			'statusIcons' => array(
+				'loading' => '',
+				'success' => render_status_icon( true, false ),
+				'failure' => render_status_icon( false, false ),
+			),
+		)
+	);
 }
 add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\register_tools_script' );
 
@@ -71,11 +73,13 @@ function render_tools_page() {
 		<h1><?php echo esc_html( _x( 'Airstory', 'tools page heading', 'airstory' ) ); ?></h1>
 		<p class="description">
 			<?php
-				echo esc_html( sprintf(
-					/* Translators: %1$s is the current plugin version. */
-					__( 'Version %1$s', 'airstory' ),
-					AIRSTORY_VERSION
-				) );
+				echo esc_html(
+					sprintf(
+						/* Translators: %1$s is the current plugin version. */
+						__( 'Version %1$s', 'airstory' ),
+						AIRSTORY_VERSION
+					)
+				);
 			?>
 		</p>
 		<p><?php esc_html_e( 'This page contains useful information for integrating Airstory into WordPress.', 'airstory' ); ?></p>
@@ -96,11 +100,13 @@ function render_tools_page() {
 					<td><?php esc_html_e( 'PHP 5.3 or higher', 'airstory' ); ?></td>
 					<td>
 						<?php
-							echo esc_html( sprintf(
-								/* Translators: %1$s is the current PHP version. */
-								_x( 'Version %1$s', 'PHP version', 'airstory' ),
-								PHP_VERSION
-							) );
+							echo esc_html(
+								sprintf(
+									/* Translators: %1$s is the current PHP version. */
+									_x( 'Version %1$s', 'PHP version', 'airstory' ),
+									PHP_VERSION
+								)
+							);
 						?>
 					</td>
 					<td><?php render_status_icon( $compatibility['details']['php'] ); ?></td>
@@ -125,11 +131,13 @@ function render_tools_page() {
 					<tr class="dependency-<?php echo esc_attr( $compatibility['details'][ $ext ] ? 'met' : 'unmet' ); ?>">
 						<td>
 							<?php
-								echo esc_html( sprintf(
-									/* Translators: %1$s represents the PHP extension name. */
-									__( 'PHP Extension: %1$s', 'airstory' ),
-									$ext
-								) );
+								echo esc_html(
+									sprintf(
+										/* Translators: %1$s represents the PHP extension name. */
+										__( 'PHP Extension: %1$s', 'airstory' ),
+										$ext
+									)
+								);
 							?>
 						</td>
 						<td>
@@ -138,11 +146,13 @@ function render_tools_page() {
 							<?php else : ?>
 								<strong>
 									<?php
-										echo esc_html( sprintf(
-											/* Translators: %1$s is the name of the missing PHP extension. */
-											__( 'The %1$s extension is missing!', 'airstory' ),
-											$ext
-										) );
+										echo esc_html(
+											sprintf(
+												/* Translators: %1$s is the name of the missing PHP extension. */
+												__( 'The %1$s extension is missing!', 'airstory' ),
+												$ext
+											)
+										);
 									?>
 								</strong>
 							<?php endif; ?>
@@ -303,10 +313,12 @@ function verify_https_support() {
 		return true;
 	}
 
-	$response = wp_remote_request( get_rest_url( null, '/airstory/v1', 'https' ), array(
-		'method'    => 'HEAD',
-		'sslverify' => false,
-	) );
+	$response = wp_remote_request(
+		get_rest_url( null, '/airstory/v1', 'https' ), array(
+			'method'    => 'HEAD',
+			'sslverify' => false,
+		)
+	);
 
 	if ( is_wp_error( $response ) ) {
 		return false;

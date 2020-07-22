@@ -14,8 +14,6 @@ Send your blog posts from Airstory writing software to WordPress for publication
 
 == Description ==
 
-**Notice:** [Airstory documents are being deprecated on January 15, 2019](https://www.airstory.co/airstory-update-2018/), at which point this plugin will cease to connect.
-
 Send your blog posts from [Airstory](http://www.airstory.co/) to WordPress.
 
 === Publish Better Content ===

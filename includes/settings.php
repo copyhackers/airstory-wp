@@ -101,7 +101,6 @@ function render_profile_settings( $user ) {
 ?>
 
 	<h2 id="airstory"><?php esc_html_e( 'Airstory Configuration', 'airstory' ); ?></h2>
-	<?php do_action( 'airstory_before_settings', $user ); ?>
 	<table class="form-table">
 		<tbody>
 			<tr>
@@ -112,11 +111,13 @@ function render_profile_settings( $user ) {
 						<input name="airstory-disconnect" type="submit" class="button" value="<?php esc_attr_e( 'Disconnect from Airstory', 'airstory' ); ?>" />
 						<p class="description">
 							<?php
-								echo wp_kses_post( sprintf(
-									/* Translators: %1$s is the user's Airstory email address. */
-									__( 'Currently authenticated as <strong>%1$s</strong>', 'airstory' ),
-									$profile['email']
-								) );
+								echo wp_kses_post(
+									sprintf(
+										/* Translators: %1$s is the user's Airstory email address. */
+										__( 'Currently authenticated as <strong>%1$s</strong>', 'airstory' ),
+										$profile['email']
+									)
+								);
 							?>
 						</p>
 

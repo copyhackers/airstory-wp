@@ -37,10 +37,14 @@ class API {
 	 * @return stdClass|WP_Error The response from Airstory\API::make_authenticated_request().
 	 */
 	public function get_project( $project_id ) {
-		return $this->decode_json_response( $this->make_authenticated_request( sprintf(
-			'/projects/%s',
-			$project_id
-		) ) );
+		return $this->decode_json_response(
+			$this->make_authenticated_request(
+				sprintf(
+					'/projects/%s',
+					$project_id
+				)
+			)
+		);
 	}
 
 	/**
@@ -51,11 +55,15 @@ class API {
 	 * @return stdClass|WP_Error The response from Airstory\API::make_authenticated_request().
 	 */
 	public function get_document( $project_id, $document_id ) {
-		return $this->decode_json_response( $this->make_authenticated_request( sprintf(
-			'/projects/%s/documents/%s',
-			$project_id,
-			$document_id
-		) ) );
+		return $this->decode_json_response(
+			$this->make_authenticated_request(
+				sprintf(
+					'/projects/%s/documents/%s',
+					$project_id,
+					$document_id
+				)
+			)
+		);
 	}
 
 	/**
@@ -69,11 +77,13 @@ class API {
 	 * @return string|WP_Error The response from Airstory\API::make_authenticated_request().
 	 */
 	public function get_document_content( $project_id, $document_id ) {
-		$request = $this->make_authenticated_request( sprintf(
-			'/projects/%s/documents/%s/content',
-			$project_id,
-			$document_id
-		) );
+		$request = $this->make_authenticated_request(
+			sprintf(
+				'/projects/%s/documents/%s/content',
+				$project_id,
+				$document_id
+			)
+		);
 
 		return wp_remote_retrieve_body( $request );
 	}
@@ -103,13 +113,15 @@ class API {
 	 *                         WP_Error should anything go awry.
 	 */
 	public function post_target( $email, $target ) {
-		$response = $this->make_authenticated_request( sprintf( '/users/%s/targets', $email ), array(
-			'method'  => 'POST',
-			'headers' => array(
-				'content-type' => 'application/json',
-			),
-			'body'    => wp_json_encode( $target ),
-		) );
+		$response = $this->make_authenticated_request(
+			sprintf( '/users/%s/targets', $email ), array(
+				'method'  => 'POST',
+				'headers' => array(
+					'content-type' => 'application/json',
+				),
+				'body'    => wp_json_encode( $target ),
+			)
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
@@ -131,13 +143,15 @@ class API {
 	 * @return bool|WP_Error Either a boolean TRUE or a WP_Error should anything go awry.
 	 */
 	public function put_target( $email, $connection_id, $target ) {
-		$response = $this->make_authenticated_request( sprintf( '/users/%s/targets/%s', $email, $connection_id ), array(
-			'method'  => 'PUT',
-			'headers' => array(
-				'content-type' => 'application/json',
-			),
-			'body'    => wp_json_encode( $target ),
-		) );
+		$response = $this->make_authenticated_request(
+			sprintf( '/users/%s/targets/%s', $email, $connection_id ), array(
+				'method'  => 'PUT',
+				'headers' => array(
+					'content-type' => 'application/json',
+				),
+				'body'    => wp_json_encode( $target ),
+			)
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
@@ -159,9 +173,11 @@ class API {
 	 *                         a WP_Error should anything go awry.
 	 */
 	public function delete_target( $email, $target ) {
-		$response = $this->make_authenticated_request( sprintf( '/users/%s/targets/%s', $email, $target ), array(
-			'method' => 'DELETE',
-		) );
+		$response = $this->make_authenticated_request(
+			sprintf( '/users/%s/targets/%s', $email, $target ), array(
+				'method' => 'DELETE',
+			)
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
@@ -236,10 +252,12 @@ class API {
 
 		// Begin assembling the URL and arguments.
 		$url  = sprintf( '%s%s', self::API_BASE, $path );
-		$args = wp_parse_args( $args, array(
-			'method'  => 'GET',
-			'headers' => array(),
-		) );
+		$args = wp_parse_args(
+			$args, array(
+				'method'  => 'GET',
+				'headers' => array(),
+			)
+		);
 
 		// Explicitly append the Authorization header, which is required by Airstory.
 		$args['headers']['Authorization'] = sprintf( 'Bearer=%s', $token );

@@ -68,8 +68,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 * Initial public release.
 
 
-[Unreleased]: https://github.com/liquidweb/airstory-wp/compare/master...develop
-[1.1.8]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.8
+[Unreleased]: https://github.com/copyhackers/airstory-wp/compare/master...develop
+[1.1.8]: https://github.com/copyhackers/airstory-wp/releases/tag/v1.1.8
 [1.1.7]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.7
 [1.1.6]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.6
 [1.1.5]: https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.5

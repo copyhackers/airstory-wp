@@ -14,8 +14,8 @@
     }
   ],
   "support": {
-    "source": "https://github.com/liquidweb/airstory-wp",
-    "issues": "https://github.com/liquidweb/airstory-wp/issues"
+    "source": "https://github.com/copyhackers/airstory-wp",
+    "issues": "https://github.com/copyhackers/airstory-wp/issues"
   },
   "license": "MIT",
   "require": {

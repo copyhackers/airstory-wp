@@ -340,7 +340,7 @@ function verify_https_support() {
  * copyright holder Pippin Williamson.
  *
  * @link https://github.com/easydigitaldownloads/easy-digital-downloads
- * @link https://github.com/liquidweb/airstory-wp/pull/35#discussion_r119388840
+ * @link https://github.com/copyhackers/airstory-wp/pull/35#discussion_r119388840
  *
  * @global $wpdb
  *

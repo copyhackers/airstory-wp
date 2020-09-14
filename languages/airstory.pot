@@ -1,10 +1,10 @@
-# Copyright (C) 2020 Liquid Web
+# Copyright (C) 2020 Airstory
 # This file is distributed under the MIT.
 msgid ""
 msgstr ""
 "Project-Id-Version: Airstory 1.1.8\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/airstory-wp\n"
-"POT-Creation-Date: 2020-07-22 19:39:17+00:00\n"
+"POT-Creation-Date: 2020-09-14 20:20:47+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -236,12 +236,12 @@ msgstr ""
 msgid "The current user has not provided an Airstory user token"
 msgstr ""
 
-#. Plugin Name of the plugin/theme
+#. Author of the plugin/theme
 msgid "Airstory"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
-msgid "http://www.airstory.co/integrations/"
+msgid "http://help.airstory.co/en/articles/890966-airstory-integrations"
 msgstr ""
 
 #. Description of the plugin/theme
@@ -250,12 +250,8 @@ msgid ""
 "publication."
 msgstr ""
 
-#. Author of the plugin/theme
-msgid "Liquid Web"
-msgstr ""
-
 #. Author URI of the plugin/theme
-msgid "https://www.liquidweb.com"
+msgid "https://airstory.co"
 msgstr ""
 
 #: includes/settings.php:136

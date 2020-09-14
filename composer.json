@@ -5,12 +5,16 @@
   "homepage": "http://www.airstory.co/integrations/",
   "authors": [
     {
-      "name": "Liquid Web",
-      "homepage": "https://www.liquidweb.com"
+      "name": "Copyhackers",
+      "homepage": "https://copyhackers.com"
     },
     {
-      "name": "Steve Grunwell",
-      "homepage": "https://stevegrunwell.com"
+      "name": "Airstory",
+      "homepage": "https://airstory.co"
+    },
+    {
+      "name": "Steven Luke",
+      "homepage": "https://github.com/stevendluke"
     }
   ],
   "support": {

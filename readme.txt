@@ -1,9 +1,9 @@
 === Airstory ===
-Contributors: liquidweb, airstory, stevegrunwell
+Contributors: liquidweb, airstory, stevegrunwell, stevendluke
 Donate link: http://airstory.co
 Tags: blogging, writing, import, airstory, content, publishing
 Requires at least: 4.7
-Tested up to: 4.9.9
+Tested up to: 5.5
 Requires PHP: 5.3
 Stable tag: 1.1.8
 License: MIT
@@ -65,7 +65,7 @@ Exporting to WordPress will create a new *draft* post, enabling you to set post 
 
 === Actions and filters ===
 
-For developers, the Airstory WordPress plugin contains a number of [actions and filters that can be used to modify its default behavior](https://codex.wordpress.org/Plugin_API). For a full list of available filters, please [see the wiki in the plugin's GitHub repository](https://github.com/liquidweb/airstory-wp/wiki/Actions-and-Filters).
+For developers, the Airstory WordPress plugin contains a number of [actions and filters that can be used to modify its default behavior](https://codex.wordpress.org/Plugin_API). For a full list of available filters, please [see the wiki in the plugin's GitHub repository](https://github.com/copyhackers/airstory-wp/wiki/Actions-and-Filters).
 
 
 == Installation ==
@@ -143,7 +143,7 @@ All modern hosts (Liquid Web, WP Engine, SiteGround, etc.) should support these 
 
 == Changelog ==
 
-For a full list of changes, please [view the change log on GitHub](https://github.com/liquidweb/airstory-wp/blob/develop/CHANGELOG.md).
+For a full list of changes, please [view the change log on GitHub](https://github.com/copyhackers/airstory-wp/blob/develop/CHANGELOG.md).
 
 = 1.1.8 =
 * Removed deprecation message. Fixed bugs introduce with PHP 7.3.
@@ -152,7 +152,7 @@ For a full list of changes, please [view the change log on GitHub](https://githu
 * Sunset the plugin in preparation for [Airstory deprecating documents on January 15, 2019](https://www.airstory.co/airstory-update-2018/).
 
 = 1.1.6 =
-* [Log any libxml errors that occur while importing content into WordPress](https://github.com/liquidweb/airstory-wp/releases/tag/v1.1.6).
+* [Log any libxml errors that occur while importing content into WordPress](https://github.com/copyhackers/airstory-wp/releases/tag/v1.1.6).
 
 = 1.1.5 =
 * Explicitly set "Access-Control-Allow-Origin" headers for the Airstory webhook request.

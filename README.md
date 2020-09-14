@@ -33,7 +33,7 @@ Exporting to WordPress will create a new *draft* post, enabling you to set post 
 
 ## Actions and filters
 
-For developers, the Airstory WordPress plugin contains a number of [actions and filters that can be used to modify its default behavior](https://codex.wordpress.org/Plugin_API). For a full list of available filters, please [see the wiki in the plugin's GitHub repository](https://github.com/liquidweb/airstory-wp/wiki/Actions-and-Filters).
+For developers, the Airstory WordPress plugin contains a number of [actions and filters that can be used to modify its default behavior](https://codex.wordpress.org/Plugin_API). For a full list of available filters, please [see the wiki in the plugin's GitHub repository](https://github.com/copyhackers/airstory-wp/wiki/Actions-and-Filters).
 
 
 ## Frequently Asked Questions

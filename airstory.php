@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Airstory
- * Plugin URI:  http://www.airstory.co/integrations/
+ * Plugin URI:  http://help.airstory.co/en/articles/890966-airstory-integrations
  * Description: Send your blog posts from Airstory writing software to WordPress for publication.
  * Version:     1.1.8
- * Author:      Liquid Web
- * Author URI:  https://www.liquidweb.com
+ * Author:      Airstory
+ * Author URI:  https://airstory.co
  * Text Domain: airstory
  * Domain Path: /languages
  * License:     MIT

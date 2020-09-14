@@ -4,15 +4,15 @@
   "description": "Send your blog posts from Airstory writing software to WordPress for publication.",
   "homepage": "http://www.airstory.co/integrations/",
   "author": {
-    "name": "Liquid Web",
-    "url": "https://www.liquidweb.com"
+    "name": "Airstory",
+    "url": "https://airstory.co"
   },
   "repository":{
     "type" : "git",
     "url" : "https://github.com/npm/npm.git"
   },
   "bugs": {
-    "url": "https://github.com/liquidweb/airstory-wp/issues"
+    "url": "https://github.com/copyhackers/airstory-wp/issues"
   },
   "license": "MIT",
   "dependencies": {},

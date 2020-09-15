@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Airstory
- * Plugin URI:  http://www.airstory.co/integrations/
- * Description: *DEPRECATED* Send your blog posts from Airstory writing software to WordPress for publication.
- * Version:     1.1.7
- * Author:      Liquid Web
- * Author URI:  https://www.liquidweb.com
+ * Plugin URI:  http://help.airstory.co/en/articles/890966-airstory-integrations
+ * Description: Send your blog posts from Airstory writing software to WordPress for publication.
+ * Version:     1.1.8
+ * Author:      Airstory
+ * Author URI:  https://airstory.co
  * Text Domain: airstory
  * Domain Path: /languages
  * License:     MIT
@@ -17,7 +17,7 @@
 namespace Airstory;
 
 // Declare the canonical plugin version.
-define( 'AIRSTORY_VERSION', '1.1.7' );
+define( 'AIRSTORY_VERSION', '1.1.8' );
 
 if ( ! defined( 'AIRSTORY_DIR' ) ) {
 	define( 'AIRSTORY_DIR', __DIR__ );
@@ -33,4 +33,3 @@ require_once AIRSTORY_DIR . '/includes/formatting.php';
 require_once AIRSTORY_DIR . '/includes/settings.php';
 require_once AIRSTORY_DIR . '/includes/tools.php';
 require_once AIRSTORY_DIR . '/includes/webhook.php';
-require_once AIRSTORY_DIR . '/includes/sunset.php';

@@ -4,8 +4,6 @@
 [![Code Climate](https://codeclimate.com/github/liquidweb/airstory-wp/badges/gpa.svg)](https://codeclimate.com/github/liquidweb/airstory-wp)
 [![Test Coverage](https://codeclimate.com/github/liquidweb/airstory-wp/badges/coverage.svg)](https://codeclimate.com/github/liquidweb/airstory-wp/coverage)
 
-> **Notice:** [Airstory documents are being deprecated on January 15, 2019](https://www.airstory.co/airstory-update-2018/), at which point this plugin will cease to connect.
-
 This plugin enables [Airstory](http://www.airstory.co/) users to connect their WordPress sites, enabling authors to leverage the exceptional editorial experience of Airstory with the powerful publishing of WordPress.
 
 ## Requirements
@@ -35,7 +33,7 @@ Exporting to WordPress will create a new *draft* post, enabling you to set post 
 
 ## Actions and filters
 
-For developers, the Airstory WordPress plugin contains a number of [actions and filters that can be used to modify its default behavior](https://codex.wordpress.org/Plugin_API). For a full list of available filters, please [see the wiki in the plugin's GitHub repository](https://github.com/liquidweb/airstory-wp/wiki/Actions-and-Filters).
+For developers, the Airstory WordPress plugin contains a number of [actions and filters that can be used to modify its default behavior](https://codex.wordpress.org/Plugin_API). For a full list of available filters, please [see the wiki in the plugin's GitHub repository](https://github.com/copyhackers/airstory-wp/wiki/Actions-and-Filters).
 
 
 ## Frequently Asked Questions

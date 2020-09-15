@@ -11,7 +11,7 @@ Begin by cloning the GitHub repo locally and installing the dependencies:
 
 ```bash
 # Clone the repository, ideally into a wp-content/plugins directory:
-$ git clone https://github.com/liquidweb/airstory-wp.git airstory && cd airstory
+$ git clone https://github.com/copyhackers/airstory-wp.git airstory && cd airstory
 
 # Install local dependencies
 $ composer install && npm install
@@ -75,4 +75,4 @@ $ npm test
 
 The Airstory plugin was built as a joint effort between [Airstory](http://airstory.co/) and [Liquid Web](https://www.liquidweb.com).
 
-[See a list of all contributors to the plugin](https://github.com/liquidweb/airstory-wp/graphs/contributors).
+[See a list of all contributors to the plugin](https://github.com/copyhackers/airstory-wp/graphs/contributors).

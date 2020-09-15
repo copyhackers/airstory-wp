@@ -18,10 +18,12 @@ use WP_Error;
  * Register the /airstory/v1/webhook endpoint within the WP REST API.
  */
 function register_webhook_endpoint() {
-	register_rest_route( 'airstory/v1', '/webhook', array(
-		'methods'  => 'POST',
-		'callback' => __NAMESPACE__ . '\handle_webhook',
-	) );
+	register_rest_route(
+		'airstory/v1', '/webhook', array(
+			'methods'  => 'POST',
+			'callback' => __NAMESPACE__ . '\handle_webhook',
+		)
+	);
 }
 add_action( 'rest_api_init', __NAMESPACE__ . '\register_webhook_endpoint' );
 
@@ -51,11 +53,13 @@ function handle_webhook( WP_REST_Request $request ) {
 
 		foreach ( array( 'identifier', 'project', 'document' ) as $arg ) {
 			if ( empty( $$arg ) ) {
-				$error->add( 'airstory-missing-argument', sprintf(
-					/* Translators: %1$s is the request argument that is missing. */
-					__( 'The "%1$s" argument is required', 'airstory' ),
-					$arg
-				) );
+				$error->add(
+					'airstory-missing-argument', sprintf(
+						/* Translators: %1$s is the request argument that is missing. */
+						__( 'The "%1$s" argument is required', 'airstory' ),
+						$arg
+					)
+				);
 			}
 		}
 		return $error;
@@ -95,10 +99,12 @@ function handle_webhook( WP_REST_Request $request ) {
 	}
 
 	// Since get_edit_post_link() depends on permission checks, we'll construct the link manually.
-	$edit_path = add_query_arg( array(
-		'post'   => $post_id,
-		'action' => 'edit',
-	), '/post.php' );
+	$edit_path = add_query_arg(
+		array(
+			'post'   => $post_id,
+			'action' => 'edit',
+		), '/post.php'
+	);
 
 	return array(
 		'project'  => $project,
@@ -124,10 +130,12 @@ function override_cors_headers( $served ) {
 	$origins = apply_filters( 'airstory_webhook_cors_origin', array( 'https://app.airstory.co' ) );
 
 	if ( ! empty( $origins ) ) {
-		header( sprintf(
-			'Access-Control-Allow-Origin: %s',
-			implode( ' ', array_map( 'esc_url', $origins ) )
-		) );
+		header(
+			sprintf(
+				'Access-Control-Allow-Origin: %s',
+				implode( ' ', array_map( 'esc_url', $origins ) )
+			)
+		);
 	}
 
 	return $served;

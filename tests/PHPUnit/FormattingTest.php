@@ -62,7 +62,7 @@ EOT;
 	/**
 	 * @dataProvider foreignLanguageProvider
 	 *
-	 * @link https://github.com/liquidweb/airstory-wp/issues/44
+	 * @link https://github.com/copyhackers/airstory-wp/issues/44
 	 */
 	public function testGetBodyContentsWithAccentedLanguages( $content ) {
 		$content = '<p>' . $content . '</p>';
@@ -143,7 +143,7 @@ EOT;
 	}
 
 	/**
-	 * @link https://github.com/liquidweb/airstory-wp/issues/28
+	 * @link https://github.com/copyhackers/airstory-wp/issues/28
 	 */
 	public function testGetBodyContentsHandlesNonBreakingSpacesCorrectly() {
 		$response = '<p>This&nbsp;paragraph&nbsp;has&nbsp;non-breaking&nbsp;spaces&nbsp;between&nbsp;each&nbsp;word.</p>';
@@ -440,7 +440,7 @@ EOT;
 	}
 
 	/**
-	 * @link https://github.com/liquidweb/airstory-wp/issues/27
+	 * @link https://github.com/copyhackers/airstory-wp/issues/27
 	 */
 	public function testSideloadAllImagesSupportsCloudinaryURLs() {
 		$content = '<p><img src="https://res.cloudinary.com/airstory/image/upload/c_scale,w_0.1/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg" alt="my alt text" /></p>';
@@ -475,7 +475,7 @@ EOT;
 	}
 
 	/**
-	 * @link https://github.com/liquidweb/airstory-wp/issues/27
+	 * @link https://github.com/copyhackers/airstory-wp/issues/27
 	 */
 	public function testSideloadAllImagesSupportsUserProvidedDomains() {
 		$content = '<p><img src="https://someimagehost.com/image.jpg" alt="my alt text" /></p>';
@@ -513,7 +513,7 @@ EOT;
 	/**
 	 * @dataProvider foreignLanguageProvider
 	 *
-	 * @link https://github.com/liquidweb/airstory-wp/issues/61
+	 * @link https://github.com/copyhackers/airstory-wp/issues/61
 	 */
 	public function testSideloadAllImagesWithAccentedLanguages( $content ) {
 		$post = new \stdClass;
@@ -631,7 +631,7 @@ EOT;
 	}
 
 	/**
-	 * @link https://github.com/liquidweb/airstory-wp/issues/27
+	 * @link https://github.com/copyhackers/airstory-wp/issues/27
 	 */
 	public function testRetrieveOriginalMedia() {
 		$url = 'https://images.airstory.co/c_scale,w_0.1/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
@@ -645,7 +645,7 @@ EOT;
 	}
 
 	/**
-	 * @link https://github.com/liquidweb/airstory-wp/issues/27
+	 * @link https://github.com/copyhackers/airstory-wp/issues/27
 	 */
 	public function testRetrieveOriginalMediaCloudinary() {
 		$url = 'https://res.cloudinary.com/airstory/image/upload/c_scale,w_0.1/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
@@ -659,7 +659,7 @@ EOT;
 	}
 
 	/**
-	 * @link https://github.com/liquidweb/airstory-wp/issues/27
+	 * @link https://github.com/copyhackers/airstory-wp/issues/27
 	 */
 	public function testRetrieveOriginalMediaReturnsEarlyIfNotCloudinaryMedia() {
 		$url = 'https://example.com/airstory/image/upload/c_scale,w_0.1/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
@@ -672,7 +672,7 @@ EOT;
 	}
 
 	/**
-	 * @link https://github.com/liquidweb/airstory-wp/issues/27
+	 * @link https://github.com/copyhackers/airstory-wp/issues/27
 	 */
 	public function testRetrieveOriginalMediaReturnsEarlyIfAlreadyOriginalImage() {
 		$url = 'https://images.airstory.co/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';
@@ -685,7 +685,7 @@ EOT;
 	}
 
 	/**
-	 * @link https://github.com/liquidweb/airstory-wp/issues/27
+	 * @link https://github.com/copyhackers/airstory-wp/issues/27
 	 */
 	public function testRetrieveOriginalMediaReturnsEarlyIfAlreadyOriginalImageCloudinary() {
 		$url = 'https://res.cloudinary.com/airstory/image/upload/v1/prod/iXXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/image.jpg';

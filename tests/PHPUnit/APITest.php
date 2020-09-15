@@ -415,7 +415,7 @@ class APITest extends \Airstory\TestCase {
 	}
 
 	/**
-	 * @link https://github.com/liquidweb/airstory-wp/issues/58
+	 * @link https://github.com/copyhackers/airstory-wp/issues/58
 	 */
 	public function testDecodeJsonResponseHandlesWPErrors() {
 		$instance = Mockery::mock( __NAMESPACE__ . '\API' )->shouldAllowMockingProtectedMethods()->makePartial();

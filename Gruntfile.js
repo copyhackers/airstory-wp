@@ -17,7 +17,7 @@ module.exports = function(grunt) {
 					/*
 					 * Exclude files not necessary in the distribution.
 					 *
-					 * @link https://github.com/liquidweb/airstory-wp/issues/69
+					 * @link https://github.com/copyhackers/airstory-wp/issues/69
 					 */
 					'!includes/lib/wp-async-task/*.dist',
 					'!includes/lib/wp-async-task/tests/**',
